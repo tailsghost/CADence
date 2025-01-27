@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CADence.Aperture\CADence.Aperture.csproj" />
-    <ProjectReference Include="..\CADence.Format\CADence.Format.csproj" />
+    <ProjectReference Include="..\..\infrastructure\CADence.Infrastructure.Aperture\CADence.Infrastructure.Aperture.csproj" />
+    <ProjectReference Include="..\CADence.Domain.Format\CADence.Domain.Format.csproj" />
   </ItemGroup>
 
 </Project>
