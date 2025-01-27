@@ -1,4 +1,6 @@
-﻿using CADence.Layer.Enums;
+﻿using CADence.Aperture;
+using CADence.Format;
+using CADence.Layer.Enums;
 using NetTopologySuite.Geometries;
 using System.Text;
 
@@ -6,6 +8,13 @@ namespace CADence.Layer;
 
 public abstract class LayerBase
 {
+
+    protected LayerBase(FormatBase format)
+    {
+        Format = format;
+    }
+
+    protected FormatBase Format;
     public GerberLayer Layer { get; set; }
     public double Thickness { get; set; }
     public abstract void Render();

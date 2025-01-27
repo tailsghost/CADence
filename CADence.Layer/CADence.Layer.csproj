@@ -10,4 +10,9 @@
     <PackageReference Include="NetTopologySuite" Version="2.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CADence.Aperture\CADence.Aperture.csproj" />
+    <ProjectReference Include="..\CADence.Format\CADence.Format.csproj" />
+  </ItemGroup>
+
 </Project>

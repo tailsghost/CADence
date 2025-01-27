@@ -1,4 +1,6 @@
-﻿using NetTopologySuite.Geometries;
+﻿using CADence.Aperture;
+using CADence.Format;
+using NetTopologySuite.Geometries;
 using System.Text;
 
 namespace CADence.Layer.Gerber_274x;
@@ -6,7 +8,7 @@ namespace CADence.Layer.Gerber_274x;
 internal class BottomCopper : LayerBase
 {
 
-    public BottomCopper()
+    public BottomCopper(FormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.BottomCopper;
     }

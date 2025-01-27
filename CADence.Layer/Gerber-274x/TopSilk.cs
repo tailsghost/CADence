@@ -1,4 +1,5 @@
-﻿using NetTopologySuite.Geometries;
+﻿using CADence.Format;
+using NetTopologySuite.Geometries;
 using System.Text;
 
 namespace CADence.Layer.Gerber_274x;
@@ -6,7 +7,7 @@ namespace CADence.Layer.Gerber_274x;
 public class TopSilk : LayerBase
 {
 
-    public TopSilk()
+    public TopSilk(FormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.TopSilk;
     }
