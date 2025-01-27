@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\infrastructure\CADence.Infrastructure.Aperture\CADence.Infrastructure.Aperture.csproj" />
-    <ProjectReference Include="..\CADence.Domain.Format\CADence.Models.Format.csproj" />
+    <ProjectReference Include="..\CADence.Models.Format\CADence.Models.Format.csproj" />
   </ItemGroup>
 
 </Project>
