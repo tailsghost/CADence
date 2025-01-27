@@ -1,25 +1,36 @@
 ﻿using CADence.Format;
 
-namespace CADence.Models.Tests.FormatTests
+namespace CADence.Models.Tests.FormatTests;
+
+public class ApertureFormatTests
 {
-    public class Tests
+    private ApertureFormat _apertureFormat;
+
+    [SetUp]
+    public void Setup()
     {
-        private ApertureFormat _apertureFormat;
+        _apertureFormat = new ApertureFormat();
+    }
 
-        [SetUp]
-        public void Setup()
-        {
-            _apertureFormat = new ApertureFormat();
-        }
+    [Test]
+    public void ParseFixedPositiveMM()
+    {
+        _apertureFormat.ConfigureFormat(4, 3);
+        _apertureFormat.ConfigureMM();
 
-        [Test]
-        public void Test1()
-        {
-            _apertureFormat.
+        var result = _apertureFormat.ParseFixed("242126");
 
-            _apertureFormat.ParseFixed("242126");
+        Assert.That(result, Is.EqualTo(2421260.0));
+    }
 
-            Assert.Pass();
-        }
+    [Test]
+    public void ParseFixedPositiveInch()
+    {
+        _apertureFormat.ConfigureFormat(4, 3);
+        _apertureFormat.ConfigureInch();
+
+        var result = _apertureFormat.ParseFixed("242126");
+
+        Assert.That(result, Is.EqualTo(61500004.0));
     }
 }
