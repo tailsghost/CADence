@@ -1,4 +1,4 @@
-﻿namespace CADence.Aperture;
+﻿namespace CADence.Aperture.Abstractions;
 
 internal abstract class ApertureMacroBase
 {

@@ -1,5 +1,4 @@
-﻿
-namespace CADence.Format;
+﻿namespace CADence.Format.Abstractions;
 
 public abstract class FormatBase(double MitreLimit = 1, int QuadrantSegments = 4)
 {

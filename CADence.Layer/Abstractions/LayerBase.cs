@@ -1,10 +1,10 @@
 ﻿using CADence.Aperture;
-using CADence.Format;
+using CADence.Format.Abstractions;
 using CADence.Layer.Enums;
 using NetTopologySuite.Geometries;
 using System.Text;
 
-namespace CADence.Layer;
+namespace CADence.Layer.Abstractions;
 
 public abstract class LayerBase
 {

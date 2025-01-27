@@ -2,7 +2,7 @@
 using NetTopologySuite.Operation.Buffer;
 using System.IO;
 
-namespace CADence.Aperture;
+namespace CADence.Aperture.Abstractions;
 
 public abstract class ApertureBase
 {
@@ -137,7 +137,7 @@ public abstract class ApertureBase
                 cx = point.X * xx + point.Y * yx;
                 cy = point.X * xy + point.Y * yy;
 
-                pathCopy.Add(new Coordinate((Math.Round(cx) + translateX), (Math.Round(cy) + translateY)));
+                pathCopy.Add(new Coordinate(Math.Round(cx) + translateX, Math.Round(cy) + translateY));
             }
 
             if (AccumPaths.Count > 0)

@@ -1,4 +1,6 @@
-﻿namespace CADence.Layer.Gerber_274x.Drills;
+﻿using CADence.Layer.Abstractions;
+
+namespace CADence.Layer.Gerber_274x.Drills;
 
 public class Drill : DrillBase
 {

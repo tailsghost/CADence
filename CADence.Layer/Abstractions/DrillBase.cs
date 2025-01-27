@@ -1,6 +1,6 @@
 ﻿using CADence.Layer.Enums;
 
-namespace CADence.Layer;
+namespace CADence.Layer.Abstractions;
 
 public class DrillBase
 {

@@ -1,5 +1,6 @@
 ﻿using CADence.Aperture;
-using CADence.Format;
+using CADence.Format.Abstractions;
+using CADence.Layer.Abstractions;
 using NetTopologySuite.Geometries;
 using System.Text;
 
