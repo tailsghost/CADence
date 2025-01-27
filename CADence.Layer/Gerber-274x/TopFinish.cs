@@ -8,7 +8,7 @@ namespace CADence.Layer.Gerber_274x;
 public class TopFinish : LayerBase
 {
 
-    public TopFinish(FormatBase format) : base(format)
+    public TopFinish(ApertureFormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.TopFinish;
     }

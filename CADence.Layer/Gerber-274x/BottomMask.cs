@@ -8,7 +8,7 @@ namespace CADence.Layer.Gerber_274x;
 public class BottomMask : LayerBase
 {
 
-    public BottomMask(FormatBase format) : base(format)
+    public BottomMask(ApertureFormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.BottomMask;
     }

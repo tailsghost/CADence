@@ -8,7 +8,7 @@ namespace CADence.Layer.Gerber_274x;
 public class Substrate : LayerBase
 {
 
-    public Substrate(FormatBase format) : base(format)
+    public Substrate(ApertureFormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.Substrate;
     }

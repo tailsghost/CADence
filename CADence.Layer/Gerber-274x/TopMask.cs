@@ -8,7 +8,7 @@ namespace CADence.Layer.Gerber_274x;
 public class TopMask : LayerBase
 {
 
-    public TopMask(FormatBase format) : base(format)
+    public TopMask(ApertureFormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.TopMask;
     }

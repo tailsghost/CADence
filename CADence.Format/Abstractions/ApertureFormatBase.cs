@@ -1,6 +1,6 @@
 ﻿namespace CADence.Format.Abstractions;
 
-public abstract class FormatBase(double MitreLimit = 1, int QuadrantSegments = 4)
+public abstract class ApertureFormatBase(double MitreLimit = 1, int QuadrantSegments = 4)
 {
     protected bool fmtConfigured = false;
     protected int nInt;

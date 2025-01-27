@@ -8,7 +8,7 @@ namespace CADence.Layer.Gerber_274x;
 public class TopCopper : LayerBase
 {
 
-    public TopCopper(FormatBase format) : base(format)
+    public TopCopper(ApertureFormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.TopCopper;
     }

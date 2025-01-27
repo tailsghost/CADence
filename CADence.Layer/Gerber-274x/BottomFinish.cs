@@ -8,7 +8,7 @@ namespace CADence.Layer.Gerber_274x;
 public class BottomFinish : LayerBase
 {
 
-    public BottomFinish(FormatBase format) : base(format)
+    public BottomFinish(ApertureFormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.BottomFinish;
     }

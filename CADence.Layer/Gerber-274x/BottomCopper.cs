@@ -9,7 +9,7 @@ namespace CADence.Layer.Gerber_274x;
 internal class BottomCopper : LayerBase
 {
 
-    public BottomCopper(FormatBase format) : base(format)
+    public BottomCopper(ApertureFormatBase format) : base(format)
     {
         Layer = Enums.GerberLayer.BottomCopper;
     }

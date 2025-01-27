@@ -9,12 +9,12 @@ namespace CADence.Layer.Abstractions;
 public abstract class LayerBase
 {
 
-    protected LayerBase(FormatBase format)
+    protected LayerBase(ApertureFormatBase format)
     {
         Format = format;
     }
 
-    protected FormatBase Format;
+    protected ApertureFormatBase Format;
     public GerberLayer Layer { get; set; }
     public double Thickness { get; set; }
     public abstract void Render();
