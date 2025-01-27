@@ -1,23 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Core", "CADence.Core\CADence.Core.csproj", "{69BA8881-4605-41EA-9278-D1B02743C3CA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Core", "src\app\CADence.Core\CADence.Core.csproj", "{69BA8881-4605-41EA-9278-D1B02743C3CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Aperture", "CADence.Aperture\CADence.Aperture.csproj", "{91A76E8C-8270-4265-BF0D-C143D9A51DF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Aperture", "src\infrastructure\CADence.Aperture\CADence.Aperture.csproj", "{91A76E8C-8270-4265-BF0D-C143D9A51DF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Command", "CADence.Command\CADence.Command.csproj", "{62D2F9DE-6328-445B-BC04-38C48B1D5FDC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Command", "src\infrastructure\CADence.Command\CADence.Command.csproj", "{62D2F9DE-6328-445B-BC04-38C48B1D5FDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Format", "CADence.Format\CADence.Format.csproj", "{A004C7CF-A0CB-4D62-8F3A-D536C237E19C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Format", "src\domain\CADence.Format\CADence.Format.csproj", "{A004C7CF-A0CB-4D62-8F3A-D536C237E19C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Layer", "CADence.Layer\CADence.Layer.csproj", "{72490883-E04C-47F1-8BC9-45A468B9F1BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Layer", "src\domain\CADence.Layer\CADence.Layer.csproj", "{72490883-E04C-47F1-8BC9-45A468B9F1BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.LayerFabric", "CADence.LayerFabric\CADence.LayerFabric.csproj", "{71C2CA32-825A-4B3C-9622-ABEA1983FEE6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.LayerFabric", "src\infrastructure\CADence.LayerFabric\CADence.LayerFabric.csproj", "{71C2CA32-825A-4B3C-9622-ABEA1983FEE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.NetTopology", "CADence.NetTopology\CADence.NetTopology.csproj", "{4BF35287-A849-4346-9CC6-FAB598FC8E7D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Parser", "CADence.Parser\CADence.Parser.csproj", "{30C042AF-2C4B-4B12-8864-0C2EBFC3F2D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Parser", "src\infrastructure\CADence.Parser\CADence.Parser.csproj", "{30C042AF-2C4B-4B12-8864-0C2EBFC3F2D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,10 +47,6 @@ Global
 		{71C2CA32-825A-4B3C-9622-ABEA1983FEE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71C2CA32-825A-4B3C-9622-ABEA1983FEE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71C2CA32-825A-4B3C-9622-ABEA1983FEE6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4BF35287-A849-4346-9CC6-FAB598FC8E7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4BF35287-A849-4346-9CC6-FAB598FC8E7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4BF35287-A849-4346-9CC6-FAB598FC8E7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4BF35287-A849-4346-9CC6-FAB598FC8E7D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{30C042AF-2C4B-4B12-8864-0C2EBFC3F2D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30C042AF-2C4B-4B12-8864-0C2EBFC3F2D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30C042AF-2C4B-4B12-8864-0C2EBFC3F2D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
