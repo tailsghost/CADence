@@ -5,6 +5,9 @@ namespace CADence.Format.Format;
 
 internal class Format : FormatBase
 {
+    private const double INCH_TO_MILLIMETER = 25.4;
+    private const double MILLIMETER_TO_MILLIMETER = 1.0;
+
     public override void ConfigureFormat(int nInt, int nDec)
     {
         TryToReconfigure();
@@ -23,14 +26,14 @@ internal class Format : FormatBase
     {
         TryToReconfigure();
         unitConfigured = true;
-        factor = 25.4;
+        factor = INCH_TO_MILLIMETER;
     }
 
     public override void ConfigureMM()
     {
         TryToReconfigure();
         unitConfigured = true;
-        factor = 1.0;
+        factor = MILLIMETER_TO_MILLIMETER;
     }
 
     public override double ParseFixed(string s)
@@ -114,11 +117,11 @@ internal class Format : FormatBase
 
     private double AdjustValue(double val)
     {
-        if (factor == 25.4)
+        if (factor == INCH_TO_MILLIMETER)
         {
-            return val * 254; 
+            return val * INCH_TO_MILLIMETER; 
         }
-        else if (factor == 1.0)
+        else if (factor == MILLIMETER_TO_MILLIMETER)
         {
             return val; 
         }
