@@ -3,7 +3,6 @@ using System.Globalization;
 
 namespace CADence.Format
 {
-
     public class ApertureFormat : ApertureFormatBase
     {
         private const double INCH_TO_MILLIMETER = 25.4;
