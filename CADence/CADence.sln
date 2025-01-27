@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Parser", "..\CADenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Aperture", "..\CADence.Aperture\CADence.Aperture.csproj", "{7A2053F5-A3F0-4318-810C-BAF44F968190}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Determine", "..\CADence.Determine\CADence.Determine.csproj", "{AA6F4D80-5AA0-4242-BBF5-425CB4C42545}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Command", "..\CADence.Command\CADence.Command.csproj", "{93143E62-FE06-4AAB-910D-E654E4EDC141}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Layer", "..\CADence.Layer\CADence.Layer.csproj", "{FF493D68-C9A1-4876-B603-27C97A652762}"
@@ -18,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Format", "..\CADence.Format\CADence.Format.csproj", "{DAB5F4AA-226B-4354-B236-345660A408DF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.NetTopology", "..\CADence.NetTopology\CADence.NetTopology.csproj", "{4686DE6E-2D20-414C-ADAC-6E194BA6AAF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.LayerFabric", "..\CADence.LayerFabric\CADence.LayerFabric.csproj", "{F9748CC5-96E6-4952-A490-67FDEC62A716}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +37,6 @@ Global
 		{7A2053F5-A3F0-4318-810C-BAF44F968190}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A2053F5-A3F0-4318-810C-BAF44F968190}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A2053F5-A3F0-4318-810C-BAF44F968190}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA6F4D80-5AA0-4242-BBF5-425CB4C42545}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA6F4D80-5AA0-4242-BBF5-425CB4C42545}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA6F4D80-5AA0-4242-BBF5-425CB4C42545}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA6F4D80-5AA0-4242-BBF5-425CB4C42545}.Release|Any CPU.Build.0 = Release|Any CPU
 		{93143E62-FE06-4AAB-910D-E654E4EDC141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{93143E62-FE06-4AAB-910D-E654E4EDC141}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93143E62-FE06-4AAB-910D-E654E4EDC141}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -57,6 +53,10 @@ Global
 		{4686DE6E-2D20-414C-ADAC-6E194BA6AAF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4686DE6E-2D20-414C-ADAC-6E194BA6AAF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4686DE6E-2D20-414C-ADAC-6E194BA6AAF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9748CC5-96E6-4952-A490-67FDEC62A716}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9748CC5-96E6-4952-A490-67FDEC62A716}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9748CC5-96E6-4952-A490-67FDEC62A716}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9748CC5-96E6-4952-A490-67FDEC62A716}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
