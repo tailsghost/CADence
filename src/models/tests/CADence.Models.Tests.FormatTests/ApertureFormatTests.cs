@@ -33,4 +33,12 @@ public class ApertureFormatTests
 
         Assert.That(result, Is.EqualTo(61500004.0));
     }
+
+    [Test]
+    public void ParseFixedNegativeMM()
+    {
+        _apertureFormat.ConfigureFormat(4, 3);
+
+        Assert.That(() => _apertureFormat.ParseFixed("242126"), Throws.TypeOf<InvalidOperationException>());
+    }
 }
