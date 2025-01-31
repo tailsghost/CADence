@@ -2,6 +2,6 @@
 {
     public interface IInputData
     {
-        IEnumerable<string> Get();
+        IDictionary<string, string> Get();
     }
 }

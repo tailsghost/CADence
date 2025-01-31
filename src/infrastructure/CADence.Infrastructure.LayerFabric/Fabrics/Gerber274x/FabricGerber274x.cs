@@ -16,11 +16,11 @@ namespace CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x
             return Init(inputData.Get());
         }
 
-        private List<LayerBase> Init(IEnumerable<string> data)
+        private List<LayerBase> Init(IDictionary<string, string> data)
         {
 
-            Side = (BoardSide)Resources.FabricGerber274x.ResourceManager.GetString(ДАННЫЕ);
-            Layer = (BoardLayer)Resources.FabricGerber274x.ResourceManager.GetString(ДАННЫЕ);
+            Side = (BoardSide)Resources.FabricGerber274xSides.ResourceManager.GetString(ДАННЫЕ);
+            Layer = (BoardLayer)Resources.FabricGerber274xLayers.ResourceManager.GetString(ДАННЫЕ);
 
             return new List<LayerBase>();
         }
