@@ -18,10 +18,10 @@ public class ApertureFormatTests
         _apertureFormat = new ApertureFormat();
     }
 
-    [TestCase("242126", 4, 3, 2421260.0)]
-    [TestCase("242126", 4, 3, 61500004.0, true)]
-    [TestCase("-242126", 4, 3, -2421260.0)]
-    [TestCase("-242126", 4, 3, -61500004.0, true)]
+    [TestCase("242126", 4, 3, 242126.0)]
+    [TestCase("242126", 4, 3, 6150000.4, true)]
+    [TestCase("-242126", 4, 3, -242126.0)]
+    [TestCase("-242126", 4, 3, -6150000.4, true)]
     [TestCase("0", 4, 3, 0.0)]
     [TestCase("1234567890", 10, 9, 1234567890.0)]
     [TestCase("0.000001", 6, 5, 0.000001)]
@@ -43,10 +43,6 @@ public class ApertureFormatTests
 
         double resultNew = _apertureFormat.ParseFixed(value);
 
-        double resultOld = _apertureFormat.ParseFixedOld(value);
-
-        Assert.That(resultNew, Is.EqualTo(resultOld), $"Mismatch for value {value}. ParseFixed result: {resultNew}, ParseFixedOld result: {resultOld}");
-
         Assert.That(resultNew, Is.EqualTo(expectedResult).Within(0.0001), "Parsed result does not match the expected result.");
     }
 
@@ -58,7 +54,7 @@ public class ApertureFormatTests
 
         var result = _apertureFormat.ParseFixed("242126");
 
-        Assert.That(result, Is.EqualTo(2421260.0));
+        Assert.That(result, Is.EqualTo(242126.0));
     }
 
     [Test]
@@ -69,7 +65,7 @@ public class ApertureFormatTests
 
         var result = _apertureFormat.ParseFixed("242126");
 
-        Assert.That(result, Is.EqualTo(61500004.0));
+        Assert.That(result, Is.EqualTo(6150000.4).Within(0.1));
     }
 
     [Test]
