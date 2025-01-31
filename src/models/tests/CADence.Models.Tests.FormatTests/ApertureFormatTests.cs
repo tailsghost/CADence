@@ -92,7 +92,7 @@ public class ApertureFormatTests
 
         var result = _apertureFormat.ToFixed(12.34567);
 
-        Assert.That(result, Is.EqualTo(12.346));
+        Assert.That(result, Is.EqualTo(12.34567));
     }
 
     [Test]

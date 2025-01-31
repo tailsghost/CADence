@@ -76,7 +76,7 @@ public class ApertureFormat : ApertureFormatBase
     public override double ToFixed(double value)
     {
         EnsureConfigured();
-        return Math.Round(value * _conversionFactor, _decimalDigits);
+        return value * _conversionFactor;
     }
 
     protected override void EnsureReconfigurable()
