@@ -1,8 +1,4 @@
-﻿using CADence.Format;
-using NUnit.Framework;
-using System;
-
-namespace CADence.Models.Tests.FormatTests;
+﻿namespace CADence.Models.Tests.FormatTests;
 
 /// <summary>
 /// Набор тестов для класса <see cref="ApertureFormat"/>.
