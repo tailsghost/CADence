@@ -17,7 +17,7 @@ public class ApertureFormatTests
     public void ParseFixedPositiveMM()
     {
         _apertureFormat.ConfigureFormat(4, 3);
-        _apertureFormat.ConfigureMM();
+        _apertureFormat.ConfigureMillimeters();
 
         var result = _apertureFormat.ParseFixed("242126");
 
@@ -28,7 +28,7 @@ public class ApertureFormatTests
     public void ParseFixedPositiveInch()
     {
         _apertureFormat.ConfigureFormat(4, 3);
-        _apertureFormat.ConfigureInch();
+        _apertureFormat.ConfigureInches();
 
         var result = _apertureFormat.ParseFixed("242126");
 

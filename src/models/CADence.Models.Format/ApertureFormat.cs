@@ -1,134 +1,135 @@
-﻿using CADence.Format.Abstractions;
+﻿namespace CADence.Format;
+using CADence.Format.Abstractions;
 using System.Globalization;
 
-namespace CADence.Format
+/// <summary>
+/// Реализация базового класса ApertureFormatBase.
+/// </summary>
+public class ApertureFormat : ApertureFormatBase
 {
-    public class ApertureFormat : ApertureFormatBase
+    private const double InchesToMillimeters = 25.4;
+    private const double MillimetersToMillimeters = 1.0;
+
+    public override void ConfigureFormat(int integerDigits, int decimalDigits)
     {
-        private const double INCH_TO_MILLIMETER = 25.4;
-        private const double MILLIMETER_TO_MILLIMETER = 1.0;
+        EnsureReconfigurable();
+        _isFormatConfigured = true;
+        _integerDigits = integerDigits;
+        _decimalDigits = decimalDigits;
+    }
 
-        public override void ConfigureFormat(int nInt, int nDec)
+    public override void ConfigureTrailingZeros(bool addTrailingZeros)
+    {
+        EnsureReconfigurable();
+        _addTrailingZeros = addTrailingZeros;
+    }
+
+    public override void ConfigureInches()
+    {
+        EnsureReconfigurable();
+        _isUnitConfigured = true;
+        _conversionFactor = InchesToMillimeters;
+    }
+
+    public override void ConfigureMillimeters()
+    {
+        EnsureReconfigurable();
+        _isUnitConfigured = true;
+        _conversionFactor = MillimetersToMillimeters;
+    }
+
+    public override double ParseFixed(string value)
+    {
+        EnsureConfigured();
+        if (value.Contains('.'))
         {
-            TryToReconfigure();
-            fmtConfigured = true;
-            this.nInt = nInt;
-            this.nDec = nDec;
+            return ParseFloat(value);
         }
 
-        public override void ConfigureTrailingZeros(bool addTrailingZeros)
+        int totalDigits = value.Length;
+        int signOffset = (value[0] == '-' || value[0] == '+') ? 1 : 0;
+        int digits = totalDigits - signOffset;
+
+        if (digits < _integerDigits + _decimalDigits)
         {
-            TryToReconfigure();
-            this.addTrailingZeros = addTrailingZeros;
+            string paddedString = value.PadRight(_integerDigits + _decimalDigits + signOffset, '0');
+            double val = double.Parse(paddedString, CultureInfo.InvariantCulture);
+            return AdjustValue(val);
+        }
+        else if (digits == _integerDigits + _decimalDigits)
+        {
+            double val = double.Parse(value, CultureInfo.InvariantCulture);
+            return AdjustValue(val);
+        }
+        else
+        {
+            throw new FormatException($"Unexpected coordinate length: {value}");
+        }
+    }
+
+    public override double ParseFloat(string value)
+    {
+        var result = double.Parse(value, CultureInfo.InvariantCulture);
+        return ToFixed(result);
+    }
+
+    public override double ToFixed(double value)
+    {
+        EnsureConfigured();
+        return Math.Round(value * _conversionFactor, _decimalDigits);
+    }
+
+    public override double FromMillimeters(double value)
+    {
+        return Math.Round(value * _decimalDigits);
+    }
+
+    public override double ToMillimeters(double value, int digits = 2)
+    {
+        return Math.Round(value / _decimalDigits, digits);
+    }
+
+    protected override void EnsureReconfigurable()
+    {
+        if (_isUsed)
+        {
+            throw new InvalidOperationException(
+                "Cannot reconfigure coordinate format after coordinates have already been interpreted."
+            );
+        }
+    }
+
+    protected override void EnsureConfigured()
+    {
+        if (!_isFormatConfigured)
+        {
+            throw new InvalidOperationException(
+                "Cannot convert coordinates before coordinate format is configured."
+            );
+        }
+        if (!_isUnitConfigured)
+        {
+            throw new InvalidOperationException(
+                "Cannot convert coordinates before unit is configured."
+            );
         }
 
-        public override void ConfigureInch()
+        _isUsed = true;
+    }
+
+    private double AdjustValue(double val)
+    {
+        if (_conversionFactor == InchesToMillimeters)
         {
-            TryToReconfigure();
-            unitConfigured = true;
-            factor = INCH_TO_MILLIMETER;
+            return val * InchesToMillimeters;
         }
-
-        public override void ConfigureMM()
+        else if (_conversionFactor == MillimetersToMillimeters)
         {
-            TryToReconfigure();
-            unitConfigured = true;
-            factor = MILLIMETER_TO_MILLIMETER;
+            return val;
         }
-
-        public override double ParseFixed(string s)
+        else
         {
-            TryToUse();
-            if (s.Contains('.'))
-            {
-                return ParseFloat(s);
-            }
-
-            int totalDigits = s.Length;
-            int signOffset = (s[0] == '-' || s[0] == '+') ? 1 : 0;
-            int digits = totalDigits - signOffset;
-
-            if (digits < nInt + nDec)
-            {
-                string paddedString = s.PadRight(nInt + nDec + signOffset, '0');
-                double val = double.Parse(paddedString, CultureInfo.InvariantCulture);
-                return AdjustValue(val);
-            }
-            else if (digits == nInt + nDec)
-            {
-                double val = double.Parse(s, CultureInfo.InvariantCulture);
-                return AdjustValue(val);
-            }
-            else
-            {
-                throw new FormatException($"Unexpected coordinate length: {s}");
-            }
-        }
-
-        public override double ParseFloat(string s)
-        {
-            var result = double.Parse(s, CultureInfo.InvariantCulture);
-            return ToFixed(result);
-        }
-
-        public override double ToFixed(double d)
-        {
-            TryToUse();
-            return Math.Round(d * factor, nDec);
-        }
-
-        public override double FromMM(double i)
-        {
-            return Math.Round(i * nDec);
-        }
-
-        public override double ToMM(double i, int digits = 2)
-        {
-            return Math.Round(i / nDec, digits);
-        }
-
-        protected override void TryToReconfigure()
-        {
-            if (used)
-            {
-                throw new InvalidOperationException(
-                    "Cannot reconfigure coordinate format after coordinates have already been interpreted."
-                );
-            }
-        }
-
-        protected override void TryToUse()
-        {
-            if (!fmtConfigured)
-            {
-                throw new InvalidOperationException(
-                    "Cannot convert coordinates before coordinate format is configured."
-                );
-            }
-            if (!unitConfigured)
-            {
-                throw new InvalidOperationException(
-                    "Cannot convert coordinates before unit is configured."
-                );
-            }
-
-            used = true;
-        }
-
-        private double AdjustValue(double val)
-        {
-            if (factor == INCH_TO_MILLIMETER)
-            {
-                return val * INCH_TO_MILLIMETER;
-            }
-            else if (factor == MILLIMETER_TO_MILLIMETER)
-            {
-                return val;
-            }
-            else
-            {
-                throw new InvalidOperationException("Unknown conversion factor");
-            }
+            throw new InvalidOperationException("Unknown conversion factor");
         }
     }
 }

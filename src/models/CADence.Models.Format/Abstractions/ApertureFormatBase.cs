@@ -1,34 +1,78 @@
 ﻿namespace CADence.Format.Abstractions;
 
-public abstract class ApertureFormatBase(double MitreLimit = 1, int QuadrantSegments = 4)
+/// <summary>
+/// Абстрактный базовый класс для работы с форматом апертур.
+/// </summary>
+public abstract class ApertureFormatBase
 {
-    protected bool fmtConfigured = false;
-    protected int nInt;
-    protected int nDec;
-    protected bool unitConfigured = false;
-    protected bool addTrailingZeros = false;
-    protected double factor;
-    protected bool used = false;
-    protected int QuadrantSegments = QuadrantSegments;
-    protected double MitreLimit = MitreLimit;
+    protected bool _isFormatConfigured = false;
+    protected int _integerDigits;
+    protected int _decimalDigits;
+    protected bool _isUnitConfigured = false;
+    protected bool _addTrailingZeros = false;
+    protected double _conversionFactor;
+    protected bool _isUsed = false;
+    protected int QuadrantSegments { get; }
+    protected double MitreLimit { get; }
 
-    public abstract void ConfigureFormat(int nInt, int nDec);
+    protected ApertureFormatBase(double mitreLimit = 1, int quadrantSegments = 4)
+    {
+        MitreLimit = mitreLimit;
+        QuadrantSegments = quadrantSegments;
+    }
 
+    /// <summary>
+    /// Конфигурирует формат чисел.
+    /// </summary>
+    public abstract void ConfigureFormat(int integerDigits, int decimalDigits);
+
+    /// <summary>
+    /// Настраивает добавление нулей в конце числа.
+    /// </summary>
     public abstract void ConfigureTrailingZeros(bool addTrailingZeros);
 
-    public abstract void ConfigureInch();
+    /// <summary>
+    /// Устанавливает единицы измерения в дюймы.
+    /// </summary>
+    public abstract void ConfigureInches();
 
-    public abstract void ConfigureMM();
+    /// <summary>
+    /// Устанавливает единицы измерения в миллиметры.
+    /// </summary>
+    public abstract void ConfigureMillimeters();
 
-    public abstract double ParseFixed(string s);
+    /// <summary>
+    /// Разбирает строку фиксированного формата в число.
+    /// </summary>
+    public abstract double ParseFixed(string value);
 
-    public abstract double ParseFloat(string s);
+    /// <summary>
+    /// Разбирает строку с плавающей точкой в число.
+    /// </summary>
+    public abstract double ParseFloat(string value);
 
-    public abstract double ToFixed(double d);
-    public abstract double FromMM(double i);
-    public abstract double ToMM(double i, int digits = 2);
+    /// <summary>
+    /// Конвертирует число в фиксированный формат.
+    /// </summary>
+    public abstract double ToFixed(double value);
 
-    protected abstract void TryToReconfigure();
+    /// <summary>
+    /// Конвертирует миллиметры в заданный формат.
+    /// </summary>
+    public abstract double FromMillimeters(double value);
 
-    protected abstract void TryToUse();
+    /// <summary>
+    /// Конвертирует число в миллиметры.
+    /// </summary>
+    public abstract double ToMillimeters(double value, int digits = 2);
+
+    /// <summary>
+    /// Проверяет возможность повторной конфигурации.
+    /// </summary>
+    protected abstract void EnsureReconfigurable();
+
+    /// <summary>
+    /// Проверяет, что конфигурация завершена перед использованием.
+    /// </summary>
+    protected abstract void EnsureConfigured();
 }
