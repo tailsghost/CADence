@@ -92,8 +92,14 @@ public class ApertureFormat : ApertureFormatBase
         _isUsed = true;
     }
 
+    /// <summary>
+    /// Применяет коэффициент преобразования к переданному значению.
+    /// </summary>
+    /// <param name="value">Число, к которому применяется коэффициент преобразования.</param>
+    /// <returns>Преобразованное значение, полученное умножением на коэффициент.</returns>
     private double AdjustValue(double value)
     {
         return value * _conversionFactor;
     }
+
 }
