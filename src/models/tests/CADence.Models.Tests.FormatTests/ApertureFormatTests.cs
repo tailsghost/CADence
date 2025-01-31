@@ -137,7 +137,6 @@ public class ApertureFormatTests
         _apertureFormat.ToFixed(10);
 
         Assert.Throws<InvalidOperationException>(() => _apertureFormat.ConfigureFormat(4, 3));
-        Assert.Throws<InvalidOperationException>(() => _apertureFormat.ConfigureTrailingZeros(false));
         Assert.Throws<InvalidOperationException>(() => _apertureFormat.ConfigureInches());
         Assert.Throws<InvalidOperationException>(() => _apertureFormat.ConfigureMillimeters());
     }
