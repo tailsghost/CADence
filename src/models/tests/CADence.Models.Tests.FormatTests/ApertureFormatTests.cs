@@ -73,7 +73,7 @@ public class ApertureFormatTests
     {
         _apertureFormat.ConfigureFormat(4, 3);
 
-        Assert.That(() => _apertureFormat.ParseFixed("242126"), Throws.InvalidOperationException);
+        Assert.That(() => _apertureFormat.ParseFixed("242126.0"), Throws.InvalidOperationException);
     }
 
     [Test]
@@ -128,4 +128,27 @@ public class ApertureFormatTests
     {
         Assert.Throws<InvalidOperationException>(() => _apertureFormat.ToFixed(10));
     }
+
+    [Test]
+    public void EnsureReconfigurable_WhenConfigured_ThrowsInvalidOperationException()
+    {
+        _apertureFormat.ConfigureFormat(4, 3);
+        _apertureFormat.ConfigureMillimeters();
+        _apertureFormat.ToFixed(10);
+
+        Assert.Throws<InvalidOperationException>(() => _apertureFormat.ConfigureFormat(4, 3));
+        Assert.Throws<InvalidOperationException>(() => _apertureFormat.ConfigureTrailingZeros(false));
+        Assert.Throws<InvalidOperationException>(() => _apertureFormat.ConfigureInches());
+        Assert.Throws<InvalidOperationException>(() => _apertureFormat.ConfigureMillimeters());
+    }
+
+    [Test]
+    public void ParseFixed_WhenCoordinateOutOfRange_ThrowsInvalidFormatException()
+    {
+        _apertureFormat.ConfigureFormat(4, 3);
+        _apertureFormat.ConfigureMillimeters();
+
+        Assert.Throws<FormatException>(() => _apertureFormat.ParseFixed("5993858472"));
+    }
+
 }
