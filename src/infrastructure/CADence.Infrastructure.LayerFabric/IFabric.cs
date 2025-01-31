@@ -1,7 +1,6 @@
 ﻿namespace CADence.LayerFabric
 {
-    public class Class1
+    public interface IFabric
     {
-
     }
 }
