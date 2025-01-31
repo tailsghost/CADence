@@ -38,7 +38,6 @@ public class ApertureFormat : ApertureFormatBase
 
     public override double ParseFixed(string value)
     {
-        EnsureConfigured();
         double val = 0;
 
         if (value.Contains('.'))
