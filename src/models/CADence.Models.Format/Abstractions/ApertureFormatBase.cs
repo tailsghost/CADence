@@ -57,16 +57,6 @@ public abstract class ApertureFormatBase
     public abstract double ToFixed(double value);
 
     /// <summary>
-    /// Конвертирует миллиметры в заданный формат.
-    /// </summary>
-    public abstract double FromMillimeters(double value);
-
-    /// <summary>
-    /// Конвертирует число в миллиметры.
-    /// </summary>
-    public abstract double ToMillimeters(double value, int digits = 2);
-
-    /// <summary>
     /// Проверяет возможность повторной конфигурации.
     /// </summary>
     protected abstract void EnsureReconfigurable();

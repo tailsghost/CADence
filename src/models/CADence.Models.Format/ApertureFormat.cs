@@ -79,16 +79,6 @@ public class ApertureFormat : ApertureFormatBase
         return Math.Round(value * _conversionFactor, _decimalDigits);
     }
 
-    public override double FromMillimeters(double value)
-    {
-        return Math.Round(value * _decimalDigits);
-    }
-
-    public override double ToMillimeters(double value, int digits = 2)
-    {
-        return Math.Round(value / _decimalDigits, digits);
-    }
-
     protected override void EnsureReconfigurable()
     {
         if (_isUsed)
