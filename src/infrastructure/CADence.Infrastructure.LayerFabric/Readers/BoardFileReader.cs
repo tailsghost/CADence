@@ -26,5 +26,18 @@ namespace CADence.Infrastructure.LayerFabric.Readers
 
             return BoardFileType.Unsupported;
         }
+
+        private bool isValidFile(string filename)
+        {
+            if (filename != string.Empty)
+            {
+                var ext = new FileInfo(filename).Extension.ToLower().TrimStart('.');
+
+                return supported.Contains(ext);
+            }
+            else return false;
+        }
+
+        private readonly IEnumerable<string> supported = new List<string>() { "zip", "rar" };
     }
 }
