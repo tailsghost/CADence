@@ -16,7 +16,6 @@ public class ApertureFormat : ApertureFormatBase
         _decimalDigits = decimalDigits;
     }
 
-
     public override void ConfigureInches()
     {
         EnsureReconfigurable();
@@ -95,5 +94,4 @@ public class ApertureFormat : ApertureFormatBase
     {
         return value * _conversionFactor;
     }
-
 }
