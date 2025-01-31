@@ -1,7 +1,8 @@
-﻿using CADence.Infrastructure.LayerFabric;
+﻿using CADence.Infrastructure.LayerFabric.Common.Abstractions;
+using CADence.Infrastructure.LayerFabric.Fabrics.Abstractions;
 using CADence.Layer.Abstractions;
 
-namespace CADence.LayerFabric
+namespace CADence.Infrastructure.LayerFabric.Fabrics
 {
     public class FabricGerber274x : IFabric
     {

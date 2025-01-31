@@ -1,4 +1,4 @@
-﻿namespace CADence.LayerFabric
+﻿namespace CADence.Infrastructure.LayerFabric.Readers
 {
     public enum BoardFileType
     {

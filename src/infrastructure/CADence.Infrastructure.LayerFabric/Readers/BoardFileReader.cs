@@ -1,7 +1,7 @@
 ﻿using SharpCompress.Archives.Rar;
 using System.IO.Compression;
 
-namespace CADence.LayerFabric
+namespace CADence.Infrastructure.LayerFabric.Readers
 {
     public class BoardFileReader
     {
