@@ -14,4 +14,20 @@
     <ProjectReference Include="..\..\models\CADence.Models.Layer\CADence.Models.Layer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Fabrics\Gerber274x\Resources\FabricGerber274x.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FabricGerber274x.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Fabrics\Gerber274x\Resources\FabricGerber274x.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FabricGerber274x.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

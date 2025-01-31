@@ -2,7 +2,7 @@
 using CADence.Infrastructure.LayerFabric.Fabrics.Abstractions;
 using CADence.Layer.Abstractions;
 
-namespace CADence.Infrastructure.LayerFabric.Fabrics
+namespace CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x
 {
     public class FabricGerber274x : IFabric
     {
@@ -18,6 +18,9 @@ namespace CADence.Infrastructure.LayerFabric.Fabrics
 
         private List<LayerBase> Init(IEnumerable<string> data)
         {
+
+            Side = (BoardSide)Resources.FabricGerber274x.ResourceManager.GetString(ДАННЫЕ);
+            Layer = (BoardLayer)Resources.FabricGerber274x.ResourceManager.GetString(ДАННЫЕ);
 
             return new List<LayerBase>();
         }
