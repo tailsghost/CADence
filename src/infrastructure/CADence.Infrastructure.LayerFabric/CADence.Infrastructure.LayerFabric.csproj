@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SharpCompress" Version="0.39.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\models\CADence.Models.Layer\CADence.Models.Layer.csproj" />
   </ItemGroup>
 
