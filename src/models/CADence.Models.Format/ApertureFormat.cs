@@ -16,11 +16,6 @@ public class ApertureFormat : ApertureFormatBase
         _decimalDigits = decimalDigits;
     }
 
-    public override void ConfigureTrailingZeros(bool addTrailingZeros)
-    {
-        EnsureReconfigurable();
-        _addTrailingZeros = addTrailingZeros;
-    }
 
     public override void ConfigureInches()
     {

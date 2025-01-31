@@ -9,7 +9,6 @@ public abstract class ApertureFormatBase
     protected int _integerDigits;
     protected int _decimalDigits;
     protected bool _isUnitConfigured = false;
-    protected bool _addTrailingZeros = false;
     protected double _conversionFactor;
     protected bool _isUsed = false;
     protected int QuadrantSegments { get; }
@@ -25,11 +24,6 @@ public abstract class ApertureFormatBase
     /// Конфигурирует формат чисел.
     /// </summary>
     public abstract void ConfigureFormat(int integerDigits, int decimalDigits);
-
-    /// <summary>
-    /// Настраивает добавление нулей в конце числа.
-    /// </summary>
-    public abstract void ConfigureTrailingZeros(bool addTrailingZeros);
 
     /// <summary>
     /// Устанавливает единицы измерения в дюймы.
