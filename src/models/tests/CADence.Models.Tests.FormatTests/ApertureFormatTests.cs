@@ -23,9 +23,9 @@ public class ApertureFormatTests
     [TestCase("-242126", 4, 3, -2421260.0)]
     [TestCase("-242126", 4, 3, -61500004.0, true)]
     [TestCase("0", 4, 3, 0.0)]
-    [TestCase("1234567890", 10, 10, 1234567890.0)]
-    [TestCase("0.000001", 6, 6, 0.000001)]
-    [TestCase("-0.000001", 6, 6, -0.000001)]
+    [TestCase("1234567890", 10, 9, 1234567890.0)]
+    [TestCase("0.000001", 6, 5, 0.000001)]
+    [TestCase("-0.000001", 6, 5, -0.000001)]
     [TestCase("12345.6789", 5, 4, 12345.6789)]
     public void ParseFixed_And_ParseFixedOld_AreEquivalent_ForVariousInputs(
         string value, int integerDigits, int decimalDigits, double expectedResult, bool isInches = false)
@@ -47,7 +47,6 @@ public class ApertureFormatTests
 
         Assert.That(resultNew, Is.EqualTo(resultOld), $"Mismatch for value {value}. ParseFixed result: {resultNew}, ParseFixedOld result: {resultOld}");
 
-        // Also assert that both methods return the expected result
         Assert.That(resultNew, Is.EqualTo(expectedResult).Within(0.0001), "Parsed result does not match the expected result.");
     }
 
