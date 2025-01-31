@@ -1,14 +1,12 @@
-﻿namespace CADence.Format;
-using CADence.Format.Abstractions;
+﻿using CADence.Format.Abstractions;
 using System.Globalization;
 
-/// <summary>
-/// Реализация базового класса ApertureFormatBase.
-/// </summary>
 public class ApertureFormat : ApertureFormatBase
 {
     private const double InchesToMillimeters = 25.4;
     private const double MillimetersToMillimeters = 1.0;
+
+    private double _conversionFactor;
 
     public override void ConfigureFormat(int integerDigits, int decimalDigits)
     {
@@ -39,6 +37,33 @@ public class ApertureFormat : ApertureFormatBase
     }
 
     public override double ParseFixed(string value)
+    {
+        EnsureConfigured();
+        double val = 0;
+
+        if (value.Contains('.'))
+        {
+            return ParseFloat(value);
+        }
+
+        int totalDigits = value.Length;
+        int signOffset = (value[0] == '-' || value[0] == '+') ? 1 : 0;
+        int digits = totalDigits - signOffset;
+
+        if (digits <= _integerDigits + _decimalDigits)
+        {
+            val = double.Parse(value.PadRight(_integerDigits + _decimalDigits + signOffset, '0'), CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            throw new FormatException($"Unexpected coordinate length: {value}");
+        }
+
+        return AdjustValue(val);
+    }
+
+    [Obsolete]
+    public override double ParseFixedOld(string value)
     {
         EnsureConfigured();
         if (value.Contains('.'))
@@ -83,43 +108,21 @@ public class ApertureFormat : ApertureFormatBase
     {
         if (_isUsed)
         {
-            throw new InvalidOperationException(
-                "Cannot reconfigure coordinate format after coordinates have already been interpreted."
-            );
+            throw new InvalidOperationException("Cannot reconfigure coordinate format after coordinates have already been interpreted.");
         }
     }
 
     protected override void EnsureConfigured()
     {
-        if (!_isFormatConfigured)
+        if (!_isFormatConfigured || !_isUnitConfigured)
         {
-            throw new InvalidOperationException(
-                "Cannot convert coordinates before coordinate format is configured."
-            );
+            throw new InvalidOperationException("Cannot convert coordinates before format or unit is configured.");
         }
-        if (!_isUnitConfigured)
-        {
-            throw new InvalidOperationException(
-                "Cannot convert coordinates before unit is configured."
-            );
-        }
-
         _isUsed = true;
     }
 
     private double AdjustValue(double val)
     {
-        if (_conversionFactor == InchesToMillimeters)
-        {
-            return val * InchesToMillimeters;
-        }
-        else if (_conversionFactor == MillimetersToMillimeters)
-        {
-            return val;
-        }
-        else
-        {
-            throw new InvalidOperationException("Unknown conversion factor");
-        }
+        return val * _conversionFactor;
     }
 }

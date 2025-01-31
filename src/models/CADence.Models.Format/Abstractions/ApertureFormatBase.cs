@@ -47,6 +47,11 @@ public abstract class ApertureFormatBase
     public abstract double ParseFixed(string value);
 
     /// <summary>
+    /// Разбирает строку фиксированного формата в число. Старая версия.
+    /// </summary>
+    public abstract double ParseFixedOld(string value);
+
+    /// <summary>
     /// Разбирает строку с плавающей точкой в число.
     /// </summary>
     public abstract double ParseFloat(string value);
