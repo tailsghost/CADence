@@ -1,187 +1,195 @@
-﻿using NetTopologySuite.Geometries;
-using NetTopologySuite.Operation.Buffer;
-using System.IO;
+﻿using CADence.Infrastructure.Aperture.NetTopologySuite;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.Geometries.Utilities;
+using NetTopologySuite.Simplify;
 
-namespace CADence.Aperture.Abstractions;
+namespace CADence.Infrastructure.Aperture.Abstractions;
 
 public abstract class ApertureBase
 {
-    protected double HoleDiametr;
-    public List<List<Coordinate>> AccumPaths { get; set; } = new();
-    protected bool AccumPolarity { get; set; }
+    private readonly GeometryFactory _geomFactory = new GeometryFactory();
+    protected double HoleDiameter;
+
+    protected ApertureBase()
+    {
+        ACCUM_POLARITY = true;
+        Simplified = false;
+    }
+
+    public Geometry? Accumulated { get; protected set; } = null;
+    private bool ACCUM_POLARITY { get; set; }
     protected Geometry Dark { get; set; }
     protected Geometry Clear { get; set; }
     protected bool Simplified { get; set; }
-    protected abstract void Simplify();
-    public void DrawPaths(List<List<Coordinate>> paths, bool polarity = true)
-    {
-        if (!paths.Any())
-            return;
 
-        if (polarity != AccumPolarity) CommitPaths();
-        AccumPolarity = polarity;
 
-        for (int i = 0; i < paths.Count; i++)
-        {
-            AccumPaths.Add(paths[i]);
-        }
-    }
+    /// <summary>
+    /// Абстрактный метод проверки апертуры 
+    /// </summary>
+    /// <param name="diameter">Возвращает из апертуры диаметр.</param>
+    /// <returns>Возвращает bool значение условия полярности диаметра апертуры</returns>
+    public abstract bool IsSimpleCircle(out double diameter);
 
+    /// <summary>
+    /// Рисует (накапливает) геометрию – один или несколько контуров (в виде объекта Geometry).
+    /// В зависимости от полярности происходит дальнейшее объединение или вычитание.
+    /// </summary>
+    /// <param name="geometry">Геометрия для рисования.</param>
+    /// <param name="polarity">Полярность: true для объединения, false для вычитания.</param>
     public void DrawPaths(Geometry geometry, bool polarity = true)
     {
-        if (geometry == null || !geometry.Coordinates.Any())
-            return;
+        if (geometry.IsEmpty) return;
 
-        if (polarity != AccumPolarity) CommitPaths();
-        AccumPolarity = polarity;
+        if (polarity != ACCUM_POLARITY)
+            CommitPaths();
 
-        List<Coordinate> coordinatesList = new List<Coordinate>();
+        ACCUM_POLARITY = polarity;
 
-        for (int i = 0; i < geometry.Coordinates.Length; i++)
-        {
-            coordinatesList.Add(geometry.Coordinates[i]);
-        }
-
-        AccumPaths.Add(coordinatesList);
+        Accumulated = Accumulated?.Union(geometry);
     }
 
-    public void DrawPath(List<Coordinate> path, bool polarity = true)
-    {
-        if (!path.Any())
-            return;
-
-        if (polarity != AccumPolarity) CommitPaths();
-        AccumPolarity = polarity;
-        AccumPaths.Add(path);
-    }
-
+    /// <summary>
+    /// Фиксирует накопленные геометрии, объединяя их с итоговыми.
+    /// В зависимости от типа (Dark или Clear) и полярности выполняется объединение или разность.
+    /// </summary>
     protected void CommitPaths()
     {
-        if (AccumPaths.Count == 0) return;
+        if (Accumulated == null || Accumulated.IsEmpty)
+            return;
 
-        var geometryFactory = new GeometryFactory();
-        var pathGeometries = new List<Polygon>();
-
-        for (int i = 0; i < AccumPaths.Count; i++)
+        if (ACCUM_POLARITY)
         {
-            var path = AccumPaths[i];
-            var coordinates = new Coordinate[path.Count];
-            for (int j = 0; j < path.Count; j++)
-            {
-                coordinates[j] = new Coordinate(path[j].X, path[j].Y);
-            }
-
-            var outerRing = new LinearRing(coordinates);
-            var polygon = new Polygon(outerRing);
-            pathGeometries.Add(polygon);
+            Dark = Dark.IsEmpty ? Accumulated : Dark.Union(Accumulated);
+            Clear = Clear.IsEmpty ? _geomFactory.CreateGeometryCollection(null) : Clear.Difference(Accumulated);
+        }
+        else
+        {
+            Dark = Dark.IsEmpty ? _geomFactory.CreateGeometryCollection(null) : Dark.Difference(Accumulated);
+            Clear = Clear.IsEmpty ? Accumulated : Clear.Union(Accumulated);
         }
 
-        foreach (var polygon in pathGeometries)
-        {
-            if (AccumPolarity)
-            {
-                Dark = Dark == null ? polygon : Dark.Union(polygon);
-                Clear = Clear == null ? polygon : Clear.Difference(polygon);
-            }
-            else
-            {
-                Dark = Dark == null ? polygon : Dark.Difference(polygon);
-                Clear = Clear == null ? polygon : Clear.Union(polygon);
-            }
-        }
-
+        Accumulated = null;
         Simplified = false;
-        AccumPaths.Clear();
     }
 
-    public void DrawPaths(
-    Geometry paths,
-    bool polarity,
-    double translateX,
-    double translateY = 0,
-    bool mirrorX = false,
-    bool mirrorY = false,
-    double rotate = 0.0,
-    double scale = 1.0,
-    bool specialFillType = false
-)
+    /// <summary>
+    /// Рисует геометрию с применением аффинных преобразований: сдвиг, отражение, поворот, масштаб.
+    /// </summary>
+    /// <param name="geometry">Геометрия для преобразования и рисования.</param>
+    /// <param name="polarity">Полярность для объединения или вычитания.</param>
+    /// <param name="translateX">Смещение по оси X.</param>
+    /// <param name="translateY">Смещение по оси Y.</param>
+    /// <param name="mirrorX">Отражение по оси X.</param>
+    /// <param name="mirrorY">Отражение по оси Y.</param>
+    /// <param name="rotate">Угол поворота в радианах.</param>
+    /// <param name="scale">Масштабирование.</param>
+    /// <param name="specialFillType">Если true – фиксирует накопления до и после преобразований.</param>
+    private void DrawPaths(
+        Geometry geometry,
+        bool polarity,
+        double translateX,
+        double translateY = 0,
+        bool mirrorX = false,
+        bool mirrorY = false,
+        double rotate = 0.0,
+        double scale = 1.0,
+        bool specialFillType = false)
     {
-        if (paths.Coordinates.Length == 0) return;
+        if (geometry.Coordinates.Length == 0) return;
 
         if (specialFillType) CommitPaths();
 
-        DrawPaths(paths, polarity);
+        DrawPaths(geometry, polarity);
 
-        double ixx = mirrorX ? -scale : scale;
-        double iyy = mirrorY ? -scale : scale;
-        double sinRot = Math.Sin(rotate);
-        double cosRot = Math.Cos(rotate);
+        var scaleX = mirrorX ? -scale : scale;
+        var scaleY = mirrorY ? -scale : scale;
 
-        double xx = ixx * cosRot;
-        double xy = ixx * sinRot;
-        double yx = iyy * -sinRot;
-        double yy = iyy * cosRot;
+        var scaleTransform = AffineTransformation.ScaleInstance(scaleX, scaleY);
+        var rotateTransform = AffineTransformation.RotationInstance(rotate);
+        var translateTransform = AffineTransformation.TranslationInstance(translateX, translateY);
 
-        double cx;
-        double cy;
+        var transform = scaleTransform.Compose(rotateTransform).Compose(translateTransform);
 
-        Coordinate point;
+        var transformed = transform.Transform(geometry);
 
-        for (int j = 0; j < paths.NumGeometries; j++)
-        {
-            var pathCopy = new List<Coordinate>(paths.Coordinates.Length);
-
-            for (int i = 0; i < paths.Coordinates.Length; i++)
-            {
-                point = paths.Coordinates[i];
-                cx = point.X * xx + point.Y * yx;
-                cy = point.X * xy + point.Y * yy;
-
-                pathCopy.Add(new Coordinate(Math.Round(cx) + translateX, Math.Round(cy) + translateY));
-            }
-
-            if (AccumPaths.Count > 0)
-            {
-                AccumPaths[AccumPaths.Count - 1] = pathCopy;
-            }
-            else
-            {
-                AccumPaths.Add(pathCopy);
-            }
-        }
-
-        if (mirrorX != mirrorY)
-        {
-            int accumulatedPathCount = AccumPaths.Count;
-            int pathsCount = paths.NumGeometries;
-
-            for (int i = accumulatedPathCount - pathsCount; i < accumulatedPathCount; i++)
-            {
-                AccumPaths[i].Reverse();
-            }
-        }
+        DrawPaths(transformed, polarity);
 
         if (specialFillType) CommitPaths();
     }
 
+    /// <summary>
+    /// Рисует апертуру с заданными параметрами преобразования.
+    /// </summary>
+    /// <param name="aperture">Апертура для рисования.</param>
+    /// <param name="polarity">Полярность для объединения или вычитания.</param>
+    /// <param name="translateX">Смещение по оси X.</param>
+    /// <param name="translateY">Смещение по оси Y.</param>
+    /// <param name="mirrorX">Отражение по оси X.</param>
+    /// <param name="mirrorY">Отражение по оси Y.</param>
+    /// <param name="rotate">Угол поворота в радианах.</param>
+    /// <param name="scale">Масштабирование.</param>
     public void DrawAperture(
-        ApertureBase plot,
+        ApertureBase aperture,
         bool polarity = true,
         double translateX = 0,
         double translateY = 0,
         bool mirrorX = false,
         bool mirrorY = false,
         double rotate = 0.0,
-        double scale = 1.0
-    )
+        double scale = 1.0)
     {
-        DrawPaths(plot.Dark, polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
-        DrawPaths(plot.Clear, !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.Dark, polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.Clear, !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
     }
 
-    public abstract Geometry GetDark();
+    /// <summary>
+    /// Фиксирует все накопленные объекты и выполняет упрощение второстепенной геометрии.
+    /// </summary>
+    /// <returns>Упрощённая второстепенная геометрия.</returns>
+    public Geometry? GetClear()
+    {
+        CommitPaths();
+        return Simplify(Clear);
+    }
 
-    public abstract Geometry GetClear();
+    /// <summary>
+    /// Фиксирует все накопленные объекты и выполняет упрощение основной геометрии.
+    /// </summary>
+    /// <returns>Упрощённая основная геометрия.</returns>
+    public Geometry? GetDark()
+    {
+        CommitPaths();
+        return Simplify(Dark);
+    }
 
-    protected abstract Geometry GetHole();
+    /// <summary>
+    /// Упрощает переданную геометрию с сохранением топологии, используя допуск 1e-6.
+    /// </summary>
+    /// <param name="geometry">Геометрия для упрощения.</param>
+    /// <returns>Упрощённая геометрия.</returns>
+    private Geometry? Simplify(Geometry? geometry)
+    {
+        if (geometry == null || geometry.IsEmpty) return geometry;
+        return TopologyPreservingSimplifier.Simplify(geometry, 1e-6);
+    }
+
+    /// <summary>
+    /// Виртуальный метод с возможностью переопределения базовой логики генерации отверстия.
+    /// Если HoleDiameter меньше или равен 0, возвращается пустая коллекция геометрий.
+    /// В противном случае генерируется круг, представляющий отверстие, с использованием буферизации точки.
+    /// </summary>
+    /// <returns> Возвращает геометрию отверстия.</returns>
+    protected virtual Geometry GetHole()
+    {
+        if (HoleDiameter <= 0.0)
+        {
+            return new GeometryCollection([], _geomFactory);
+        }
+
+        var point = _geomFactory.CreatePoint(new Coordinate(0, 0));
+
+        var polygon = point.Render(HoleDiameter, false);
+
+        return polygon.Reverse();
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using CADence.Format;
+using CADence.Infrastructure.Aperture.Abstractions;
 
 namespace CADence.Aperture.Abstractions;
 

@@ -1,52 +1,61 @@
-﻿using CADence.Aperture.Abstractions;
+﻿using CADence.Infrastructure.Aperture.Abstractions;
+using CADence.Infrastructure.Aperture.NetTopologySuite;
 using NetTopologySuite.Geometries;
 
-namespace CADence.Aperture.Gerber_274x;
+namespace CADence.Infrastructure.Aperture.Gerber_274x;
 
-public class Circle : ApertureBase
+public sealed class Circle : ApertureBase
 {
-    public override void DrawAperture(ApertureBase plot, bool polarity = true, double translateX = 0, double translateY = 0, bool mirrorX = false, bool mirrorY = false, double rotate = 0, double scale = 1)
+    private double Diameter { get; set; }
+    
+    private readonly GeometryFactory _geomFactory = new GeometryFactory();
+
+    /// <summary>
+    /// Конструктор апертуры типа Circle.
+    /// Принимает список параметров и формат, используемый для парсинга.
+    /// Если задано отверстие (HoleDiameter > 0), оно добавляется в апертуру.
+    /// </summary>
+    /// <param name="csep">Список строковых параметров апертуры.</param>
+    /// <param name="format">Объект формата апертуры.</param>
+    public Circle(List<string> csep, ApertureFormat format)
     {
-        throw new NotImplementedException();
+        if (csep.Count < 2 || csep.Count > 3)
+        {
+            throw new ArgumentException("Invalid circle aperture");
+        }
+        
+        Diameter = format.ParseFloat(csep[1]);
+        HoleDiameter = csep.Count > 2 ? format.ParseFloat(csep[2]) : 0;
+
+
+        var aperture = _geomFactory.CreatePoint(new Coordinate(0, 0)).Render(Diameter, false);
+        
+        if (HoleDiameter > 0)
+        {
+            var hole = GetHole();
+
+            if (aperture is global::NetTopologySuite.Geometries.Polygon aperturePoly &&
+                hole is global::NetTopologySuite.Geometries.Polygon holePoly)
+            {
+                aperture = _geomFactory.CreatePolygon(
+                    (LinearRing)aperturePoly.ExteriorRing,
+                    new LinearRing[] { (LinearRing)holePoly.ExteriorRing }
+                );
+            }
+        }
+
+        Dark = aperture;
     }
 
-    public override void DrawPath(List<Coordinate> path, bool polarity = true)
+    /// <summary>
+    /// Метод возвращает информацию о том, является ли круг простым (без отверстия).
+    /// Если отверстие задано (HoleDiameter > 0), круг не считается простым.
+    /// </summary>
+    /// <param name="diameter">Диаметр отверстия.</param>
+    /// <returns>Возвращает true, если круг не имеет отверстия, иначе false.</returns>
+    public override bool IsSimpleCircle(out double diameter)
     {
-        throw new NotImplementedException();
-    }
-
-    public override void DrawPaths(List<List<Coordinate>> paths, bool polarity = true)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void DrawPaths(List<List<Coordinate>> paths, bool polarity, double translateX, double translateY = 0, bool mirrorX = false, bool mirrorY = false, double rotate = 0, double scale = 1, bool specialFillType = false)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override Geometry GetClear()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override Geometry GetDark()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void CommitPaths()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override Geometry GetHole()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override void Simplify()
-    {
-        throw new NotImplementedException();
+        diameter = HoleDiameter;
+        return !(HoleDiameter > 0);
     }
 }
