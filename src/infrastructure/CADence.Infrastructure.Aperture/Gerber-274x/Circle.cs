@@ -24,7 +24,7 @@ public sealed class Circle : ApertureBase
     /// csep[2] – (опционально) диаметр отверстия (HoleDiameter). Если задан, отверстие добавляется внутрь апертуры.
     /// </summary>
     /// <param name="csep">Список строковых параметров апертуры.</param>
-    /// <param name="format">Объект формата апертуры для парсинга параметров.</param>
+    /// <param name="format">Объект формата апертуры.</param>
     public Circle(List<string> csep, ApertureFormat format)
     {
         if (csep.Count is < 2 or > 3)
