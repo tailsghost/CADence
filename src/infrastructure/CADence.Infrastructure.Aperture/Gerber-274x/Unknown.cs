@@ -6,7 +6,7 @@ namespace CADence.Infrastructure.Aperture.Gerber_274x;
 /// <summary>
 /// Апертура созданная с помощью <see cref="ApertureMacroBase"/>
 /// </summary>
-public class Unknown : ApertureBase
+public sealed class Unknown : ApertureBase
 {
     /// <summary>
     /// Метод, определяющий, является ли апертура простым полигоном (без отверстия).
