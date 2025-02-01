@@ -41,9 +41,9 @@ public class ApertureFormat : ApertureFormatBase
             return ParseFloat(value);
         }
 
-        int totalDigits = value.Length;
-        int signOffset = (value[0] == '-' || value[0] == '+') ? 1 : 0;
-        int digits = totalDigits - signOffset;
+        var totalDigits = value.Length;
+        var signOffset = (value[0] == '-' || value[0] == '+') ? 1 : 0;
+        var digits = totalDigits - signOffset;
 
         if (digits <= _integerDigits + _decimalDigits)
         {

@@ -1,5 +1,4 @@
-﻿using CADence.Aperture.Abstractions;
-using CADence.Infrastructure.Aperture.Abstractions;
+﻿using CADence.Infrastructure.Aperture.Abstractions;
 
 namespace CADence.Infrastructure.Aperture.Gerber_274x;
 

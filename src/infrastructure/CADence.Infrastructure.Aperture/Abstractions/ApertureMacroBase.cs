@@ -1,12 +1,9 @@
-﻿using CADence.Format;
-using CADence.Infrastructure.Aperture.Abstractions;
-
-namespace CADence.Aperture.Abstractions;
+﻿namespace CADence.Infrastructure.Aperture.Abstractions;
 
 internal abstract class ApertureMacroBase
 {
-    protected List<Expression.Expression> Cmd = [];
-    protected List<List<Expression.Expression>> cmds { get; set; } = [];
+    protected List<CADence.Aperture.Expression.Expression> Cmd = [];
+    protected List<List<CADence.Aperture.Expression.Expression>> cmds { get; set; } = [];
     public abstract void Append(string cmd);
-    public abstract ApertureBase Build(List<string> csep, ApertureFormat fmt);
+    public abstract ApertureBase Build(List<string> csep, ApertureBase format);
 }

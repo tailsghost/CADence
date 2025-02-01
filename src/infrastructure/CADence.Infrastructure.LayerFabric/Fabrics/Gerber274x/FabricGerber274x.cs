@@ -2,27 +2,24 @@
 using CADence.Infrastructure.LayerFabric.Fabrics.Abstractions;
 using CADence.Layer.Abstractions;
 
-namespace CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x
+namespace CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
+
+public class FabricGerber274X : IFabric
 {
-    public class FabricGerber274x : IFabric
+    public FabricGerber274X()
     {
+    }
 
-        public FabricGerber274x()
-        {
-        }
+    public List<LayerBase> GetLayers(IInputData inputData)
+    {
+        return Init(inputData.Get());
+    }
 
-        public List<LayerBase> GetLayers(IInputData inputData)
-        {
-            return Init(inputData.Get());
-        }
+    private List<LayerBase> Init(IDictionary<string, string> data)
+    {
+        // Side = (BoardSide)Resources.FabricGerber274xSides.ResourceManager.GetString(ДАННЫЕ);
+        // Layer = (BoardLayer)Resources.FabricGerber274xLayers.ResourceManager.GetString(ДАННЫЕ);
 
-        private List<LayerBase> Init(IDictionary<string, string> data)
-        {
-
-            Side = (BoardSide)Resources.FabricGerber274xSides.ResourceManager.GetString(ДАННЫЕ);
-            Layer = (BoardLayer)Resources.FabricGerber274xLayers.ResourceManager.GetString(ДАННЫЕ);
-
-            return new List<LayerBase>();
-        }
+        return new List<LayerBase>();
     }
 }
