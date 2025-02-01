@@ -7,13 +7,27 @@ namespace CADence.Infrastructure.Aperture.Gerber_274x;
 public sealed class Polygon : ApertureBase
 {
     private readonly GeometryFactory _geomFactory = new GeometryFactory();
+    
+    /// <summary>
+    /// Диаметр полигона, определяющий расстояние между противоположными вершинами.
+    /// </summary>
     private double Diameter { get; set; }
+
+    /// <summary>
+    /// Количество вершин полигона. 
+    /// Должно быть не меньше 3 для формирования правильной геометрической фигуры.
+    /// </summary>
     private int NVertices { get; set; }
+
+    /// <summary>
+    /// Угол поворота полигона в градусах, преобразованный в радианы.
+    /// Определяет начальный угол смещения вершин относительно оси координат.
+    /// </summary>
     private double Rotation { get; set; }
 
     /// <summary>
-    /// Конструктор апертуры типа "Полигон".
-    /// Параметры передаются в виде списка строк (csep) и формата ConcreteFormat.
+    /// Конструктор апертуры типа Polygon.
+    /// Параметры передаются в виде списка строк (csep) и формата ApertureFormat.
     /// Ожидается, что csep содержит от 3 до 5 элементов:
     /// csep[0]: идентификатор типа апертуры.
     /// csep[1] - диаметр полигона,
@@ -22,15 +36,15 @@ public sealed class Polygon : ApertureBase
     /// csep[4] (опционально) - диаметр отверстия (HoleDiameter). Если задан, отверстие добавляется внутрь апертуры.
     /// </summary>
     /// <param name="csep">Список строковых параметров апертуры.</param>
-    /// <param name="fmt">Формат апертуры с методами для парсинга параметров.</param>
-    public Polygon(List<string> csep, ApertureFormat fmt)
+    /// <param name="format">Объект формата апертуры.</param>
+    public Polygon(List<string> csep, ApertureFormat format)
     {
-        if (csep.Count < 3 || csep.Count > 5)
+        if (csep.Count is < 3 or > 5)
         {
             throw new ArgumentException("Invalid polygon aperture");
         }
 
-        Diameter = fmt.ParseFloat(csep[1]);
+        Diameter = format.ParseFloat(csep[1]);
         
         NVertices = int.Parse(csep[2]);
         if (NVertices < 3)
@@ -40,7 +54,7 @@ public sealed class Polygon : ApertureBase
         
         Rotation = csep.Count > 3 ? double.Parse(csep[3]) * Math.PI / 180.0 : 0.0;
         
-        HoleDiameter = csep.Count > 4 ? fmt.ParseFloat(csep[4]) : 0;
+        HoleDiameter = csep.Count > 4 ? format.ParseFloat(csep[4]) : 0;
         
         var coords = new Coordinate[NVertices + 1];
         for (var i = 0; i < NVertices; i++)
@@ -59,14 +73,14 @@ public sealed class Polygon : ApertureBase
         
         if (HoleDiameter > 0)
         {
-            Geometry holeGeometry = GetHole();
+            var holeGeometry = GetHole();
             if (holeGeometry is global::NetTopologySuite.Geometries.Polygon holePoly)
             {
                 holes = [(LinearRing)holePoly.ExteriorRing];
             }
             else
             {
-                throw new Exception("Полученная геометрия отверстия не является полигоном.");
+                throw new Exception("The resulting hole geometry is not a polygon.");
             }
         }
         

@@ -7,14 +7,21 @@ namespace CADence.Infrastructure.Aperture.Gerber_274x;
 
 public sealed class Obround : ApertureBase
 {
+    /// <summary>
+    /// Размер по оси X.
+    /// </summary>
     private double XSize { get; set; }
+    
+    /// <summary>
+    /// Размер по оси Y.
+    /// </summary>
     private double YSize { get; set; }
 
     private readonly GeometryFactory _geomFactory = new GeometryFactory();
 
     /// <summary>
     /// Конструктор апертуры типа Obround.
-    /// Принимает список параметров и формат, используемый для парсинга.
+    /// Параметры передаются в виде списка строк (csep) и формата ApertureFormat.
     /// Если задано отверстие (HoleDiameter > 0), оно добавляется в апертуру.
     /// Ожидается, что csep содержит от 3 до 4 элементов:
     /// - csep[0]: идентификатор типа апертуры.
@@ -60,6 +67,10 @@ public sealed class Obround : ApertureBase
                     (LinearRing)aperturePoly.ExteriorRing, 
                     new LinearRing[] { (LinearRing)holePoly.ExteriorRing }
                 );
+            } 
+            else
+            {
+                throw new Exception("The resulting hole geometry is not a polygon.");
             }
         }
         
