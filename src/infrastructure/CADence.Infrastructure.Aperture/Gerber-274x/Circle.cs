@@ -19,7 +19,7 @@ public sealed class Circle : ApertureBase
     /// <param name="format">Объект формата апертуры.</param>
     public Circle(List<string> csep, ApertureFormat format)
     {
-        if (csep.Count < 2 || csep.Count > 3)
+        if (csep.Count is < 2 or > 3)
         {
             throw new ArgumentException("Invalid circle aperture");
         }
@@ -34,8 +34,8 @@ public sealed class Circle : ApertureBase
         {
             var hole = GetHole();
 
-            if (aperture is global::NetTopologySuite.Geometries.Polygon aperturePoly &&
-                hole is global::NetTopologySuite.Geometries.Polygon holePoly)
+            if (aperture is global::NetTopologySuite.Geometries.Polygon aperturePoly 
+                && hole is global::NetTopologySuite.Geometries.Polygon holePoly)
             {
                 aperture = _geomFactory.CreatePolygon(
                     (LinearRing)aperturePoly.ExteriorRing,
