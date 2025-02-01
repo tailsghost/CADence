@@ -68,8 +68,8 @@ public sealed class Obround : ApertureBase
                 && hole is global::NetTopologySuite.Geometries.Polygon holePoly)
             {
                 aperture = _geomFactory.CreatePolygon(
-                    (LinearRing)aperturePoly.ExteriorRing, 
-                    new LinearRing[] { (LinearRing)holePoly.ExteriorRing }
+                    (LinearRing)aperturePoly.ExteriorRing,
+                    [(LinearRing)holePoly.ExteriorRing]
                 );
             } 
             else

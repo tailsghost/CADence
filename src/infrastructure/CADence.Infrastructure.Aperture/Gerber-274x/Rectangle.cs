@@ -61,7 +61,7 @@ public sealed class Rectangle : ApertureBase
             var holeGeometry = GetHole();
             if (holeGeometry is global::NetTopologySuite.Geometries.Polygon holePoly)
             {
-                holes = new LinearRing[] { (LinearRing)holePoly.ExteriorRing };
+                holes = [(LinearRing)holePoly.ExteriorRing];
             }
             else
             {

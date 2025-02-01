@@ -51,7 +51,7 @@ public sealed class Circle : ApertureBase
             {
                 aperture = _geomFactory.CreatePolygon(
                     (LinearRing)aperturePoly.ExteriorRing,
-                    new LinearRing[] { (LinearRing)holePoly.ExteriorRing }
+                    [(LinearRing)holePoly.ExteriorRing]
                 );
             }
             else
