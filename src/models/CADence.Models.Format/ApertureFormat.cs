@@ -1,5 +1,7 @@
-﻿using CADence.Format.Abstractions;
-using System.Globalization;
+﻿using System.Globalization;
+using CADence.Models.Format.Abstractions;
+
+namespace CADence.Models.Format;
 
 public class ApertureFormat : ApertureFormatBase
 {

@@ -1,5 +1,6 @@
 ﻿using CADence.Infrastructure.Aperture.Abstractions;
 using CADence.Infrastructure.Aperture.NetTopologySuite;
+using CADence.Models.Format;
 using NetTopologySuite.Geometries;
 
 namespace CADence.Infrastructure.Aperture.Gerber_274x;
@@ -15,20 +16,25 @@ public sealed class Obround : ApertureBase
     /// Конструктор апертуры типа Obround.
     /// Принимает список параметров и формат, используемый для парсинга.
     /// Если задано отверстие (HoleDiameter > 0), оно добавляется в апертуру.
+    /// Ожидается, что csep содержит от 3 до 4 элементов:
+    /// - csep[0]: идентификатор типа апертуры.
+    /// - csep[1]: размер по оси X (XSize).
+    /// - csep[2]: размер по оси Y (YSize).
+    /// - csep[3] (опционально): диаметр отверстия (HoleDiameter). Если задан, отверстие добавляется внутрь апертуры.
     /// </summary>
     /// <param name="csep">Список строковых параметров апертуры.</param>
-    /// <param name="fmt">Объект формата апертуры для парсинга параметров.</param>
-    public Obround(List<string> csep, ApertureFormat fmt)
+    /// <param name="format">Объект формата апертуры.</param>
+    public Obround(List<string> csep, ApertureFormat format)
     {
         if (csep.Count is < 3 or > 4)
         {
             throw new ArgumentException("Invalid obround aperture");
         }
 
-        XSize = Math.Abs(fmt.ParseFloat(csep[1]));
-        YSize = Math.Abs(fmt.ParseFloat(csep[2]));
+        XSize = Math.Abs(format.ParseFloat(csep[1]));
+        YSize = Math.Abs(format.ParseFloat(csep[2]));
         
-        HoleDiameter = csep.Count > 3 ? fmt.ParseFloat(csep[3]) : 0;
+        HoleDiameter = csep.Count > 3 ? format.ParseFloat(csep[3]) : 0;
         
         var halfX = XSize / 2.0;
         var halfY = YSize / 2.0;
@@ -57,15 +63,15 @@ public sealed class Obround : ApertureBase
             }
         }
         
-        Dark = aperture;
+        AdditiveGeometry = aperture;
     }
 
     /// <summary>
-    /// Метод возвращает информацию о том, является ли Obround простым (без отверстия).
-    /// Obround с заданным отверстием не считается простым.
+    /// Метод, определяющий, является ли апертура простым кругом (без отверстия).
+    /// Если отверстие задано (HoleDiameter > 0), то апертура не является простым кругом.
     /// </summary>
     /// <param name="diameter">Выходной параметр: диаметр отверстия.</param>
-    /// <returns>Возвращает false, так как Obround обычно не является простым кругом.</returns>
+    /// <returns>True, если апертура является простым кругом (без отверстия); иначе false.</returns>
     public override bool IsSimpleCircle(out double diameter)
     {
         diameter = 0;

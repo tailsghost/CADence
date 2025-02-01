@@ -16,10 +16,11 @@ public abstract class ApertureBase
         Simplified = false;
     }
 
+    
     public Geometry? Accumulated { get; protected set; } = null;
     private bool ACCUM_POLARITY { get; set; }
-    protected Geometry Dark { get; set; }
-    protected Geometry Clear { get; set; }
+    protected Geometry AdditiveGeometry { get; set; }
+    protected Geometry SubtractiveGeometry { get; set; }
     protected bool Simplified { get; set; }
 
 
@@ -59,13 +60,13 @@ public abstract class ApertureBase
 
         if (ACCUM_POLARITY)
         {
-            Dark = Dark.IsEmpty ? Accumulated : Dark.Union(Accumulated);
-            Clear = Clear.IsEmpty ? _geomFactory.CreateGeometryCollection(null) : Clear.Difference(Accumulated);
+            AdditiveGeometry = AdditiveGeometry.IsEmpty ? Accumulated : AdditiveGeometry.Union(Accumulated);
+            SubtractiveGeometry = SubtractiveGeometry.IsEmpty ? _geomFactory.CreateGeometryCollection(null) : SubtractiveGeometry.Difference(Accumulated);
         }
         else
         {
-            Dark = Dark.IsEmpty ? _geomFactory.CreateGeometryCollection(null) : Dark.Difference(Accumulated);
-            Clear = Clear.IsEmpty ? Accumulated : Clear.Union(Accumulated);
+            AdditiveGeometry = AdditiveGeometry.IsEmpty ? _geomFactory.CreateGeometryCollection(null) : AdditiveGeometry.Difference(Accumulated);
+            SubtractiveGeometry = SubtractiveGeometry.IsEmpty ? Accumulated : SubtractiveGeometry.Union(Accumulated);
         }
 
         Accumulated = null;
@@ -138,8 +139,8 @@ public abstract class ApertureBase
         double rotate = 0.0,
         double scale = 1.0)
     {
-        DrawPaths(aperture.Dark, polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
-        DrawPaths(aperture.Clear, !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.AdditiveGeometry, polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.AdditiveGeometry, !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
     }
 
     /// <summary>
@@ -149,7 +150,7 @@ public abstract class ApertureBase
     public Geometry? GetClear()
     {
         CommitPaths();
-        return Simplify(Clear);
+        return Simplify(SubtractiveGeometry);
     }
 
     /// <summary>
@@ -159,7 +160,7 @@ public abstract class ApertureBase
     public Geometry? GetDark()
     {
         CommitPaths();
-        return Simplify(Dark);
+        return Simplify(AdditiveGeometry);
     }
 
     /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace CADence.Models.Tests.FormatTests;
+﻿using CADence.Models.Format;
+
+namespace CADence.Models.Tests.FormatTests;
 
 /// <summary>
 /// Набор тестов для класса <see cref="ApertureFormat"/>.

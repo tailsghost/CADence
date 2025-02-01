@@ -3,7 +3,10 @@ using NetTopologySuite.Geometries;
 
 namespace CADence.Infrastructure.Aperture.Gerber_274x;
 
-public class Rectangle(double holeDiameter, Geometry dark, Geometry clear) : ApertureBase(holeDiameter, dark, clear)
+public class Rectangle : ApertureBase
 {
-    
+    public override bool IsSimpleCircle(out double diameter)
+    {
+        throw new NotImplementedException();
+    }
 }

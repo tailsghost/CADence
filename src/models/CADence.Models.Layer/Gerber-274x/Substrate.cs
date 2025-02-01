@@ -1,7 +1,7 @@
-﻿using CADence.Format.Abstractions;
-using CADence.Layer.Abstractions;
+﻿using CADence.Layer.Abstractions;
 using NetTopologySuite.Geometries;
 using System.Text;
+using CADence.Models.Format.Abstractions;
 
 namespace CADence.Layer.Gerber_274x;
 

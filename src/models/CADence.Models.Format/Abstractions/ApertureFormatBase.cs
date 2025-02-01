@@ -1,4 +1,4 @@
-﻿namespace CADence.Format.Abstractions;
+﻿namespace CADence.Models.Format.Abstractions;
 
 /// <summary>
 /// Абстрактный базовый класс для работы с форматом апертур.
