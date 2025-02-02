@@ -15,27 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Fabrics\Gerber274x\Resources\FabricGerber274xLayers.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FabricGerber274xLayers.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Fabrics\Gerber274x\Resources\FabricGerber274xSides.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FabricGerber274xSides.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Fabrics\Gerber274x\Resources\FabricGerber274xLayers.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>FabricGerber274xLayers.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Fabrics\Gerber274x\Resources\FabricGerber274xSides.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>FabricGerber274xSides.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Folder Include="Fabrics\Property\" />
   </ItemGroup>
 
 </Project>

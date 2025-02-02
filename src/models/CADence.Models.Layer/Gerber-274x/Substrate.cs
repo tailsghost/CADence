@@ -1,16 +1,19 @@
 ﻿using CADence.Layer.Abstractions;
 using NetTopologySuite.Geometries;
 using System.Text;
+using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
 
 namespace CADence.Layer.Gerber_274x;
 
 public class Substrate : LayerBase
 {
+    private IParser PARSER_DRILLS { get; init; }
 
-    public Substrate(ApertureFormatBase format) : base(format)
+    public Substrate(ApertureFormatBase format, IParser parserDrills, IParser parser) : base(format, parser)
     {
         Layer = Enums.GerberLayer.Substrate;
+        PARSER_DRILLS = parserDrills;
     }
 
     public override void Render()

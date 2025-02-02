@@ -1,6 +1,14 @@
-﻿namespace CADence.Infrastructure.LayerFabric.Fabrics.Abstractions
+﻿using CADence.Infrastructure.LayerFabric.Common.Abstractions;
+using CADence.Layer.Abstractions;
+
+namespace CADence.Infrastructure.LayerFabric.Fabrics.Abstractions;
+
+public interface IFabric
 {
-    public interface IFabric
-    {
-    }
+    /// <summary>
+    /// Получает слои из данных, переданных через IInputData.
+    /// </summary>
+    /// <param name="inputData">Объект, предоставляющий входные данные.</param>
+    /// <returns>Список слоев, соответствующих входным данным.</returns>
+    List<LayerBase> GetLayers(IInputData inputData);
 }
