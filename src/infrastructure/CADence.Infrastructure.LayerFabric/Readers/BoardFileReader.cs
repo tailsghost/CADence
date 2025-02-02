@@ -15,15 +15,9 @@ public class BoardFileReader : IReader
 
     private readonly InputData _inputData = new();
 
-    /// <summary>
-    /// Парсит архив (ZIP или RAR) и извлекает файлы, возвращая их содержимое в виде словаря.
-    /// </summary>
-    /// <param name="stream">Поток данных, содержащий архив.</param>
-    /// <param name="fileName">Имя архива, включая расширение.</param>
-    /// <returns>Интерфейс <see cref="IInputData"/>.</returns>
     public IInputData ParseArchive(Stream stream, string fileName)
     {
-        Dictionary<string, string> _data = new();
+        Dictionary<string, string> data = new();
 
         if (!fileName.ToLower().EndsWith(".zip") && !fileName.ToLower().EndsWith(".rar"))
         {
@@ -38,7 +32,7 @@ public class BoardFileReader : IReader
                 var entry = archive.Entries[i];
                 var result = ProcessArchiveEntry(entry.FullName, entry.Name, entry.Open);
                 if (result != string.Empty)
-                    _data[entry.FullName] = result;
+                    data[entry.FullName] = result;
             }
         }
         else if (fileName.ToLower().EndsWith(".rar"))
@@ -56,11 +50,11 @@ public class BoardFileReader : IReader
                 if (name == null || fullPath == null) continue;
                 var result = ProcessArchiveEntry(fullPath, name, () => entry.OpenEntryStream());
                 if (result != string.Empty)
-                    _data[fullPath] = result;
+                    data[fullPath] = result;
             }
         }
 
-        _inputData.Set(_data);
+        _inputData.Set(data);
         return _inputData;
     }
 
@@ -85,12 +79,7 @@ public class BoardFileReader : IReader
         var reader = new StreamReader(ms, Encoding.UTF8);
         var result = reader.ReadToEnd();
 
-        if (FindFileType(result))
-        {
-            return result;
-        }
-
-        return string.Empty;
+        return FindFileType(result) ? result : string.Empty;
     }
 
     /// <summary>
@@ -100,13 +89,11 @@ public class BoardFileReader : IReader
     /// <returns>True, если файл имеет допустимое расширение, иначе false.</returns>
     private bool IsValidFile(string filename)
     {
-        if (filename != string.Empty)
-        {
-            var ext = new FileInfo(filename).Extension.ToLower().TrimStart('.');
+        if (filename == string.Empty) return false;
 
-            return !_unsupported.Contains(ext);
-        }
-        else return false;
+        var ext = new FileInfo(filename).Extension.ToLower().TrimStart('.');
+
+        return !_unsupported.Contains(ext);
     }
 
     /// <summary>
@@ -116,16 +103,6 @@ public class BoardFileReader : IReader
     /// <returns>True, если содержимое файла удовлетворяет условию слоя, иначе false.</returns>
     private bool FindFileType(string file)
     {
-        try
-        {
-            if (file.Contains("%FS")) return true;
-            if (file.Contains("M48")) return true;
-        }
-        catch
-        {
-            return false;
-        }
-
-        return false;
+        return file.Contains("%FS") || file.Contains("M48");
     }
 }

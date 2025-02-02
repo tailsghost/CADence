@@ -1,4 +1,5 @@
 ﻿using CADence.Infrastructure.LayerFabric.Common.Abstractions;
+using CADence.Infrastructure.LayerFabric.Enums;
 using CADence.Infrastructure.LayerFabric.Fabrics.Abstractions;
 using CADence.Infrastructure.Parser.Parsers;
 using CADence.Infrastructure.Parser.Parsers.Drills;
@@ -10,6 +11,12 @@ namespace CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
 
 public class FabricGerber274X : IFabric
 {
+
+    /// <summary>
+    /// Список форматов для <see cref="_outline"/>.
+    /// </summary>
+    private readonly List<string> _boardSupported = ["gko", "gm1", "gt3"];
+    
     /// <summary>
     /// Список дырок, нужны для формирования слоя Substrate.
     /// </summary>
@@ -25,11 +32,7 @@ public class FabricGerber274X : IFabric
     /// </summary>
     private readonly List<Task<LayerBase>> _tasks = new();
 
-    /// <summary>
-    /// Получает слои из данных, переданных через IInputData.
-    /// </summary>
-    /// <param name="inputData">Объект, предоставляющий входные данные.</param>
-    /// <returns>Список слоев, соответствующих входным данным.</returns>
+
     public List<LayerBase> GetLayers(IInputData inputData)
     {
         return Init(inputData.Get()).Result;
@@ -74,7 +77,7 @@ public class FabricGerber274X : IFabric
         if (_outline != string.Empty) return false;
         var ext = Path.GetExtension(fileName).TrimStart('.').ToLower();
 
-        if (ext != "gko" && ext != "gm1" && ext != "gt3") return false;
+        if (!_boardSupported.Contains(ext)) return false;
         _outline = file;
         
         return true;
@@ -102,17 +105,22 @@ public class FabricGerber274X : IFabric
     {
         var ext = Path.GetExtension(fileName).TrimStart('.').ToLower();
 
-        Task result = ext switch
+        if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
         {
-            "gbl" => Task.Run(() => new BottomCopper(new ApertureFormat(), new GerberParser274X(file))),
-            "gtl" => Task.Run(() => new TopCopper(new ApertureFormat(), new GerberParser274X(file))),
-            "gbo" => Task.Run(() => new BottomSilk(new ApertureFormat(), new GerberParser274X(file))),
-            "gto" => Task.Run(() => new TopSilk(new ApertureFormat(), new GerberParser274X(file))),
-            "gbs" => Task.Run(() => new BottomMask(new ApertureFormat(), new GerberParser274X(file))),
-            "gts" => Task.Run(() => new TopMask(new ApertureFormat(), new GerberParser274X(file))),
+            throw new ArgumentOutOfRangeException();
+        }
+        
+        var result = extension switch
+        {
+            Layer274xFileExtensionsSupported.gbl => Task.Run<LayerBase>(() => new BottomCopper(new ApertureFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gtl => Task.Run<LayerBase>(() => new TopCopper(new ApertureFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gbo => Task.Run<LayerBase>(() => new BottomSilk(new ApertureFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gto => Task.Run<LayerBase>(() => new TopSilk(new ApertureFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gbs => Task.Run<LayerBase>(() => new BottomMask(new ApertureFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gts => Task.Run<LayerBase>(() => new TopMask(new ApertureFormat(), new GerberParser274X(file))),
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return (Task<LayerBase>)result;
+        return result;
     }
 }
