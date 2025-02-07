@@ -5,11 +5,23 @@ using NetTopologySuite.Simplify;
 
 namespace CADence.Infrastructure.Aperture.Abstractions;
 
+/// <summary>
+/// Абстрактный класс для работы с апертурами, включающий операции рисования, трансформации и объединения геометрий.
+/// </summary>
 public abstract class ApertureBase
 {
+    
     private readonly GeometryFactory _geomFactory = new GeometryFactory();
+    
+    /// <summary>
+    /// Диаметр отверстия, используемый при генерации отверстий в апертуре.
+    /// </summary>
     protected double HoleDiameter;
 
+    /// <summary>
+    /// Конструктор базового класса апертуры.
+    /// Инициализирует параметры полярности и состояния упрощения.
+    /// </summary>
     protected ApertureBase()
     {
         ACCUM_POLARITY = true;
@@ -17,10 +29,29 @@ public abstract class ApertureBase
     }
 
     
+    /// <summary>
+    /// Накопленная геометрия, хранящая временные изменения перед фиксацией.
+    /// </summary>
     public Geometry? Accumulated { get; protected set; } = null;
+    
+    /// <summary>
+    /// Текущая полярность (true - объединение, false - вычитание).
+    /// </summary>
     private bool ACCUM_POLARITY { get; set; }
+    
+    /// <summary>
+    /// Основная (добавляемая) геометрия.
+    /// </summary>
     protected Geometry AdditiveGeometry { get; set; }
+    
+    /// <summary>
+    /// Второстепенная (вычитаемая) геометрия.
+    /// </summary>
     protected Geometry SubtractiveGeometry { get; set; }
+    
+    /// <summary>
+    /// Флаг, указывающий, была ли геометрия упрощена.
+    /// </summary>
     protected bool Simplified { get; set; }
 
 

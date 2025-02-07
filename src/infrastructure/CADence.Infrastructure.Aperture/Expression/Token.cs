@@ -1,6 +1,6 @@
 ﻿namespace CADence.Aperture.Expression;
 
-internal class Token : Expression
+public class Token : Expression
 {
     private readonly char token;
 
@@ -9,17 +9,17 @@ internal class Token : Expression
         this.token = token;
     }
 
-    internal override double Eval(Dictionary<int, double> vars)
+    public override double Eval(Dictionary<int, double> vars)
     {
         throw new InvalidOperationException("Cannot evaluate token");
     }
 
-    internal override char GetToken()
+    public override char GetToken()
     {
         return token;
     }
 
-    internal override string Debug()
+    public override string Debug()
     {
         return token.ToString();
     }

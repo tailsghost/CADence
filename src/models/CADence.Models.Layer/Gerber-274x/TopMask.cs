@@ -9,7 +9,7 @@ namespace CADence.Layer.Gerber_274x;
 public class TopMask : LayerBase
 {
 
-    public TopMask(ApertureFormatBase format, IParser parser) : base(format, parser)
+    public TopMask(ApertureFormatBase format, GerberParserBase parser) : base(format, parser)
     {
         Layer = Enums.GerberLayer.TopMask;
     }

@@ -9,7 +9,7 @@ namespace CADence.Layer.Gerber_274x;
 public class TopSilk : LayerBase
 {
 
-    public TopSilk(ApertureFormatBase format, IParser parser) : base(format, parser)
+    public TopSilk(ApertureFormatBase format, GerberParserBase parser) : base(format, parser)
     {
         Layer = Enums.GerberLayer.TopSilk;
     }

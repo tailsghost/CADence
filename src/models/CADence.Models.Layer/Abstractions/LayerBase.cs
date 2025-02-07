@@ -7,9 +7,9 @@ using CADence.Models.Format.Abstractions;
 
 namespace CADence.Layer.Abstractions;
 
-public abstract class LayerBase(ApertureFormatBase format, IParser parser)
+public abstract class LayerBase(ApertureFormatBase format, GerberParserBase parser)
 {
-    private IParser PARSER { get; init; } = parser;
+    private GerberParserBase PARSER { get; init; } = parser;
 
     protected ApertureFormatBase Format = format;
     public GerberLayer Layer { get; set; }

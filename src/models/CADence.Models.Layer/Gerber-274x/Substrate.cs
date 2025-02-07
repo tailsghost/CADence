@@ -8,9 +8,9 @@ namespace CADence.Layer.Gerber_274x;
 
 public class Substrate : LayerBase
 {
-    private IParser PARSER_DRILLS { get; init; }
+    private DrillParserBase PARSER_DRILLS { get; init; }
 
-    public Substrate(ApertureFormatBase format, IParser parserDrills, IParser parser) : base(format, parser)
+    public Substrate(ApertureFormatBase format, DrillParserBase parserDrills, GerberParserBase parser) : base(format, parser)
     {
         Layer = Enums.GerberLayer.Substrate;
         PARSER_DRILLS = parserDrills;

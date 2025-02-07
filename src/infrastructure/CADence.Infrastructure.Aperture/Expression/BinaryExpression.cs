@@ -1,6 +1,6 @@
 ﻿namespace CADence.Aperture.Expression;
 
-internal class BinaryExpression : Expression
+public class BinaryExpression : Expression
 {
     private readonly char oper;
     private readonly Expression lhs, rhs;
@@ -12,7 +12,7 @@ internal class BinaryExpression : Expression
         this.rhs = rhs;
     }
 
-    internal override double Eval(Dictionary<int, double> vars)
+    public override double Eval(Dictionary<int, double> vars)
     {
         switch (oper)
         {
@@ -24,7 +24,7 @@ internal class BinaryExpression : Expression
         }
     }
 
-    internal override string Debug()
+    public override string Debug()
     {
         return lhs.Debug() + " " + oper + " " + rhs.Debug();
     }

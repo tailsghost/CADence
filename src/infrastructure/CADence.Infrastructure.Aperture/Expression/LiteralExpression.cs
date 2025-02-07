@@ -1,6 +1,6 @@
 ﻿namespace CADence.Aperture.Expression;
 
-internal class LiteralExpression : Expression
+public class LiteralExpression : Expression
 {
     private readonly double value;
 
@@ -9,12 +9,12 @@ internal class LiteralExpression : Expression
         this.value = value;
     }
 
-    internal override double Eval(Dictionary<int, double> vars)
+    public override double Eval(Dictionary<int, double> vars)
     {
         return value;
     }
 
-    internal override string Debug()
+    public override string Debug()
     {
         return value.ToString();
     }

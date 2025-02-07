@@ -3,13 +3,13 @@ using System.Linq.Expressions;
 
 namespace CADence.Aperture.Expression;
 
-internal abstract class Expression
+public abstract class Expression
 {
-    internal abstract double Eval(Dictionary<int, double> vars);
-    internal abstract string Debug();
-    internal virtual char GetToken() => '\0';
+    public abstract double Eval(Dictionary<int, double> vars);
+    public abstract string Debug();
+    public virtual char GetToken() => '\0';
 
-    internal static Expression Reduce(List<Expression> expr)
+    public static Expression Reduce(List<Expression> expr)
     {
         if (expr.Count == 0)
         {
@@ -71,7 +71,7 @@ internal abstract class Expression
         return expr[0];
     }
 
-    internal static Expression Parse(string expr)
+    public static Expression Parse(string expr)
     {
         List<Expression> tokens = new();
         string currentToken = "";
