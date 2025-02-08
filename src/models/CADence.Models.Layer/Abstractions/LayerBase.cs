@@ -7,11 +7,11 @@ using CADence.Models.Format.Abstractions;
 
 namespace CADence.Layer.Abstractions;
 
-public abstract class LayerBase(ApertureFormatBase format, GerberParserBase parser)
+public abstract class LayerBase(LayerFormatBase format, GerberParserBase parser)
 {
     private GerberParserBase PARSER { get; init; } = parser;
 
-    protected ApertureFormatBase Format = format;
+    protected LayerFormatBase Format = format;
     public GerberLayer Layer { get; set; }
     public double Thickness { get; set; }
     public abstract void Render();

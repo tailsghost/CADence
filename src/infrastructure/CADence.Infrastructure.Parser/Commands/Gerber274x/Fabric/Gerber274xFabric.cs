@@ -14,7 +14,7 @@ public class Gerber274xFabric : FabricCommandBase<GerberParserSettingsBase>
     /// </summary>
     private void CreateFabricCommand()
     {
-        Add("F", () => new FCommand());
+        Add("FS", () => new FSCommand());
         Add("M", () => new MCommand());
         Add("L", () => new LCommand());
         Add("G", () => new GCommand());

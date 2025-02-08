@@ -1,9 +1,9 @@
 ﻿namespace CADence.Models.Format.Abstractions;
 
 /// <summary>
-/// Абстрактный базовый класс для работы с форматом апертур.
+/// Абстрактный базовый класс для работы с форматом слоя.
 /// </summary>
-public abstract class ApertureFormatBase
+public abstract class LayerFormatBase
 {
     protected bool _isFormatConfigured = false;
     protected int _integerDigits;
@@ -14,7 +14,7 @@ public abstract class ApertureFormatBase
     protected int QuadrantSegments { get; }
     protected double MitreLimit { get; }
 
-    protected ApertureFormatBase(double mitreLimit = 1, int quadrantSegments = 4)
+    protected LayerFormatBase(double mitreLimit = 1, int quadrantSegments = 4)
     {
         MitreLimit = mitreLimit;
         QuadrantSegments = quadrantSegments;

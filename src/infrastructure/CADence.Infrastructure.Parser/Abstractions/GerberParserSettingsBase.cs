@@ -1,6 +1,7 @@
 using CADence.Infrastructure.Parser.Enums;
 using NetTopologySuite.Geometries;
 using CADence.Infrastructure.Aperture.Abstractions;
+using CADence.Models.Format;
 
 namespace CADence.Infrastructure.Parser.Abstractions;
 
@@ -64,4 +65,9 @@ public class GerberParserSettingsBase
     /// Флаг, указывающий, что контур был построен.
     /// </summary>
     public bool OutlineConstructed { get; set; }
+
+    /// <summary>
+    /// Н
+    /// </summary>
+    public LayerFormat format = new();
 }

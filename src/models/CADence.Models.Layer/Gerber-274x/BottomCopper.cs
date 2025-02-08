@@ -10,7 +10,7 @@ namespace CADence.Layer.Gerber_274x;
 public class BottomCopper : LayerBase
 {
 
-    public BottomCopper(ApertureFormatBase format, GerberParserBase parser) : base(format, parser)
+    public BottomCopper(LayerFormatBase format, GerberParserBase parser) : base(format, parser)
     {
         Layer = Enums.GerberLayer.BottomCopper;
     }

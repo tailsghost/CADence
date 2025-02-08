@@ -5,7 +5,7 @@ namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
 /// <summary>
 /// Команда "F" для Gerber-парсера.
 /// </summary>
-public class FCommand : CommandBase<GerberParserSettingsBase>
+public class FSCommand : CommandBase<GerberParserSettingsBase>
 {
     /// <summary>
     /// Выполняет команду "F" с заданными параметрами Gerber-парсера.

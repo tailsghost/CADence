@@ -10,7 +10,7 @@ public class Substrate : LayerBase
 {
     private DrillParserBase PARSER_DRILLS { get; init; }
 
-    public Substrate(ApertureFormatBase format, DrillParserBase parserDrills, GerberParserBase parser) : base(format, parser)
+    public Substrate(LayerFormatBase format, DrillParserBase parserDrills, GerberParserBase parser) : base(format, parser)
     {
         Layer = Enums.GerberLayer.Substrate;
         PARSER_DRILLS = parserDrills;

@@ -31,7 +31,6 @@ public abstract class FabricCommandBase<T>
     /// Удаляет команду из коллекции по ключу.
     /// </summary>
     /// <param name="startCommand">Ключ команды для удаления.</param>
-
     public void Remove(string startCommand)
         => _commands.Remove(startCommand);
     
@@ -41,13 +40,12 @@ public abstract class FabricCommandBase<T>
     /// <param name="startCommand">Ключ команды.</param>
     /// <param name="settings">Параметры, которые будут изменены командой.</param>
     /// <returns>Обновлённые параметры. Если команда не найдена, возвращаются исходные параметры.</returns>
-
     public T ExecuteCommand(string startCommand, T settings)
     {
         if (_commands.TryGetValue(startCommand, out var command))
         {
             return command().Execute(settings);
         }
-        return settings;
+        throw new ArgumentException("Command no found.");
     }
 }

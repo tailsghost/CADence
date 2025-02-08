@@ -3,17 +3,17 @@
 namespace CADence.Models.Tests.FormatTests;
 
 /// <summary>
-/// Набор тестов для класса <see cref="ApertureFormat"/>.
+/// Набор тестов для класса <see cref="LayerFormat"/>.
 /// </summary>
 [TestFixture]
-public class ApertureFormatTests
+public class LayerFormatTests
 {
-    private ApertureFormat _apertureFormat;
+    private LayerFormat _apertureFormat;
 
     [SetUp]
     public void SetUp()
     {
-        _apertureFormat = new ApertureFormat();
+        _apertureFormat = new LayerFormat();
     }
 
     [TestCase("242126", 4, 3, 242126.0)]
