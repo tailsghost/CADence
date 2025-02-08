@@ -1,5 +1,6 @@
 using System.Text;
 using CADence.Infrastructure.Parser.Abstractions;
+using CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 using CADence.Infrastructure.Parser.Settings;
 
 namespace CADence.Infrastructure.Parser.Parsers;
@@ -18,7 +19,9 @@ public class GerberParser274X : GerberParserBase
     /// Параметры для парсинга Gerber файлов формата 274X.
     /// </summary>
     private GerberParser274xSettings _settings = new();
-    
+
+    private Gerber274xFabric _fabric;
+
     /// <summary>
     /// Инициализирует новый экземпляр парсера Gerber 274X.
     /// </summary>
@@ -26,8 +29,10 @@ public class GerberParser274X : GerberParserBase
     public GerberParser274X(string file)
     {
         FILE = file;
+        _fabric = new Gerber274xFabric();
+        Execute();
     }
-    
+
     /// <summary>
     /// Выполняет парсинг Gerber файла.
     /// </summary>
@@ -41,7 +46,7 @@ public class GerberParser274X : GerberParserBase
         var is_attrib = false;
         var ss = new StringBuilder();
         char c;
-        
+
         while (stream.Peek() != -1)
         {
             c = (char)stream.Read();
@@ -58,11 +63,12 @@ public class GerberParser274X : GerberParserBase
             else if (c == '*')
             {
                 if (ss.Length == 0) throw new InvalidOperationException("empty command");
-                if (!ExecuteCommand(ss.ToString(), is_attrib))
+                if (!ExecuteCommand(ss.ToString()))
                 {
                     terminated = true;
                     break;
                 }
+
                 ss.Clear();
             }
             else
@@ -70,18 +76,22 @@ public class GerberParser274X : GerberParserBase
                 ss.Append(c);
             }
         }
+
         if (is_attrib)
         {
             throw new InvalidOperationException("unterminated attribute");
         }
+
         if (!terminated)
         {
             throw new InvalidOperationException("unterminated gerber file");
         }
+
         if (_settings.ApertureStack.Count != 1)
         {
             throw new InvalidOperationException("unterminated block aperture");
         }
+
         if (_settings.RegionMode)
         {
             throw new InvalidOperationException("unterminated region block");
@@ -89,18 +99,14 @@ public class GerberParser274X : GerberParserBase
     }
 
 
-
     /// <summary>
     /// Выполняет команду Gerber файла.
     /// </summary>
     /// <param name="cmd">Строковое представление команды.</param>
-    /// <param name="isAttrib">
-    /// Флаг, указывающий, является ли команда атрибутной.
-    /// </param>
     /// <returns>
     /// True, если команда успешно обработана; иначе false.
     /// </returns>
-    private bool ExecuteCommand(string cmd, bool isAttrib)
+    private bool ExecuteCommand(string cmd)
     {
         if (_settings.AmBuilder != null)
         {
@@ -108,15 +114,8 @@ public class GerberParser274X : GerberParserBase
             return true;
         }
 
-        if (isAttrib)
-        {
-            
-        }
-        else
-        {
-            
-        }
-        
-        return true;
+        _settings = _fabric.ExecuteCommand(cmd, _settings);
+
+        return _settings.Execute;
     }
 }

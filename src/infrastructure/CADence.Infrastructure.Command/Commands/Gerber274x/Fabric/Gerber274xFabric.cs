@@ -1,17 +1,18 @@
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
+using CADence.Infrastructure.Parser.Settings;
 
 namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 
 /// <summary>
 /// Фабрика команд для Gerber 274x, регистрирующая команды парсера.
 /// </summary>
-public class Gerber274xFabric : FabricCommandBase<GerberParserSettingsBase>
+public class Gerber274xFabric : FabricCommandBase<GerberParser274xSettings>
 {
     /// <summary>
     /// Регистрирует команды Gerber-парсера.
     /// </summary>
-    private void CreateFabricCommand()
+    private void InitialCommand()
     {
         Add("AB", () => new ABCommand());
         Add("AD", () => new ADCommand());
@@ -32,6 +33,6 @@ public class Gerber274xFabric : FabricCommandBase<GerberParserSettingsBase>
     /// </summary>
     public Gerber274xFabric()
     {
-        CreateFabricCommand();
+        InitialCommand();
     }
 }
