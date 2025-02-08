@@ -16,6 +16,11 @@ public class Drill274xFabric : FabricCommandBase<DrillParser274xSettings>
     {
         Add("M48", () => new M48Command());
         Add("FMAT,2", () => new FMAT2Command());
+        Add(";TYPE", () => new FMAT2Command());
+        Add(";FILE_FORMAT", () => new FMAT2Command());
+        Add("VER,1", () => throw new NotSupportedException("Version 1 excellon is not supported"));
+        Add("METRIC", () => new MetricCommand());
+        Add("INCH", () => new InchCommand());
     }
 
     /// <summary>

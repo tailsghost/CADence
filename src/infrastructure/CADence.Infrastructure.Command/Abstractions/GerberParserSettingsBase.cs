@@ -70,9 +70,4 @@ public class GerberParserSettingsBase : SettingsBase
     /// Флаг, указывающий, что контур был построен.
     /// </summary>
     public bool OutlineConstructed { get; set; }
-
-    /// <summary>
-    /// Н
-    /// </summary>
-    public LayerFormat format = new();
 }

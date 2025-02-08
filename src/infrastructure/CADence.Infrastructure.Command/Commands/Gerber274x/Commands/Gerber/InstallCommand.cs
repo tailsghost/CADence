@@ -2,7 +2,7 @@ using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Settings;
 using NetTopologySuite.Geometries;
 
-namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands.Gerber;
+namespace CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Gerber;
 
 /// <summary>
 /// Команда "Install" для Gerber-парсера.
@@ -23,9 +23,9 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
 
         for (var i = 0; i <= settings.cmd.Length; i++)
         {
-            var c = (i < settings.cmd.Length) ? settings.cmd[i] : 'Z';
+            var c = i < settings.cmd.Length ? settings.cmd[i] : 'Z';
             if (i != settings.cmd.Length && !char.IsLetter(c)) continue;
-            
+
             switch (code)
             {
                 case 'D':
@@ -36,17 +36,17 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
                     parameters[code] = settings.format.ParseFixed(settings.cmd[start..i]);
                     break;
                 default:
-                {
-                    if (code != ' ')
-                        parameters[code] = settings.format.ParseFixed(settings.cmd[start..i]);
-                    break;
-                }
+                    {
+                        if (code != ' ')
+                            parameters[code] = settings.format.ParseFixed(settings.cmd[start..i]);
+                        break;
+                    }
             }
 
             code = c;
             start = i + 1;
         }
-        
+
         switch (d)
         {
             case 1:

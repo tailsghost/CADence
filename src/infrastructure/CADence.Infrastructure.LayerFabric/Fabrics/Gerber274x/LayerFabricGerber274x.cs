@@ -62,7 +62,7 @@ public class LayerFabricGerber274x : ILayerFabric
         var resultTask = await Task.WhenAll(_tasks);
         var result = resultTask.ToList();
         result.Insert(0,
-            new Substrate(new LayerFormat(), new GerberParserDrill274X(_drills), new GerberParser274X(_outline)));
+            new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline)));
         return result;
     }
 
