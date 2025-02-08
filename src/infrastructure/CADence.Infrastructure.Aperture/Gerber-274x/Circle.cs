@@ -29,7 +29,7 @@ public sealed class Circle : ApertureBase
     /// </summary>
     /// <param name="csep">Список строковых параметров апертуры.</param>
     /// <param name="format">Объект формата апертуры.</param>
-    public Circle(List<string> csep, ApertureFormat format)
+    public Circle(List<string> csep, LayerFormat format)
     {
         if (csep.Count is < 2 or > 3)
         {

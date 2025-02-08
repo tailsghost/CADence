@@ -62,7 +62,7 @@ public class FabricGerber274X : IFabric
         var resultTask = await Task.WhenAll(_tasks);
         var result = resultTask.ToList();
         result.Insert(0,
-            new Substrate(new ApertureFormat(), new GerberParserDrill274X(_drills), new GerberParser274X(_outline)));
+            new Substrate(new LayerFormat(), new GerberParserDrill274X(_drills), new GerberParser274X(_outline)));
         return result;
     }
 
@@ -112,12 +112,12 @@ public class FabricGerber274X : IFabric
         
         var result = extension switch
         {
-            Layer274xFileExtensionsSupported.gbl => Task.Run<LayerBase>(() => new BottomCopper(new ApertureFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gtl => Task.Run<LayerBase>(() => new TopCopper(new ApertureFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gbo => Task.Run<LayerBase>(() => new BottomSilk(new ApertureFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gto => Task.Run<LayerBase>(() => new TopSilk(new ApertureFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gbs => Task.Run<LayerBase>(() => new BottomMask(new ApertureFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gts => Task.Run<LayerBase>(() => new TopMask(new ApertureFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gbl => Task.Run<LayerBase>(() => new BottomCopper(new LayerFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gtl => Task.Run<LayerBase>(() => new TopCopper(new LayerFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gbo => Task.Run<LayerBase>(() => new BottomSilk(new LayerFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gto => Task.Run<LayerBase>(() => new TopSilk(new LayerFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gbs => Task.Run<LayerBase>(() => new BottomMask(new LayerFormat(), new GerberParser274X(file))),
+            Layer274xFileExtensionsSupported.gts => Task.Run<LayerBase>(() => new TopMask(new LayerFormat(), new GerberParser274X(file))),
             _ => throw new ArgumentOutOfRangeException()
         };
 

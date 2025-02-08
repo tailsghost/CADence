@@ -3,7 +3,7 @@ using CADence.Models.Format.Abstractions;
 
 namespace CADence.Models.Format;
 
-public class ApertureFormat : ApertureFormatBase
+public class LayerFormat : LayerFormatBase
 {
     private const double INCHES_TO_MILLIMETERS = 25.4;
     private const double MILLIMETERS_TO_INCHES = 1.0;

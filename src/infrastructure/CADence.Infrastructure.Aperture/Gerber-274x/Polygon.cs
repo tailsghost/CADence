@@ -41,7 +41,7 @@ public sealed class Polygon : ApertureBase
     /// </summary>
     /// <param name="csep">Список строковых параметров апертуры.</param>
     /// <param name="format">Объект формата апертуры.</param>
-    public Polygon(List<string> csep, ApertureFormat format)
+    public Polygon(List<string> csep, LayerFormat format)
     {
         if (csep.Count is < 3 or > 5)
         {

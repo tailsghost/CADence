@@ -33,7 +33,7 @@ public sealed class Rectangle : ApertureBase
     /// </summary>
     /// <param name="csep">Список строковых параметров апертуры.</param>
     /// <param name="format">Объект формата апертуры.</param>
-    public Rectangle(List<string> csep, ApertureFormat format)
+    public Rectangle(List<string> csep, LayerFormat format)
     {
         if (csep.Count is < 3 or > 4)
         {
