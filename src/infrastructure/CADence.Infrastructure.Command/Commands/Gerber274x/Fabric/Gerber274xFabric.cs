@@ -1,6 +1,5 @@
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
-using CADence.Infrastructure.Parser.Settings;
 
 namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 
@@ -15,7 +14,7 @@ public class Gerber274xFabric : FabricCommandBase<GerberParserSettingsBase>
     private void CreateFabricCommand()
     {
         Add("FS", () => new FSCommand());
-        Add("M", () => new MCommand());
+        Add("MO", () => new MOCommand());
         Add("L", () => new LCommand());
         Add("G", () => new GCommand());
         Add("D", () => new DCommand());

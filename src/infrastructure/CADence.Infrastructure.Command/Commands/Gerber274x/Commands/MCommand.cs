@@ -5,7 +5,7 @@ namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
 /// <summary>
 /// Команда "M" для Gerber-парсера.
 /// </summary>
-public class MCommand : CommandBase<GerberParserSettingsBase>
+public class MOCommand : CommandBase<GerberParserSettingsBase>
 {
     /// <summary>
     /// Выполняет команду "M" с заданными параметрами Gerber-парсера.

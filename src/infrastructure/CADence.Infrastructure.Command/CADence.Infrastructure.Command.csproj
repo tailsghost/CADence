@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NetTopologySuite" Version="2.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CADence.Infrastructure.Aperture\CADence.Infrastructure.Aperture.csproj" />
+  </ItemGroup>
+
 </Project>

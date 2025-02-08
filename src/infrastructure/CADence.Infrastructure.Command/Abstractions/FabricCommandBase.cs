@@ -1,5 +1,3 @@
-using CADence.Infrastructure.Parser.Settings;
-
 namespace CADence.Infrastructure.Parser.Abstractions;
 
 /// <summary>

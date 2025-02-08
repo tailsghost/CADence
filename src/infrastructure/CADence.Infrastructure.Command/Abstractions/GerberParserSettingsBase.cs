@@ -1,7 +1,7 @@
-using CADence.Infrastructure.Parser.Enums;
-using NetTopologySuite.Geometries;
 using CADence.Infrastructure.Aperture.Abstractions;
+using CADence.Infrastructure.Parser.Enums;
 using CADence.Models.Format;
+using NetTopologySuite.Geometries;
 
 namespace CADence.Infrastructure.Parser.Abstractions;
 
