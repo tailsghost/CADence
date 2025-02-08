@@ -21,4 +21,18 @@ public class GerberParser274xSettings : GerberParserSettingsBase
     /// Текущий макрос апертуры.
     /// </summary>
     public ApertureMacroBase AmBuilder;
+    
+    public double MinThickness = double.MaxValue;
+    
+    /// <summary>
+    /// Минимальная толщина дорожки
+    /// </summary>
+    public double MinimumDiameter = double.MaxValue;
+
+    public double MinDiameter = double.MaxValue;
+
+    /// <summary>
+    /// Минимальный диаметр от дырки до ободка
+    /// </summary>
+    public double MinimumThickness = double.MaxValue;
 }
