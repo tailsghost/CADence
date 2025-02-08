@@ -2,7 +2,7 @@ using CADence.Infrastructure.Aperture.Gerber_274x;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Settings;
 
-namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
+namespace CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Gerber;
 
 
 /// <summary>
@@ -40,7 +40,7 @@ public class ADCommand : CommandBase<GerberParser274xSettings>
 
         while (i < settings.cmd.Length)
         {
-            if (settings.cmd[i] == ',' || (csep.Count > 0 && settings.cmd[i] == 'X'))
+            if (settings.cmd[i] == ',' || csep.Count > 0 && settings.cmd[i] == 'X')
             {
                 csep.Add(settings.cmd[start..i]);
                 start = i + 1;
@@ -57,7 +57,7 @@ public class ADCommand : CommandBase<GerberParser274xSettings>
         switch (csep[0])
         {
             case "C":
-                settings.Apertures[index] =   new Circle(csep, settings.format);
+                settings.Apertures[index] = new Circle(csep, settings.format);
                 break;
             case "R":
                 settings.Apertures[index] = new Rectangle(csep, settings.format);
@@ -78,7 +78,7 @@ public class ADCommand : CommandBase<GerberParser274xSettings>
         }
 
         settings.IsDone = true;
-        
+
         return settings;
     }
 }

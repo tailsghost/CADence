@@ -1,8 +1,8 @@
 using CADence.Infrastructure.Parser.Abstractions;
 
-namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
+namespace CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Gerber;
 
-public class ICommand: CommandBase<GerberParserSettingsBase>
+public class ICommand : CommandBase<GerberParserSettingsBase>
 {
     /// <summary>
     /// Выполняет команду "I" с заданными параметрами Gerber-парсера.

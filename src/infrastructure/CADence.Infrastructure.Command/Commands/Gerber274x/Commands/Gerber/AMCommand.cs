@@ -2,7 +2,7 @@ using CADence.Infrastructure.Aperture.Services;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Settings;
 
-namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
+namespace CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Gerber;
 
 public class AMCommand : CommandBase<GerberParser274xSettings>
 {

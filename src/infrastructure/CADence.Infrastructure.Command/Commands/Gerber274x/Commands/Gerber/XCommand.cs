@@ -1,14 +1,11 @@
 using CADence.Infrastructure.Parser.Abstractions;
 
-namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
+namespace CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Gerber;
 
-/// <summary>
-/// Команда "D" для Gerber-парсера.
-/// </summary>
-public class DCommand : CommandBase<GerberParserSettingsBase>
+public class XCommand : CommandBase<GerberParserSettingsBase>
 {
     /// <summary>
-    /// Выполняет команду "D" с заданными параметрами Gerber-парсера.
+    /// Выполняет команду "X" с заданными параметрами Gerber-парсера.
     /// </summary>
     /// <param name="settings">Параметры Gerber-парсера.</param>
     /// <returns>Обновлённые параметры Gerber-парсера.</returns>

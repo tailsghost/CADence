@@ -1,7 +1,7 @@
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Settings;
 
-namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
+namespace CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Gerber;
 
 /// <summary>
 /// Команда "L" для Gerber-парсера.
@@ -15,7 +15,7 @@ public class LPCommand : CommandBase<GerberParser274xSettings>
     /// <returns>Обновлённые параметры Gerber-парсера.</returns>
     public override GerberParser274xSettings Execute(GerberParser274xSettings settings)
     {
-        if (settings.cmd.Length != 3 || (settings.cmd[2] != 'C' && settings.cmd[2] != 'D'))
+        if (settings.cmd.Length != 3 || settings.cmd[2] != 'C' && settings.cmd[2] != 'D')
             throw new Exception("Invalid polarity command: " + settings.cmd);
 
         settings.Polarity = settings.cmd[2] == 'D';

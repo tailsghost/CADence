@@ -2,7 +2,7 @@ using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
 
-namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
+namespace CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Gerber;
 
 /// <summary>
 /// Команда "G" для Gerber-парсера.
@@ -65,20 +65,20 @@ public class GCommand : CommandBase<GerberParser274xSettings>
         switch (settings.cmd)
         {
             case "G36":
-            {
-                if (settings.RegionMode) throw new Exception("Already in region mode");
-                settings.RegionMode = true;
-                settings.IsDone = true;
-                return settings;
-            }
+                {
+                    if (settings.RegionMode) throw new Exception("Already in region mode");
+                    settings.RegionMode = true;
+                    settings.IsDone = true;
+                    return settings;
+                }
             case "G37":
-            {
-                if (!settings.RegionMode) throw new Exception("Not in region mode");
-                CommitRegion();
-                settings.RegionMode = false;
-                settings.IsDone = true;
-                return settings;
-            }
+                {
+                    if (!settings.RegionMode) throw new Exception("Not in region mode");
+                    CommitRegion();
+                    settings.RegionMode = false;
+                    settings.IsDone = true;
+                    return settings;
+                }
             case "G70":
                 settings.format.ConfigureInches();
                 settings.IsDone = true;
@@ -88,16 +88,16 @@ public class GCommand : CommandBase<GerberParser274xSettings>
                 settings.IsDone = true;
                 return settings;
             case "G90":
-            {
-                settings.IsDone = true;
-                return settings;
-            }
+                {
+                    settings.IsDone = true;
+                    return settings;
+                }
             case "G91":
-            {
-                throw new Exception("Incremental mode is not supported");
-            }
+                {
+                    throw new Exception("Incremental mode is not supported");
+                }
         }
-        
+
         settings.IsDone = true;
         return settings;
     }
