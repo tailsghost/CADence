@@ -9,10 +9,14 @@ namespace CADence.Infrastructure.Parser.Settings;
 public class GerberParser274xSettings : GerberParserSettingsBase
 {
     /// <summary>
-    /// Словарь макросов апертуры, сопоставленных с их идентификаторами.
+    /// Текущая аперткура
     /// </summary>
-    public Dictionary<string, ApertureMacroBase> ApertureMacros = [];
+    public ApertureBase Aperture;
     
+    /// <summary>
+    /// Словарь апертур
+    /// </summary>
+    public Dictionary<int, ApertureBase> Apertures = [];
     /// <summary>
     /// Текущий макрос апертуры.
     /// </summary>

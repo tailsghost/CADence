@@ -1,9 +1,10 @@
+using CADence.Infrastructure.Aperture.Services;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Settings;
 
 namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
 
-public class AMCommand: CommandBase<GerberParser274xSettings>
+public class AMCommand : CommandBase<GerberParser274xSettings>
 {
     /// <summary>
     /// Выполняет команду "AM" с заданными параметрами Gerber-парсера.
@@ -12,6 +13,10 @@ public class AMCommand: CommandBase<GerberParser274xSettings>
     /// <returns>Обновлённые параметры Gerber-парсера.</returns>
     public override GerberParser274xSettings Execute(GerberParser274xSettings settings)
     {
+        var name = settings.cmd[2..];
+        settings.AmBuilder = new ApertureMacro();
+        settings.ApertureMacros[name] = settings.AmBuilder;
+        settings.IsDone = true;
         return settings;
     }
 }

@@ -5,7 +5,7 @@ namespace CADence.Infrastructure.Parser.Abstractions;
 /// Управляет коллекцией команд и позволяет выполнять команды по ключу.
 /// </summary>
 /// <typeparam name="T">Тип параметров, с которыми работают команды.</typeparam>
-public abstract class FabricCommandBase<T>
+public abstract class FabricCommandBase<T> where T : SettingsBase
 {
     /// <summary>
     /// Словарь команд, сопоставляющий строковый ключ с фабрикой команд.
@@ -35,12 +35,11 @@ public abstract class FabricCommandBase<T>
     /// <summary>
     /// Выполняет команду по заданному ключу с переданными настройками.
     /// </summary>
-    /// <param name="startCommand">Ключ команды.</param>
     /// <param name="settings">Параметры, которые будут изменены командой.</param>
     /// <returns>Обновлённые параметры. Если команда не найдена, возвращаются исходные параметры.</returns>
-    public T ExecuteCommand(string startCommand, T settings)
+    public T ExecuteCommand(T settings)
     {
-        if (_commands.TryGetValue(startCommand, out var command))
+        if (_commands.TryGetValue(settings.cmd, out var command))
         {
             return command().Execute(settings);
         }

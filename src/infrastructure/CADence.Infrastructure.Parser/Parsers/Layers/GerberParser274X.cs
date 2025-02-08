@@ -20,7 +20,7 @@ public class GerberParser274X : GerberParserBase
     /// </summary>
     private GerberParser274xSettings _settings = new();
 
-    private Gerber274xFabric _fabric;
+    private Gerber274xFabric _fabric = new();
 
     /// <summary>
     /// Инициализирует новый экземпляр парсера Gerber 274X.
@@ -29,7 +29,6 @@ public class GerberParser274X : GerberParserBase
     public GerberParser274X(string file)
     {
         FILE = file;
-        _fabric = new Gerber274xFabric();
         Execute();
     }
 
@@ -45,11 +44,10 @@ public class GerberParser274X : GerberParserBase
         var terminated = false;
         var is_attrib = false;
         var ss = new StringBuilder();
-        char c;
 
         while (stream.Peek() != -1)
         {
-            c = (char)stream.Read();
+            var c = (char)stream.Read();
             if (char.IsWhiteSpace(c))
             {
                 continue;
@@ -63,7 +61,16 @@ public class GerberParser274X : GerberParserBase
             else if (c == '*')
             {
                 if (ss.Length == 0) throw new InvalidOperationException("empty command");
-                if (!ExecuteCommand(ss.ToString()))
+
+                var cmd = ss.ToString();
+
+                _settings.AmBuilder?.Append(cmd);
+
+                _settings.cmd = cmd;
+
+                _settings = _fabric.ExecuteCommand(_settings);
+
+                if (!_settings.IsDone)
                 {
                     terminated = true;
                     break;
@@ -96,26 +103,5 @@ public class GerberParser274X : GerberParserBase
         {
             throw new InvalidOperationException("unterminated region block");
         }
-    }
-
-
-    /// <summary>
-    /// Выполняет команду Gerber файла.
-    /// </summary>
-    /// <param name="cmd">Строковое представление команды.</param>
-    /// <returns>
-    /// True, если команда успешно обработана; иначе false.
-    /// </returns>
-    private bool ExecuteCommand(string cmd)
-    {
-        if (_settings.AmBuilder != null)
-        {
-            _settings.AmBuilder.Append(cmd);
-            return true;
-        }
-
-        _settings = _fabric.ExecuteCommand(cmd, _settings);
-
-        return _settings.Execute;
     }
 }

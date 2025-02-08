@@ -6,12 +6,8 @@ namespace CADence.Infrastructure.Parser.Abstractions;
 /// <summary>
 /// Базовый класс параметров для парсера команд дырок.
 /// </summary>
-public class DrillParserSettingsBase
+public class DrillParserSettingsBase : SettingsBase
 {
-    /// <summary>
-    /// Флаг означающий выполнение команды.
-    /// </summary>
-    public bool Execute { get; set; }
     
     /// <summary>
     /// Расположение дырки.

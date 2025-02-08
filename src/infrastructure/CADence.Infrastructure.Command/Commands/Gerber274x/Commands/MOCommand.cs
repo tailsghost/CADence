@@ -15,6 +15,19 @@ public class MOCommand : CommandBase<GerberParser274xSettings>
     /// <returns>Обновлённые параметры Gerber-парсера.</returns>
     public override GerberParser274xSettings Execute(GerberParser274xSettings settings)
     {
+        switch (settings.cmd.Substring(2, 2))
+        {
+            case "IN":
+                settings.format.ConfigureInches();
+                break;
+            case "MM":
+                settings.format.ConfigureMillimeters();
+                break;
+            default:
+                throw new Exception("Invalid unit specification: " + settings.cmd);
+        }
+
+        settings.IsDone = true;
         return settings;
     }
 }

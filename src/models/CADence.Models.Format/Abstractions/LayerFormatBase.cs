@@ -9,7 +9,6 @@ public abstract class LayerFormatBase
     protected int _integerDigits;
     protected int _decimalDigits;
     protected bool _isUnitConfigured = false;
-    protected double _conversionFactor;
     protected bool _isUsed = false;
     protected int QuadrantSegments { get; }
     protected double MitreLimit { get; }

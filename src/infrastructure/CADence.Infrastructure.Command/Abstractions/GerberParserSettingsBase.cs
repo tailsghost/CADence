@@ -9,13 +9,8 @@ namespace CADence.Infrastructure.Parser.Abstractions;
 /// Базовый класс параметров для парсера Gerber.
 /// Содержит параметры интерполяции, позиционирования и режимов обработки.
 /// </summary>
-public class GerberParserSettingsBase
+public class GerberParserSettingsBase : SettingsBase
 {
-    /// <summary>
-    /// Флаг означающий выполнение команды.
-    /// </summary>
-    public bool Execute { get; set; }
-    
     /// <summary>
     /// Режим интерполяции.
     /// </summary>
@@ -60,6 +55,11 @@ public class GerberParserSettingsBase
     /// Стек апертур.
     /// </summary>
     public Stack<ApertureBase> ApertureStack { get; set; } = [];
+    
+    /// <summary>
+    /// Словарь макросов апертуры, сопоставленных с их идентификаторами.
+    /// </summary>
+    public Dictionary<string, ApertureMacroBase> ApertureMacros = [];
     
     /// <summary>
     /// Режим региона.

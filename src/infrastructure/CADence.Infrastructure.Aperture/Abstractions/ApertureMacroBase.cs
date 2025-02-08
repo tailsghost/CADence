@@ -1,4 +1,6 @@
-﻿namespace CADence.Infrastructure.Aperture.Abstractions;
+﻿using CADence.Models.Format.Abstractions;
+
+namespace CADence.Infrastructure.Aperture.Abstractions;
 
 /// <summary>
 /// Абстрактный базовый класс для макросов апертуры.
@@ -27,5 +29,5 @@ public abstract class ApertureMacroBase
     /// <param name="csep">Список строковых команд.</param>
     /// <param name="format">Формат апертуры.</param>
     /// <returns>Построенный объект апертуры.</returns>
-    public abstract ApertureBase Build(List<string> csep, ApertureBase format);
+    public abstract ApertureBase Build(List<string> csep, LayerFormatBase format);
 }

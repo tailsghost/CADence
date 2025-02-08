@@ -19,6 +19,7 @@ public class Gerber274xFabric : FabricCommandBase<GerberParser274xSettings>
         Add("AM", () => new AMCommand());
         Add("FS", () => new FSCommand());
         Add("MO", () => new MOCommand());
+        Add("M0", () => new M0Command());
         Add("LP", () => new LPCommand());
         Add("LM", () => new LMCommand());
         Add("D", () => new InstallCommand());
