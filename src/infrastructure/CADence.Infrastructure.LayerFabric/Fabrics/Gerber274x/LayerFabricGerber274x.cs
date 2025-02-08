@@ -9,7 +9,7 @@ using CADence.Models.Format;
 
 namespace CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
 
-public class FabricGerber274X : IFabric
+public class LayerFabricGerber274x : ILayerFabric
 {
 
     /// <summary>
