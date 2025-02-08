@@ -9,6 +9,11 @@ namespace CADence.Infrastructure.Parser.Abstractions;
 public class DrillParserSettingsBase
 {
     /// <summary>
+    /// Флаг означающий выполнение команды.
+    /// </summary>
+    public bool Execute { get; set; }
+    
+    /// <summary>
     /// Расположение дырки.
     /// </summary>
     public ParseState ParseState { get; set; }

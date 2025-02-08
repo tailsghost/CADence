@@ -13,12 +13,18 @@ public class Gerber274xFabric : FabricCommandBase<GerberParserSettingsBase>
     /// </summary>
     private void CreateFabricCommand()
     {
+        Add("AB", () => new ABCommand());
+        Add("AD", () => new ADCommand());
+        Add("AM", () => new AMCommand());
         Add("FS", () => new FSCommand());
         Add("MO", () => new MOCommand());
-        Add("L", () => new LCommand());
+        Add("LP", () => new LPCommand());
+        Add("LM", () => new LMCommand());
+        Add("D", () => new InstallCommand());
+        Add("I", () => new InstallCommand());
         Add("G", () => new GCommand());
-        Add("D", () => new DCommand());
-        Add("Install", () => new InstallCommand());
+        Add("X", () => new InstallCommand());
+        Add("Y", () => new InstallCommand());
     }
 
     /// <summary>

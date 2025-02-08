@@ -12,6 +12,11 @@ namespace CADence.Infrastructure.Parser.Abstractions;
 public class GerberParserSettingsBase
 {
     /// <summary>
+    /// Флаг означающий выполнение команды.
+    /// </summary>
+    public bool Execute { get; set; }
+    
+    /// <summary>
     /// Режим интерполяции.
     /// </summary>
     public InterpolationMode imode { get; set; }

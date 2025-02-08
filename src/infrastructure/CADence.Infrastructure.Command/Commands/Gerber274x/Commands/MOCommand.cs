@@ -8,7 +8,7 @@ namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Commands;
 public class MOCommand : CommandBase<GerberParserSettingsBase>
 {
     /// <summary>
-    /// Выполняет команду "M" с заданными параметрами Gerber-парсера.
+    /// Выполняет команду "MO" с заданными параметрами Gerber-парсера.
     /// </summary>
     /// <param name="settings">Параметры Gerber-парсера.</param>
     /// <returns>Обновлённые параметры Gerber-парсера.</returns>
