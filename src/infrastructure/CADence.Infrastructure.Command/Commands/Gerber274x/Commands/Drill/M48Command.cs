@@ -1,8 +1,6 @@
-using CADence.Infrastructure.Aperture.Gerber_274x;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
-using System.Runtime.Intrinsics.X86;
 
 namespace CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Drill;
 
