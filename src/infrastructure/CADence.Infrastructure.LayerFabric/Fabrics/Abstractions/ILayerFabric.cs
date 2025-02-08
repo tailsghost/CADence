@@ -3,7 +3,7 @@ using CADence.Layer.Abstractions;
 
 namespace CADence.Infrastructure.LayerFabric.Fabrics.Abstractions;
 
-public interface IFabric
+public interface ILayerFabric
 {
     /// <summary>
     /// Получает слои из данных, переданных через IInputData.
