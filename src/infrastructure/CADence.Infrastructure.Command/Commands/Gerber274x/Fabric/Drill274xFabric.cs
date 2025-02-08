@@ -1,36 +1,25 @@
-using CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Gerber;
+using CADence.Infrastructure.Command.Commands.Gerber274x.Commands.Drill;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Settings;
 
 namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 
 /// <summary>
-/// ‘абрика команд дл€ Gerber 274x, регистрирующа€ команды парсера.
+/// ‘абрика команд дл€ Drill 274x, регистрирующа€ команды парсера.
 /// </summary>
-public class Drill274xFabric : FabricCommandBase<DrillParserSettingsBase>
+public class Drill274xFabric : FabricCommandBase<DrillParser274xSettings>
 {
     /// <summary>
-    /// –егистрирует команды Gerber-парсера.
+    /// –егистрирует команды Drill-парсера.
     /// </summary>
     private void InitialCommand()
     {
-        Add("AB", () => new ABCommand());
-        Add("AD", () => new ADCommand());
-        Add("AM", () => new AMCommand());
-        Add("FS", () => new FSCommand());
-        Add("MO", () => new MOCommand());
-        Add("M0", () => new M0Command());
-        Add("LP", () => new LPCommand());
-        Add("LM", () => new LMCommand());
-        Add("D", () => new InstallCommand());
-        Add("I", () => new InstallCommand());
-        Add("G", () => new GCommand());
-        Add("X", () => new InstallCommand());
-        Add("Y", () => new InstallCommand());
+        Add("M48", () => new M48Command());
+        Add("FMAT,2", () => new FMAT2Command());
     }
 
     /// <summary>
-    /// »нициализирует новый экземпл€р <see cref="Gerber274xFabric"/> и регистрирует команды.
+    /// »нициализирует новый экземпл€р <see cref="Drill274xFabric"/> и регистрирует команды.
     /// </summary>
     public Drill274xFabric()
     {

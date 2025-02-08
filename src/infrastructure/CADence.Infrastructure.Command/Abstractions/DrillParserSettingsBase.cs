@@ -1,3 +1,4 @@
+using CADence.Infrastructure.Aperture.Abstractions;
 using CADence.Infrastructure.Parser.Enums;
 using NetTopologySuite.Geometries;
 
@@ -28,4 +29,14 @@ public class DrillParserSettingsBase : SettingsBase
     /// Текущая координата.
     /// </summary>
     public Coordinate Coordinate { get; set; }
+
+    /// <summary>
+    /// Стек апертур.
+    /// </summary>
+    public Stack<ApertureBase> ApertureStack { get; set; } = [];
+
+    /// <summary>
+    /// Формат файла.
+    /// </summary>
+    public (int integerDigits, int decimalDigits) FileFormat { get; set; }
 }

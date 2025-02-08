@@ -14,8 +14,4 @@
     <ProjectReference Include="..\CADence.Infrastructure.Aperture\CADence.Infrastructure.Aperture.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commands\Gerber274x\Commands\Drill\" />
-  </ItemGroup>
-
 </Project>
