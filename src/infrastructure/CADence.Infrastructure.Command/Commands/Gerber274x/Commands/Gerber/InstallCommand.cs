@@ -56,13 +56,13 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
                     if (settings.MinThickness != 0)
                         settings.MinimumThickness = double.Min(settings.MinThickness, settings.MinimumThickness);
                 }
-                Interpolate(new Point(parameters['X'], parameters['Y']), new Point(parameters['I'], parameters['J']));
+                settings.Interpolate(new Point(parameters['X'], parameters['Y']), new Point(parameters['I'], parameters['J']));
                 settings.Pos.X = parameters['X'];
                 settings.Pos.Y = parameters['Y'];
                 break;
             case 2:
                 if (settings.RegionMode)
-                    CommitRegion();
+                    settings.CommitRegion();
 
                 settings.Pos.X = parameters['X'];
                 settings.Pos.Y = parameters['Y'];
@@ -72,7 +72,7 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
                 if (settings.RegionMode) throw new Exception("Cannot flash in region mode");
                 settings.Pos.X = parameters['X'];
                 settings.Pos.Y = parameters['Y'];
-                DrawAperture();
+                settings.DrawAperture();
                 break;
             default:
                 throw new Exception("Invalid draw/move command: " + d);

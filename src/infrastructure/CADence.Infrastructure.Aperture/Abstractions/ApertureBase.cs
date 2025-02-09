@@ -6,9 +6,9 @@ using NetTopologySuite.Simplify;
 namespace CADence.Infrastructure.Aperture.Abstractions;
 
 /// <summary>
-/// Абстрактный класс для работы с апертурами, включающий операции рисования, трансформации и объединения геометрий.
+/// Базовый класс для работы с апертурами, включающий операции рисования, трансформации и объединения геометрий.
 /// </summary>
-public abstract class ApertureBase
+public class ApertureBase
 {
     
     private readonly GeometryFactory _geomFactory = new GeometryFactory();
@@ -22,7 +22,7 @@ public abstract class ApertureBase
     /// Конструктор базового класса апертуры.
     /// Инициализирует параметры полярности и состояния упрощения.
     /// </summary>
-    protected ApertureBase()
+    public ApertureBase()
     {
         ACCUM_POLARITY = true;
         Simplified = false;
@@ -60,7 +60,11 @@ public abstract class ApertureBase
     /// </summary>
     /// <param name="diameter">Возвращает из апертуры диаметр.</param>
     /// <returns>Возвращает bool значение условия полярности диаметра апертуры</returns>
-    public abstract bool IsSimpleCircle(out double diameter);
+    public virtual bool IsSimpleCircle(out double diameter)
+    {
+        diameter = 0;
+        return false;
+    }
 
     /// <summary>
     /// Рисует (накапливает) геометрию – один или несколько контуров (в виде объекта Geometry).
@@ -70,14 +74,71 @@ public abstract class ApertureBase
     /// <param name="polarity">Полярность: true для объединения, false для вычитания.</param>
     public void DrawPaths(Geometry geometry, bool polarity = true)
     {
-        if (geometry.IsEmpty) return;
+        if (geometry.IsEmpty)
+            return;
 
         if (polarity != ACCUM_POLARITY)
             CommitPaths();
 
         ACCUM_POLARITY = polarity;
 
-        Accumulated = Accumulated?.Union(geometry);
+        if (Accumulated == null || Accumulated.IsEmpty)
+        {
+
+            Accumulated = geometry;
+        }
+        else
+        {
+            var stack = new Stack<Geometry>();
+            stack.Push(Accumulated);
+            stack.Push(geometry);
+
+            var polygons = new List<Polygon>();
+            var lineStrings = new List<LineString>();
+
+            while (stack.Count > 0)
+            {
+                var geom = stack.Pop();
+
+                if (geom is LineString ls)
+                {
+                    lineStrings.Add(ls);
+                }
+                else if (geom is Polygon poly)
+                {
+                    polygons.Add(poly);
+                }
+                else if (geom is MultiPolygon multiPoly)
+                {
+                    for (int i = 0; i < multiPoly.NumGeometries; i++)
+                    {
+                        var polyPart = (Polygon)multiPoly.GetGeometryN(i);
+                        polygons.Add(polyPart); 
+                    }
+                }
+                else if (geom is GeometryCollection gc)
+                {
+                    for (int i = 0; i < gc.NumGeometries; i++)
+                    {
+                        stack.Push(gc.GetGeometryN(i)); 
+                    }
+                }
+            }
+
+            if (polygons.Count > 0)
+            {
+                Accumulated = _geomFactory.CreateMultiPolygon(polygons.ToArray());
+            }
+            else if (lineStrings.Count > 0)
+            {
+                // Если есть LineString'и, создаем MultiLineString
+                Accumulated = _geomFactory.CreateMultiLineString(lineStrings.ToArray());
+            }
+            else
+            {
+                Accumulated = geometry;
+            }
+        }
     }
 
     /// <summary>
@@ -91,16 +152,27 @@ public abstract class ApertureBase
 
         if (ACCUM_POLARITY)
         {
-            AdditiveGeometry = AdditiveGeometry.IsEmpty ? Accumulated : AdditiveGeometry.Union(Accumulated);
-            SubtractiveGeometry = SubtractiveGeometry.IsEmpty ? _geomFactory.CreateGeometryCollection(null) : SubtractiveGeometry.Difference(Accumulated);
+            AdditiveGeometry = (AdditiveGeometry == null || AdditiveGeometry.IsEmpty)
+                ? Accumulated
+                : AdditiveGeometry.Union(Accumulated);
+
+            SubtractiveGeometry = (SubtractiveGeometry == null || SubtractiveGeometry.IsEmpty)
+                ? _geomFactory.CreateGeometryCollection(null)
+                : SubtractiveGeometry.Difference(Accumulated);
         }
         else
         {
-            AdditiveGeometry = AdditiveGeometry.IsEmpty ? _geomFactory.CreateGeometryCollection(null) : AdditiveGeometry.Difference(Accumulated);
-            SubtractiveGeometry = SubtractiveGeometry.IsEmpty ? Accumulated : SubtractiveGeometry.Union(Accumulated);
+            AdditiveGeometry = (AdditiveGeometry == null || AdditiveGeometry.IsEmpty)
+                ? _geomFactory.CreateGeometryCollection(null)
+                : AdditiveGeometry.Difference(Accumulated);
+
+            SubtractiveGeometry = (SubtractiveGeometry == null || SubtractiveGeometry.IsEmpty)
+                ? Accumulated
+                : SubtractiveGeometry.Union(Accumulated);
         }
 
         Accumulated = null;
+
         Simplified = false;
     }
 

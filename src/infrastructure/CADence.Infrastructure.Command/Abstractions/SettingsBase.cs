@@ -15,6 +15,11 @@ public abstract class SettingsBase
     public string cmd { get; set; }
 
     /// <summary>
+    /// Строковое представление полной команды.
+    /// </summary>
+    public string fcmd { get; set; }
+
+    /// <summary>
     /// H
     /// </summary>
     public LayerFormat format = new();

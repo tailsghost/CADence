@@ -1,181 +1,166 @@
 using System.Text;
-using System.Xml;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
+using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
+using NetTopologySuite.Geometries;
 
 namespace CADence.Infrastructure.Parser.Parsers.Drills
 {
     /// <summary>
-    /// Парсер для NC drill файлов формата 274X.
+    /// РџР°СЂСЃРµСЂ Drill С„Р°Р№Р»РѕРІ С„РѕСЂРјР°С‚Р° 274X.
     /// </summary>
     public class DrillParser274X : DrillParserBase
     {
+
+        private GeometryFactory _geometryFactory = new();
+
+
         /// <summary>
-        /// Содержит команды для обработки.
+        /// РЎРїРёСЃРѕРє С„Р°Р№Р»РѕРІ РґС‹СЂРѕРє.
         /// </summary>
         private List<string> DRILLS = new();
 
         /// <summary>
-        /// Строки, прочитанные из файла.
-        /// </summary>
-        private readonly List<string> _lines;
-
-        /// <summary>
-        /// Текущий инструмент, используемый для операций.
-        /// </summary>
-        private string _currentTool;
-
-        /// <summary>
-        /// Параметры для парсинга.
+        /// РќР°СЃС‚СЂРѕР№РєРё РґР»СЏ РїР°СЂСЃРµСЂР°.
         /// </summary>
         private DrillParser274xSettings _settings;
 
+        /// <summary>
+        /// Р¤Р°Р±СЂРёРєР° РєРѕРјРјР°РЅРґ
+        /// </summary>
         private Drill274xFabric _fabric = new();
 
         /// <summary>
-        /// Инициализирует новый экземпляр парсера Drill 274X.
+        /// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ РЅРѕРІС‹Р№ СЌРєР·РµРјРїР»СЏСЂ РїР°СЂСЃРµСЂР° Drill 274X.
         /// </summary>
-        /// <param name="lines">Список строк команд из drill файла.</param>
-        public DrillParser274X(List<string> lines)
+        /// <param name="drills">РЎС‚СЂРѕРєРѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ С„Р°Р№Р»С‹.</param>
+        public DrillParser274X(List<string> drills)
         {
-            _lines = lines;
+            DRILLS = drills;
             _settings = new DrillParser274xSettings();
             Execute();
         }
 
         /// <summary>
-        /// Выполняет парсинг команд из drill файла.
+        /// Р’С‹РїРѕР»РЅСЏРµС‚ РїР°СЂСЃРёРЅРі Drill С„Р°Р№Р»РѕРІ
         /// </summary>
+        /// <exception cref="InvalidOperationException">Р’С‹Р±СЂР°СЃС‹РІР°РµС‚СЃСЏ, РµСЃР»Рё С…РѕС‚СЏ Р±С‹ РѕРґРЅР° РєРѕРјР°РЅРґР° РЅРµ Р±С‹Р»Р° РІС‹РїРѕР»РЅРµРЅР°</exception>
         public override void Execute()
         {
-            using var stream = new StringReader(string.Join(Environment.NewLine, _lines));
-            bool terminated = false;
-            bool isAttrib = false;
-            var commandBuilder = new StringBuilder();
+            using var stream = new StringReader(string.Join("\n", DRILLS[0]));
 
-            while (stream.Peek() != -1)
+            _settings.format.ConfigureFormat(4, 3);
+            _settings.format.ConfigureMillimeters();
+            _settings.RoutMode = RoutMode.DRILL;
+            string line;
+            while ((line = stream.ReadLine()) != null)
             {
-                var c = (char)stream.Read();
 
-                if (char.IsWhiteSpace(c))
+                _settings.cmd = line;
+                _settings = ExecuteCommand();
+                if (!_settings.IsDone) break;
+            }
+
+
+            var geom = GetResult();
+
+            if (!_settings.IsDone)
+            {
+                throw new InvalidOperationException("unterminated NC drill file");
+            }
+        }
+
+        public override Geometry GetResult(bool plated = true, bool unplated = true)
+        {
+            Geometry result = null;
+
+            if (plated)
+            {
+                if (unplated)
                 {
-                    continue;
-                }
-                else if (c == '%')
-                {
-                    if (commandBuilder.Length > 0)
-                        throw new InvalidOperationException("Attribute mid-command.");
-                    isAttrib = !isAttrib;
-                }
-                else if (c == '*')
-                {
-                    if (commandBuilder.Length == 0)
-                        throw new InvalidOperationException("Empty command.");
-
-                    string cmd = commandBuilder.ToString();
-                    _settings.cmd = cmd;
-
-                    _settings = _fabric.ExecuteCommand(_settings);
-
-                    if (!_settings.IsDone)
+                    Geometry platedGeom = _settings.Pth.GetDark();
+                    Geometry unplatedGeom = _settings.Npth.GetDark();
+                    var result1 = platedGeom.Coordinates.Length;
+                    if (platedGeom != null && unplatedGeom != null)
                     {
-                        terminated = true;
-                        break;
+                        result = platedGeom.Union(unplatedGeom);
                     }
-
-                    commandBuilder.Clear();
-                }
-                else if (isAttrib)
-                {
-                    if (commandBuilder.Length == 0)
-                        throw new InvalidOperationException("Empty command.");
-
-                    string cmd = commandBuilder.ToString();
-
-                    ProcessCommand(cmd);
-
-                    if (!_settings.IsDone)
+                    else if (platedGeom != null)
                     {
-                        terminated = true;
-                        break;
+                        result = platedGeom;
                     }
-
-                    commandBuilder.Clear();
+                    else
+                    {
+                        result = unplatedGeom;
+                    }
                 }
                 else
                 {
-                    commandBuilder.Append(c);
+                    result = _settings.Pth.GetDark();
                 }
             }
 
-            if (isAttrib)
-                throw new InvalidOperationException("Unterminated attribute.");
-
-            if (!terminated)
-                throw new InvalidOperationException("Unterminated drill file.");
-
-            if (_settings.ApertureStack.Count != 1)
-                throw new InvalidOperationException("Unterminated block aperture.");
-        }
-
-
-
-        /// <summary>
-        /// Обрабатывает команды, извлекая необходимые параметры.
-        /// </summary>
-        /// <param name="command">Команда для обработки.</param>
-        private void ProcessCommand(string command)
-        {
-            var parameters = ParseRegularCommand(command);
-            // Обработка параметров команды
-            if (parameters.TryGetValue('T', out var tool))
-            {
-                _settings.cmd = "T";
-                _currentTool = tool;
-            }
-
-            // Логика обработки других команд (например, координаты)
-            if (parameters.TryGetValue('X', out var x))
-            {
-                _settings.cmd = "X";
-                _settings = _fabric.ExecuteCommand(_settings, x);
-                // Обработка координаты X
-            }
-
-            if (parameters.TryGetValue('Y', out var y))
-            {
-                _settings.cmd = "Y";
-                _settings = _fabric.ExecuteCommand(_settings, y);
-                // Обработка координаты Y
-            }
+            return result.Reverse();
         }
 
         /// <summary>
-        /// Разбирает команду, извлекая её параметры.
+        /// Р’С‹РїРѕР»РЅСЏРµС‚ РєРѕРјР°РЅРґС‹ РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РїРµСЂРІРѕРіРѕ СЃРёРјРІРѕР»Р°.
         /// </summary>
-        /// <param name="command">Команда для парсинга.</param>
-        /// <returns>Словарь параметров команды.</returns>
-        private Dictionary<char, string> ParseRegularCommand(string command)
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException">Р’С‹Р±СЂР°СЃС‹РІР°РµС‚СЃСЏ, РµСЃР»Рё Р±С‹Р»Р° РѕР±РЅР°СЂСѓР¶РµРЅР° РЅРµРёР·РІРµСЃС‚РЅР°СЏ РєРѕРјР°РЅРґР°</exception>
+        private DrillParser274xSettings ExecuteCommand()
         {
-            var parameters = new Dictionary<char, string>();
-            char code = '\0';
-            int start = 0;
-            for (int i = 0; i <= command.Length; i++)
+            if (_settings.ParseState == ParseState.HEADER)
             {
-                char c = i < command.Length ? command[i] : '\0';
-
-                if (i == command.Length || char.IsLetter(c))
+                switch (_settings.cmd[0])
                 {
-                    if (i > start)
-                    {
-                        parameters[code] = command.Substring(start, i - start);
-                    }
-                    code = c;
-                    start = i + 1;
+                    case ';':
+                        _settings.cmd = _settings.cmd.Substring(1);
+                        return _fabric.ExecuteCommand(_settings);
+                    case 'T':
+                        _settings.fcmd = _settings.cmd;
+                        _settings.cmd = "T";
+                        return _fabric.ExecuteCommand(_settings);
+                    default:
+                        return _fabric.ExecuteCommand(_settings);
                 }
             }
-            return parameters;
+            else if (_settings.ParseState == ParseState.BODY)
+            {
+                if (_settings.cmd[0] != ';')
+                {
+                    switch (_settings.cmd[0])
+                    {
+                        case 'X':
+                            _settings.fcmd = _settings.cmd;
+                            _settings.cmd = "X";
+                            return _fabric.ExecuteCommand(_settings);
+                        case 'Y':
+                            _settings.fcmd = _settings.cmd;
+                            _settings.cmd = "Y";
+                            return _fabric.ExecuteCommand(_settings);
+                        case 'T':
+                            _settings.fcmd = _settings.cmd;
+                            _settings.cmd = "T";
+                            return _fabric.ExecuteCommand(_settings);
+                        case 'G':
+                            _settings.fcmd = _settings.cmd;
+                            _settings.cmd = "G";
+                            return _fabric.ExecuteCommand(_settings);
+                        case 'M':
+                            _settings.fcmd = _settings.cmd;
+                            _settings.cmd = "M";
+                            return _fabric.ExecuteCommand(_settings);
+                        default:
+                            throw new InvalidOperationException("unknown/unexpected command: " + _settings.cmd);
+                    }
+                }
+                _settings.IsDone = true;
+                return _settings;
+            }
+
+            return _fabric.ExecuteCommand(_settings);
         }
     }
 }

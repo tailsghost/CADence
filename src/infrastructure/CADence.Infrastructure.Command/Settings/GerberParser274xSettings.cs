@@ -1,5 +1,7 @@
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Aperture.Abstractions;
+using NetTopologySuite.Geometries;
+
 namespace CADence.Infrastructure.Parser.Settings;
 
 /// <summary>
@@ -35,4 +37,19 @@ public class GerberParser274xSettings : GerberParserSettingsBase
     /// Минимальный диаметр от дырки до ободка
     /// </summary>
     public double MinimumThickness = double.MaxValue;
+
+    public void CommitRegion()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Interpolate(Point point, Point point1)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DrawAperture()
+    {
+        throw new NotImplementedException();
+    }
 }

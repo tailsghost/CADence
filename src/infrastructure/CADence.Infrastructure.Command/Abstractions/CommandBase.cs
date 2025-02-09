@@ -4,7 +4,7 @@ namespace CADence.Infrastructure.Parser.Abstractions;
 /// Абстрактный базовый класс для команд с параметромизированным типом параметров.
 /// </summary>
 /// <typeparam name="T">Тип параметров, с которыми работает команда.</typeparam>
-public abstract class CommandBase<T>
+public abstract class CommandBase<T> where T : class
 {
     /// <summary>
     /// Выполняет команду, изменяя переданные параметры.

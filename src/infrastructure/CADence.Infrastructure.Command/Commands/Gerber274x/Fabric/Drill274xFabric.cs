@@ -5,26 +5,35 @@ using CADence.Infrastructure.Parser.Settings;
 namespace CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 
 /// <summary>
-/// Фабрика команд для Drill 274x, регистрирующая команды парсера.
+/// Р¤Р°Р±СЂРёРєР° РєРѕРјР°РЅРґ РґР»СЏ Drill 274x, СЂРµРіРёСЃС‚СЂРёСЂСѓСЋС‰Р°СЏ РєРѕРјР°РЅРґС‹ РїР°СЂСЃРµСЂР°.
 /// </summary>
 public class Drill274xFabric : FabricCommandBase<DrillParser274xSettings>
 {
     /// <summary>
-    /// Регистрирует команды Drill-парсера.
+    /// Р РµРіРёСЃС‚СЂРёСЂСѓРµС‚ РєРѕРјР°РЅРґС‹ Drill-РїР°СЂСЃРµСЂР°.
     /// </summary>
     private void InitialCommand()
     {
         Add("M48", () => new M48Command());
-        Add("FMAT,2", () => new FMAT2Command());
-        Add(";TYPE", () => new FMAT2Command());
-        Add(";FILE_FORMAT", () => new FMAT2Command());
-        Add("VER,1", () => throw new NotSupportedException("Version 1 excellon is not supported"));
+        Add("FMAT,2", () => new NoOpCommand());
+        Add("FILE_FORMAT=", () => new HeaderCommentCommand());
+        Add("TYPE", () => new HeaderCommentCommand());
+        Add("VER,1", () =>  throw new InvalidOperationException("Version 1 excellon is not supported"));
         Add("METRIC", () => new MetricCommand());
         Add("INCH", () => new InchCommand());
+        Add("%", () => new EndHeaderCommand());
+        Add("M95", () => new EndHeaderCommand());
+        Add(";", () => new NoOpCommand());
+        Add("T", () => new ToolChangeCommand());
+        Add("G", () => new GCommand());
+        Add("M", () => new MCommand());
+        Add("X", () => new CoordinateCommand());
+        Add("Y", () => new CoordinateCommand());
+        
     }
 
     /// <summary>
-    /// Инициализирует новый экземпляр <see cref="Drill274xFabric"/> и регистрирует команды.
+    /// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚ РЅРѕРІС‹Р№ СЌРєР·РµРјРїР»СЏСЂ <see cref="Drill274xFabric"/> Рё СЂРµРіРёСЃС‚СЂРёСЂСѓРµС‚ РєРѕРјР°РЅРґС‹.
     /// </summary>
     public Drill274xFabric()
     {

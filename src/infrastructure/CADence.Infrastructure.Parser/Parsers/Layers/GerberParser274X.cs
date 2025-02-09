@@ -29,7 +29,7 @@ public class GerberParser274X : GerberParserBase
     public GerberParser274X(string file)
     {
         FILE = file;
-        Execute();
+        //Execute();
     }
 
     /// <summary>
@@ -41,7 +41,6 @@ public class GerberParser274X : GerberParserBase
     public override void Execute()
     {
         using var stream = new StringReader(FILE);
-        var terminated = false;
         var is_attrib = false;
         var ss = new StringBuilder();
 
@@ -72,7 +71,6 @@ public class GerberParser274X : GerberParserBase
 
                 if (!_settings.IsDone)
                 {
-                    terminated = true;
                     break;
                 }
 
@@ -89,7 +87,7 @@ public class GerberParser274X : GerberParserBase
             throw new InvalidOperationException("unterminated attribute");
         }
 
-        if (!terminated)
+        if (!_settings.IsDone)
         {
             throw new InvalidOperationException("unterminated gerber file");
         }

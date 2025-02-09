@@ -56,13 +56,14 @@ public class LayerFabricGerber274x : ILayerFabric
             if (DetermineDrill(value))
                 continue;
 
-            _tasks.Add(DetermineLayer(key, value));
+            //_tasks.Add(DetermineLayer(key, value));
         }
 
-        var resultTask = await Task.WhenAll(_tasks);
-        var result = resultTask.ToList();
-        result.Insert(0,
-            new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline)));
+        //var resultTask = await Task.WhenAll(_tasks);
+        //var result = resultTask.ToList();
+
+        var result = new List<LayerBase>();
+        result.Add(new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline)));
         return result;
     }
 
@@ -101,26 +102,26 @@ public class LayerFabricGerber274x : ILayerFabric
     /// <param name="fileName">Имя файла.</param>
     /// <param name="file">Содержимое файла.</param>
     /// <returns>Задача, которая при завершении возвращает объект слоя.</returns>
-    private Task<LayerBase> DetermineLayer(string fileName, string file)
-    {
-        var ext = Path.GetExtension(fileName).TrimStart('.').ToLower();
+    //private Task<LayerBase> DetermineLayer(string fileName, string file)
+    //{
+    //    var ext = Path.GetExtension(fileName).TrimStart('.').ToLower();
 
-        if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
-        {
-            throw new ArgumentOutOfRangeException();
-        }
+    //    if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
+    //    {
+    //        throw new ArgumentOutOfRangeException();
+    //    }
         
-        var result = extension switch
-        {
-            Layer274xFileExtensionsSupported.gbl => Task.Run<LayerBase>(() => new BottomCopper(new LayerFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gtl => Task.Run<LayerBase>(() => new TopCopper(new LayerFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gbo => Task.Run<LayerBase>(() => new BottomSilk(new LayerFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gto => Task.Run<LayerBase>(() => new TopSilk(new LayerFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gbs => Task.Run<LayerBase>(() => new BottomMask(new LayerFormat(), new GerberParser274X(file))),
-            Layer274xFileExtensionsSupported.gts => Task.Run<LayerBase>(() => new TopMask(new LayerFormat(), new GerberParser274X(file))),
-            _ => throw new ArgumentOutOfRangeException()
-        };
+    //    var result = extension switch
+    //    {
+    //        Layer274xFileExtensionsSupported.gbl => Task.Run<LayerBase>(() => new BottomCopper(new LayerFormat(), new GerberParser274X(file))),
+    //        Layer274xFileExtensionsSupported.gtl => Task.Run<LayerBase>(() => new TopCopper(new LayerFormat(), new GerberParser274X(file))),
+    //        Layer274xFileExtensionsSupported.gbo => Task.Run<LayerBase>(() => new BottomSilk(new LayerFormat(), new GerberParser274X(file))),
+    //        Layer274xFileExtensionsSupported.gto => Task.Run<LayerBase>(() => new TopSilk(new LayerFormat(), new GerberParser274X(file))),
+    //        Layer274xFileExtensionsSupported.gbs => Task.Run<LayerBase>(() => new BottomMask(new LayerFormat(), new GerberParser274X(file))),
+    //        Layer274xFileExtensionsSupported.gts => Task.Run<LayerBase>(() => new TopMask(new LayerFormat(), new GerberParser274X(file))),
+    //        _ => throw new ArgumentOutOfRangeException()
+    //    };
 
-        return result;
-    }
+    //    return result;
+    //}
 }

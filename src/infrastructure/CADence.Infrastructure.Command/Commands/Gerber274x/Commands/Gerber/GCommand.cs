@@ -74,7 +74,7 @@ public class GCommand : CommandBase<GerberParser274xSettings>
             case "G37":
                 {
                     if (!settings.RegionMode) throw new Exception("Not in region mode");
-                    CommitRegion();
+                    settings.CommitRegion();
                     settings.RegionMode = false;
                     settings.IsDone = true;
                     return settings;
