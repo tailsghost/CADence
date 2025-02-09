@@ -22,77 +22,91 @@ public class GCommand : CommandBase<DrillParser274xSettings>
     /// </exception>
     public override DrillParser274xSettings Execute(DrillParser274xSettings settings)
     {
+
+        var setting = settings;
+
         var dict = CommandUtils.ParseRegularCommand(settings.fcmd);
         if (!dict.TryGetValue('G', out var gStr))
             return settings;
-        
+
+        if(dict.TryGetValue('X', out var Xcommand))
+        {
+            var coordinate = new CoordinateCommand();
+            setting =  coordinate.Execute(setting);
+        }
+
+        if (dict.TryGetValue('Y', out var Ycommand))
+        {
+            var coordinate = new CoordinateCommand();
+            setting = coordinate.Execute(setting);
+        }
+
         var g = int.Parse(gStr);
         switch (g)
         {
             case 0:
-                settings.RoutMode = RoutMode.ROUT_TOOL_UP;
+                setting.RoutMode = RoutMode.ROUT_TOOL_UP;
                 break;
             case 1:
-                if (settings.RoutMode == RoutMode.ROUT_TOOL_DOWN)
-                    settings.Points.Add(settings.Point);
+                if (setting.RoutMode == RoutMode.ROUT_TOOL_DOWN)
+                    setting.Points.Add(setting.LastPoint);
                 break;
             case 2:
             case 3:
                 var ccw = (g == 3);
-                if (settings.RoutMode == RoutMode.ROUT_TOOL_DOWN)
+                if (setting.RoutMode == RoutMode.ROUT_TOOL_DOWN)
                 {
                     if (!dict.TryGetValue('A', out var aStr))
                         throw new InvalidOperationException("arc radius is missing for G0" + g);
                     
-                    var startPoint = settings.LastPoint;
-                    var endPoint = settings.Point;
-                    settings.AddArc(startPoint, endPoint, settings.format.ParseFixed(aStr), ccw);
+                    var startPoint = setting.StartPoint;
+                    var endPoint = setting.LastPoint;
+                    setting.AddArc(startPoint, endPoint, setting.format.ParseFixed(aStr), ccw);
                 }
                 break;
             case 5:
-                if (settings.RoutMode == RoutMode.ROUT_TOOL_DOWN)
+                if (setting.RoutMode == RoutMode.ROUT_TOOL_DOWN)
                     throw new InvalidOperationException("unexpected G05; cannot exit route mode with tool down");
-                settings.RoutMode = RoutMode.DRILL;
+                setting.RoutMode = RoutMode.DRILL;
                 break;
             case 85:
                 {
-                    var indexG = settings.fcmd.IndexOf('G');
-                    var subCmd = settings.fcmd.Substring(0, indexG);
+                    var indexG = setting.fcmd.IndexOf('G');
+                    var subCmd = setting.fcmd.Substring(0, indexG);
                     var subDict = CommandUtils.ParseRegularCommand(subCmd);
                     
                     if (subDict.TryGetValue('X', out var xStr))
-                        settings.Point.X = settings.format.ParseFixed(xStr);
+                        setting.Point.X = setting.format.ParseFixed(xStr);
                     
                     if (subDict.TryGetValue('Y', out var yStr))
-                        settings.Point.Y = settings.format.ParseFixed(yStr);
-                    
-                    var start = settings.Point;
-                    var secondPart = settings.fcmd.Substring(indexG);
+                        setting.Point.Y = setting.format.ParseFixed(yStr);
+                    setting.StartPoint = setting.Point;
+
+                    var secondPart = setting.fcmd.Substring(indexG);
                     var secondDict = CommandUtils.ParseRegularCommand(secondPart);
-                    
                     if (secondDict.TryGetValue('X', out xStr))
-                        settings.Point.X = settings.format.ParseFixed(xStr);
+                        setting.Point.X = setting.format.ParseFixed(xStr);
                     
                     if (secondDict.TryGetValue('Y', out yStr))
-                        settings.Point.Y = settings.format.ParseFixed(yStr);
+                        setting.Point.Y = setting.format.ParseFixed(yStr);
+
+                    setting.LastPoint = setting.Point;
                     
-                    var end = settings.Point;
-                    
-                    if (settings.RoutMode != RoutMode.DRILL)
+                    if (setting.RoutMode != RoutMode.DRILL)
                         throw new InvalidOperationException("unexpected G85 in rout mode");
-                    
-                    settings.Points.Add(start);
-                    settings.Points.Add(end);
-                    settings.CommitPath();
+
+                    setting.Points.Add(setting.StartPoint);
+                    setting.Points.Add(setting.LastPoint);
+                    setting.CommitPath();
                 }
                 break;
             case 90:
                 break;
             default:
-                throw new InvalidOperationException("unsupported G command: " + settings.fcmd);
+                throw new InvalidOperationException("unsupported G command: " + setting.fcmd);
         }
 
-        settings.IsDone = true;
-        return settings;
+        setting.IsDone = true;
+        return setting;
     }
 }

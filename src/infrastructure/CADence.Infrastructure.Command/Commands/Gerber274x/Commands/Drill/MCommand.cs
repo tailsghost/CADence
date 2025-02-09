@@ -36,7 +36,7 @@ public class MCommand : CommandBase<DrillParser274xSettings>
                     throw new InvalidOperationException("unexpected M15; not in rout mode");
                 
                 settings.RoutMode = RoutMode.ROUT_TOOL_DOWN;
-                settings.Points.Add(settings.Point);
+                settings.Points.Add(settings.LastPoint);
                 break;
             case 16:
                 if (settings.RoutMode == RoutMode.ROUT_TOOL_UP)

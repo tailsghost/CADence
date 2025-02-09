@@ -36,9 +36,10 @@ public class CoordinateCommand : CommandBase<DrillParser274xSettings>
             settings.Point.Y = settings.format.ParseFixed(yStr);
             coordSet = true;
         }
+        settings.LastPoint = settings.Point;
         if (coordSet)
         {
-            settings.Points.Add(new Point(settings.Point.X, settings.Point.Y));
+            settings.Points.Add(settings.LastPoint);
             settings.CommitPath();
         }
 

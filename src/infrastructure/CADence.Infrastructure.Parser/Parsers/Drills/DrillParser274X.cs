@@ -38,7 +38,6 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
         public DrillParser274X(List<string> drills)
         {
             DRILLS = drills;
-            _settings = new DrillParser274xSettings();
             Execute();
         }
 
@@ -48,26 +47,40 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
         /// <exception cref="InvalidOperationException">Выбрасывается, если хотя бы одна команда не была выполнена</exception>
         public override void Execute()
         {
-            using var stream = new StringReader(string.Join("\n", DRILLS[0]));
+            Geometry geometry = null;
 
-            _settings.format.ConfigureFormat(4, 3);
-            _settings.format.ConfigureMillimeters();
-            _settings.RoutMode = RoutMode.DRILL;
-            string line;
-            while ((line = stream.ReadLine()) != null)
-            {
+            foreach (string drill in DRILLS) {
+                using var stream = new StringReader(string.Join("\n", drill));
+                string line;
+                _settings = new();
+                _settings.ParseState = ParseState.PRE_HEADER;
+                _settings.format.ConfigureFormat(4, 3);
+                _settings.format.ConfigureMillimeters();
+                _settings.Point = new Point(0, 0);
+                _settings.RoutMode = RoutMode.DRILL;
+                while ((line = stream.ReadLine()) != null)
+                {
 
-                _settings.cmd = line;
-                _settings = ExecuteCommand();
-                if (!_settings.IsDone) break;
-            }
+                    _settings.cmd = line;
+                    _settings = ExecuteCommand();
+                    if (!_settings.IsDone) break;
+                }
 
 
-            var geom = GetResult();
+                var geom = GetResult();
 
-            if (!_settings.IsDone)
-            {
-                throw new InvalidOperationException("unterminated NC drill file");
+                if(geometry == null)
+                {
+                    geometry = geom;
+                } else
+                {
+                    geometry.Difference(geom);
+                }
+
+                //if (!_settings.IsDone)
+                //{
+                //    throw new InvalidOperationException("unterminated NC drill file");
+                //}
             }
         }
 
