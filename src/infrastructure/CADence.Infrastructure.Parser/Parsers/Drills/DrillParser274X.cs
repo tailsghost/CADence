@@ -81,7 +81,7 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
                 {
                     Geometry platedGeom = _settings.Pth.GetDark();
                     Geometry unplatedGeom = _settings.Npth.GetDark();
-                    var result1 = platedGeom.Coordinates.Length;
+
                     if (platedGeom != null && unplatedGeom != null)
                     {
                         result = platedGeom.Union(unplatedGeom);
