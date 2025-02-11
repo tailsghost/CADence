@@ -49,7 +49,8 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
         {
             Geometry geometry = null;
 
-            foreach (string drill in DRILLS) {
+            foreach (string drill in DRILLS)
+            {
                 using var stream = new StringReader(string.Join("\n", drill));
                 string line;
                 _settings = new();
@@ -66,15 +67,15 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
                     if (!_settings.IsDone) break;
                 }
 
-
                 var geom = GetResult();
 
-                if(geometry == null)
+                if (geometry == null)
                 {
                     geometry = geom;
-                } else
+                }
+                else
                 {
-                    geometry.Difference(geom);
+                    geometry = geometry.Difference(geom);
                 }
 
                 //if (!_settings.IsDone)

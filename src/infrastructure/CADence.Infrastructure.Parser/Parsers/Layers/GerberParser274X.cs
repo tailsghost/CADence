@@ -1,6 +1,7 @@
 using System.Text;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
+using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
 
 namespace CADence.Infrastructure.Parser.Parsers;
@@ -29,7 +30,7 @@ public class GerberParser274X : GerberParserBase
     public GerberParser274X(string file)
     {
         FILE = file;
-        //Execute();
+        Execute();
     }
 
     /// <summary>
@@ -41,6 +42,19 @@ public class GerberParser274X : GerberParserBase
     public override void Execute()
     {
         using var stream = new StringReader(FILE);
+        _settings.imode = InterpolationMode.UNDEFINED;
+        _settings.qmode = QuadrantMode.UNDEFINED;
+        _settings.Pos = new NetTopologySuite.Geometries.Point(0,0);
+        _settings.Polarity = true;
+        _settings.apMirrorX = false;
+        _settings.apMirrorY = false;
+        _settings.apRotate = 0.0;
+        _settings.apScale = 1.0;
+        _settings.ApertureStack = new Stack<Aperture.Abstractions.ApertureBase>();
+        _settings.ApertureStack.Push(new Aperture.Abstractions.ApertureBase());
+        _settings.RegionMode = false;
+        _settings.OutlineConstructed = false;
+
         var is_attrib = false;
         var ss = new StringBuilder();
 

@@ -50,7 +50,7 @@ public class GCommand : CommandBase<GerberParser274xSettings>
         if (settings.cmd.StartsWith("G54D") || settings.cmd.StartsWith("G55D"))
             apCmd = apCmd[3..];
 
-        if (apCmd.StartsWith('D') || !apCmd.StartsWith("D0"))
+        if (apCmd.StartsWith('D') && !apCmd.StartsWith("D0"))
         {
             if (!settings.Apertures.TryGetValue(int.Parse(apCmd[1..]), out var Aperture))
             {

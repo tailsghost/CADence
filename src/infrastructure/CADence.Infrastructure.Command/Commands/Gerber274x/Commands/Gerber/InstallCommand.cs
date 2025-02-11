@@ -23,7 +23,7 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
 
         for (var i = 0; i <= settings.cmd.Length; i++)
         {
-            var c = i < settings.cmd.Length ? settings.cmd[i] : 'Z';
+            var c = (i < settings.cmd.Length) ? settings.cmd[i] : 'Z';
             if (i != settings.cmd.Length && !char.IsLetter(c)) continue;
 
             switch (code)

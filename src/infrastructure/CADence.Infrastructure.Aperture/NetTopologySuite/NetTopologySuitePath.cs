@@ -17,7 +17,14 @@ public static class NetTopologySuitePath
         
         return geometry.Buffer(thickness * 0.5, _bufferParams);
     }
-    
+
+    public static Geometry Render(this LineString geometry, double thickness, bool square)
+    {
+        CreateBufferParameter(square);
+
+        return geometry.Buffer(thickness * 0.5, _bufferParams);
+    }
+
     public static Geometry Render(this Point geometry, double thickness, bool square)
     {
         CreateBufferParameter(square);

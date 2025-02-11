@@ -24,7 +24,7 @@ public class GerberParserSettingsBase : SettingsBase
     /// <summary>
     /// Текущая позиция.
     /// </summary>
-    public Coordinate Pos { get; set; }
+    public Point Pos { get; set; }
     
     /// <summary>
     /// Полярность текущей операции.

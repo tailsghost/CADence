@@ -3,6 +3,7 @@ using CADence.Infrastructure.Aperture.NetTopologySuite;
 using CADence.Infrastructure.Command.Property.Gerber274x;
 using CADence.Infrastructure.Parser.Abstractions;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.Utilities;
 
 namespace CADence.Infrastructure.Parser.Settings;
 
@@ -122,35 +123,37 @@ public class DrillParser274xSettings : DrillParserSettingsBase
         var y0 = startPoint.Y;
         var x1 = endPoint.X;
         var y1 = endPoint.Y;
-        var r = radius;
 
         var d = Math.Sqrt(Math.Pow(x0 - x1, 2) + Math.Pow(y0 - y1, 2));
-        var e = 2.0 * r / d;
-        e = (e < 1.0) ? 0.0 : Math.Sqrt(e * e - 1.0) * (ccw ? 1 : -1);
-
-        var ax = (x0 - x1) / 2;
-        var ay = (y0 - y1) / 2;
-        var xc = ax + ay * e;
-        var yc = ay - ax * e;
-
-        var a0 = Math.Atan2(y0 - yc, x0 - xc);
-        var a1 = Math.Atan2(y1 - yc, x1 - xc);
-        if (ccw && a1 < a0) a1 += 2.0 * Math.PI;
-        if (!ccw && a0 < a1) a0 += 2.0 * Math.PI;
-
-        var epsilon = 1; // В дальнейшем поменять это значение на валидное
-        var f = (r > epsilon) ? (1.0 - epsilon / r) : 0.0;
-        var th = Math.Acos(2.0 * f * f - 1.0) + 1e-3;
-        var nVertices = Math.Ceiling(Math.Abs(a1 - a0) / th);
-
-        for (int i = 1; i <= nVertices; i++)
+        if (d >= 2 * radius)
         {
-            var f1 = i / nVertices;
-            var f0 = 1.0 - f1;
-            var va = f0 * a0 + f1 * a1;
-            var vx = xc + r * Math.Cos(va);
-            var vy = yc + r * Math.Sin(va);
-            Points.Add(new Point(Math.Round(vx), Math.Round(vy)));
+            throw new ArgumentException("Расстояние между точками должно быть меньше диаметра окружности.");
+        }
+
+        var e = Math.Sqrt(1 - (d * d) / (4 * radius * radius));
+
+        var cx = (x0 + x1) / 2 + e * (y1 - y0) / d;
+        var cy = (y0 + y1) / 2 - e * (x1 - x0) / d;
+
+        var angle0 = Math.Atan2(y0 - cy, x0 - cx);
+        var angle1 = Math.Atan2(y1 - cy, x1 - cx);
+
+        if (ccw && angle1 < angle0) angle1 += 2 * Math.PI;
+        if (!ccw && angle0 < angle1) angle0 += 2 * Math.PI;
+
+        var shapeFactory = new GeometricShapeFactory
+        {
+            Base = new Coordinate(cx, cy),
+            Size = radius * 2 
+        };
+
+        var arc = shapeFactory.CreateArc(angle0, angle1);
+
+        var coordinates = arc.Coordinates;
+
+        foreach (var coord in coordinates)
+        {
+            Points.Add(new Point(Math.Round(coord.X), Math.Round(coord.Y)));
         }
     }
 }
