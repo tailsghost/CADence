@@ -44,6 +44,7 @@ public class SVGWriter
         }
 
         stream.AppendLine("</g>");
+        stream.AppendLine("</g>");
         stream.AppendLine("</svg>");
 
         if (!string.IsNullOrWhiteSpace(_path))
