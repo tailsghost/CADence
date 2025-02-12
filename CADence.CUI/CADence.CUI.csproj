@@ -9,4 +9,8 @@
     <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.LayerFabric\CADence.Infrastructure.LayerFabric.csproj" />
+  </ItemGroup>
+
 </Project>
