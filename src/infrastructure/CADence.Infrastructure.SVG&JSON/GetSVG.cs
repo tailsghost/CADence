@@ -38,7 +38,6 @@ public class SVGReader
             "<g transform=\"translate({0} {1}) scale({2} -1)\" filter=\"drop-shadow(0 0 1 rgba(0, 0, 0, 0.2))\">",
             tx, ty, flipped ? "-1" : "1"));
 
-
         foreach (var layer in _layers)
         {
             stream.Append(ParseGeometry(layer));
@@ -47,17 +46,14 @@ public class SVGReader
         stream.AppendLine("</g>");
         stream.AppendLine("</svg>");
 
-        if (_path != "")
+        if (!string.IsNullOrWhiteSpace(_path))
         {
             File.WriteAllText(_path, stream.ToString());
-            stream.Clear();
-            return null;
+            return string.Empty; // Возвращаем пустую строку вместо null
         }
 
         return stream.ToString();
     }
-
-
 
     private StringBuilder ParseGeometry(LayerBase layer)
     {
@@ -103,7 +99,6 @@ public class SVGReader
         return Data;
     }
 
-
     private void AppendPolygon(Polygon polygon, StringBuilder data)
     {
         AppendLineString(polygon.ExteriorRing, data);
@@ -120,7 +115,7 @@ public class SVGReader
         if (coordinates.Length > 0)
         {
             data.Append(string.Format(CultureInfo.InvariantCulture, "M {0} {1} ",
-                (coordinates[0].X), coordinates[1].Y));
+                coordinates[0].X, coordinates[0].Y));
 
             for (int i = 1; i < coordinates.Length; i++)
             {
