@@ -49,7 +49,7 @@ public class SVGReader
         if (!string.IsNullOrWhiteSpace(_path))
         {
             File.WriteAllText(_path, stream.ToString());
-            return string.Empty; // Возвращаем пустую строку вместо null
+            return string.Empty;
         }
 
         return stream.ToString();
