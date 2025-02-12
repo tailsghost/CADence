@@ -75,7 +75,25 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
                 settings.DrawAperture();
                 break;
             default:
-                throw new Exception("Invalid draw/move command: " + d);
+                return SetupAperture(settings);
+        }
+
+        settings.IsDone = true;
+        return settings;
+    }
+
+
+
+    private GerberParser274xSettings SetupAperture(GerberParser274xSettings settings)
+    {
+        if (settings.cmd.StartsWith('D') && !settings.cmd.StartsWith("D0"))
+        {
+            if (!settings.Apertures.TryGetValue(int.Parse(settings.cmd[1..]), out var Aperture))
+            {
+                throw new Exception("Undefined aperture selected");
+            }
+
+            settings.Aperture = Aperture;
         }
 
         settings.IsDone = true;

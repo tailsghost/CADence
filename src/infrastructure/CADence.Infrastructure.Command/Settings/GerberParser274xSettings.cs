@@ -4,7 +4,6 @@ using NetTopologySuite.Geometries;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Aperture.NetTopologySuite;
 using CADence.Infrastructure.Command.Helpers;
-using NetTopologySuite.Algorithm;
 
 namespace CADence.Infrastructure.Parser.Settings;
 

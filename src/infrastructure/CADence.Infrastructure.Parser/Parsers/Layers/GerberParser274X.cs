@@ -3,6 +3,7 @@ using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
+using NetTopologySuite.Geometries;
 
 namespace CADence.Infrastructure.Parser.Parsers;
 
@@ -44,7 +45,7 @@ public class GerberParser274X : GerberParserBase
         using var stream = new StringReader(FILE);
         _settings.imode = InterpolationMode.UNDEFINED;
         _settings.qmode = QuadrantMode.UNDEFINED;
-        _settings.Pos = new NetTopologySuite.Geometries.Point(0,0);
+        _settings.Pos = new NetTopologySuite.Geometries.Point(0, 0);
         _settings.Polarity = true;
         _settings.apMirrorX = false;
         _settings.apMirrorY = false;
@@ -101,7 +102,7 @@ public class GerberParser274X : GerberParserBase
             throw new InvalidOperationException("unterminated attribute");
         }
 
-        if (!_settings.IsDone)
+        if (_settings.IsDone)
         {
             throw new InvalidOperationException("unterminated gerber file");
         }
@@ -115,5 +116,83 @@ public class GerberParser274X : GerberParserBase
         {
             throw new InvalidOperationException("unterminated region block");
         }
+    }
+
+    public override Geometry GetResult(bool BoardOutLine = false)
+    {
+
+        if (BoardOutLine)
+        {
+            return FindLargestAreaPathWithoutBorderBox(_settings.ApertureStack.Peek().GetDark());
+        }
+
+        return _settings.ApertureStack.Peek().GetDark();
+    }
+
+
+
+    private static Geometry FindLargestAreaPathWithoutBorderBox(Geometry multiPolygon)
+    {
+        if (multiPolygon == null || multiPolygon.IsEmpty)
+        {
+            return multiPolygon;
+        }
+
+        double maxArea = double.MinValue;
+        Geometry largestPolygon = null;
+
+        for (int i = 0; i < multiPolygon.NumGeometries; i++)
+        {
+            Geometry subGeometry = multiPolygon.GetGeometryN(i);
+
+            if (subGeometry is Polygon polygon)
+            {
+                double area = polygon.Area;
+
+                if (area > maxArea)
+                {
+                    maxArea = area;
+                    largestPolygon = polygon;
+                }
+            }
+        }
+
+        if (largestPolygon != null)
+        {
+            Envelope envelope = largestPolygon.EnvelopeInternal;
+            Coordinate[] borderBoxCoords = new Coordinate[]
+            {
+            new Coordinate(envelope.MinX, envelope.MinY),
+            new Coordinate(envelope.MaxX, envelope.MinY),
+            new Coordinate(envelope.MaxX, envelope.MaxY),
+            new Coordinate(envelope.MinX, envelope.MaxY),
+            new Coordinate(envelope.MinX, envelope.MinY)
+            };
+
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Polygon borderBox = geometryFactory.CreatePolygon(borderBoxCoords);
+
+            Geometry updatedPolygon = largestPolygon.Difference(borderBox);
+
+            List<Geometry> updatedPolygons = new List<Geometry>();
+
+            for (int i = 0; i < multiPolygon.NumGeometries; i++)
+            {
+                Geometry subGeometry = multiPolygon.GetGeometryN(i);
+
+                if (!subGeometry.Equals(largestPolygon))
+                {
+                    updatedPolygons.Add(subGeometry);
+                }
+                else
+                {
+                    updatedPolygons.Add(borderBox);
+                }
+            }
+
+            return geometryFactory.CreateMultiPolygon(updatedPolygons.Cast<Polygon>().ToArray());
+        }
+
+        return multiPolygon;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CADence.Layer.Color;
+﻿namespace CADence.Layer.Colors;
 
 public struct Color
 {

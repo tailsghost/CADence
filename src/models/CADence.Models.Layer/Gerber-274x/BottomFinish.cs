@@ -1,6 +1,5 @@
 ﻿using CADence.Layer.Abstractions;
 using NetTopologySuite.Geometries;
-using System.Text;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
 
@@ -14,27 +13,12 @@ public class BottomFinish : LayerBase
         Layer = Enums.GerberLayer.BottomFinish;
     }
 
+    public override Geometry GetLayer()
+    {
+        throw new NotImplementedException();
+    }
+
     public override void Render()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override StringBuilder ToJson(Geometry geometry, Color.Color? color, StringBuilder Data)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override StringBuilder ToJson(List<Geometry> geometry, Color.Color? color, StringBuilder Data)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override StringBuilder ToSvg(Geometry geometry, Color.Color? color, StringBuilder Data)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override StringBuilder ToSvg(List<Geometry> geometry, Color.Color? color, StringBuilder Data)
     {
         throw new NotImplementedException();
     }

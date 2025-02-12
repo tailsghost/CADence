@@ -16,6 +16,7 @@ public class MetricCommand : CommandBase<DrillParser274xSettings>
     public override DrillParser274xSettings Execute(DrillParser274xSettings settings)
     {
         settings.format.ConfigureMillimeters();
+        settings.format.ConfigureTrailingZeros(settings.cmd.EndsWith(",LZ"));
         settings.IsDone = true;
         return settings;
     }

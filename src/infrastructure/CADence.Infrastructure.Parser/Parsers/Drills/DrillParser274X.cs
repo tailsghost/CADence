@@ -15,7 +15,6 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
 
         private GeometryFactory _geometryFactory = new();
 
-
         /// <summary>
         /// Список файлов дырок.
         /// </summary>
@@ -38,7 +37,12 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
         public DrillParser274X(List<string> drills)
         {
             DRILLS = drills;
-            Execute();
+            try
+            {
+                Execute();
+            } catch {
+                Console.WriteLine("");
+            }
         }
 
         /// <summary>
@@ -69,13 +73,13 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
 
                 var geom = GetResult();
 
-                if (geometry == null)
+                if (DrillGeometry == null)
                 {
-                    geometry = geom;
+                    DrillGeometry = geom;
                 }
                 else
                 {
-                    geometry = geometry.Difference(geom);
+                    DrillGeometry = DrillGeometry.Difference(geom);
                 }
 
                 //if (!_settings.IsDone)
@@ -85,8 +89,9 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
             }
         }
 
-        public override Geometry GetResult(bool plated = true, bool unplated = true)
+        private Geometry GetResult(bool plated = true, bool unplated = true)
         {
+
             Geometry result = null;
 
             if (plated)

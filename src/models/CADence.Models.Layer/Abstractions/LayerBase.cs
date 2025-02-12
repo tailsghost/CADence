@@ -4,19 +4,18 @@ using NetTopologySuite.Geometries;
 using System.Text;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
+using CADence.Layer.Colors;
 
 namespace CADence.Layer.Abstractions;
 
 public abstract class LayerBase(LayerFormatBase format, GerberParserBase parser)
 {
-    private GerberParserBase PARSER { get; init; } = parser;
+    protected GerberParserBase PARSER { get; init; } = parser;
 
     protected LayerFormatBase Format = format;
     public GerberLayer Layer { get; set; }
+    public Color ColorLayer { get; protected set; }
     public double Thickness { get; set; }
-    public abstract void Render();
-    public abstract StringBuilder ToSvg(Geometry geometry, Color.Color? color, StringBuilder data);
-    public abstract StringBuilder ToJson(Geometry geometry, Color.Color? color, StringBuilder data);
-    public abstract StringBuilder ToSvg(List<Geometry> geometry, Color.Color? color, StringBuilder data);
-    public abstract StringBuilder ToJson(List<Geometry> geometry, Color.Color? color, StringBuilder data);
+    public abstract void Render(); 
+    public abstract Geometry GetLayer();
 }

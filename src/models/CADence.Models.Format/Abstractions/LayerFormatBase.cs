@@ -10,6 +10,7 @@ public abstract class LayerFormatBase
     protected int _decimalDigits;
     protected bool _isUnitConfigured = false;
     protected bool _isUsed = false;
+    protected bool _addTrailingZeros = false;
     protected int QuadrantSegments { get; }
     protected double MitreLimit { get; }
 
@@ -22,7 +23,7 @@ public abstract class LayerFormatBase
     /// <summary>
     /// Конфигурирует формат чисел.
     /// </summary>
-    public abstract void ConfigureFormat(int integerDigits, int decimalDigits);
+    public abstract void ConfigureFormat(int integerDigits, int decimalDigits, bool reverse = false);
 
     /// <summary>
     /// Устанавливает единицы измерения в дюймы.
@@ -58,4 +59,7 @@ public abstract class LayerFormatBase
     /// Проверяет, что конфигурация завершена перед использованием.
     /// </summary>
     protected abstract void EnsureConfigured();
+
+
+    public abstract void ConfigureTrailingZeros(bool addTrailingZeros);
 }

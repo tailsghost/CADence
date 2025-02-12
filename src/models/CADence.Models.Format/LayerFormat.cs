@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Numerics;
 using CADence.Models.Format.Abstractions;
 
 namespace CADence.Models.Format;
@@ -10,12 +11,22 @@ public class LayerFormat : LayerFormatBase
 
     private double _conversionFactor;
 
-    public override void ConfigureFormat(int integerDigits, int decimalDigits)
+    private bool _addTrailingZeros;
+
+    public override void ConfigureFormat(int integerDigits, int decimalDigits, bool reverse = false)
     {
         EnsureReconfigurable();
         _isFormatConfigured = true;
-        _integerDigits = integerDigits;
-        _decimalDigits = decimalDigits;
+
+        if(reverse)
+        {
+            _integerDigits = decimalDigits;
+            _decimalDigits = integerDigits;
+        } else
+        {
+            _integerDigits = integerDigits;
+            _decimalDigits = decimalDigits;
+        }
     }
 
     public override void ConfigureInches()
@@ -32,31 +43,36 @@ public class LayerFormat : LayerFormatBase
         _conversionFactor = MILLIMETERS_TO_INCHES;
     }
 
+    public override void ConfigureTrailingZeros(bool addTrailingZeros)
+    {
+        EnsureReconfigurable();
+        _addTrailingZeros = addTrailingZeros;
+    }
+
     public override double ParseFixed(string value)
     {
-        double val = 0;
-
         if (value.Contains('.'))
         {
             return ParseFloat(value);
         }
 
-        var totalDigits = value.Length;
-        var signOffset = (value[0] == '-' || value[0] == '+') ? 1 : 0;
-        var digits = totalDigits - signOffset;
+        int totalDigits = value.Length;
+        int signOffset = (value[0] == '-' || value[0] == '+') ? 1 : 0;
+        int digitsCount = totalDigits - signOffset;
 
-        if (digits <= _integerDigits + _decimalDigits)
-        {
-
-            val = double.Parse(value, CultureInfo.InvariantCulture);
-        }
-        else
+        if (digitsCount > _integerDigits + _decimalDigits)
         {
             throw new FormatException($"Unexpected coordinate length: {value}");
         }
 
-        return AdjustValue(val);
+        var integerDigits = _integerDigits;
+
+        double parsed = double.Parse(value, CultureInfo.InvariantCulture);
+        double result = parsed / Math.Pow(10, integerDigits);
+
+        return AdjustValue(result);
     }
+
 
     public override double ParseFloat(string value)
     {

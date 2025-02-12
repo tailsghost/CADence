@@ -109,8 +109,6 @@ public class ApertureBase
             mergedAccumulated = geomCollection.Union();
         }
 
-        mergedAccumulated = TopologyPreservingSimplifier.Simplify(mergedAccumulated, 1e-6);
-
         if (ACCUM_POLARITY)
         {
             AdditiveGeometry = AdditiveGeometry.Union(mergedAccumulated);
@@ -227,7 +225,7 @@ public class ApertureBase
     private Geometry? Simplify(Geometry? geometry)
     {
         if (geometry == null || geometry.IsEmpty) return geometry;
-        return TopologyPreservingSimplifier.Simplify(geometry, 1e-6);
+        return geometry;
     }
 
     /// <summary>

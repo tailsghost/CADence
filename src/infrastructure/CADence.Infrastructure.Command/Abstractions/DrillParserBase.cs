@@ -12,10 +12,5 @@ public abstract class DrillParserBase
     /// </summary>
     public abstract void Execute();
 
-
-    /// <summary>
-    /// Выполняет рендеринг дырок
-    /// </summary>
-    /// <returns>Возвращает геометрию дырок</returns>
-    public abstract Geometry GetResult(bool plated = true, bool unplated = true);
+    public Geometry DrillGeometry { get; protected set; }
 }
