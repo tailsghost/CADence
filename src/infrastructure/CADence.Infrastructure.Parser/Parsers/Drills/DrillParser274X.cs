@@ -12,7 +12,6 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
     /// </summary>
     public class DrillParser274X : DrillParserBase
     {
-
         private GeometryFactory _geometryFactory = new();
 
         /// <summary>
@@ -23,7 +22,7 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
         /// <summary>
         /// Настройки для парсера.
         /// </summary>
-        private DrillParser274xSettings _settings;
+        private DrillParser274xSettings _settings = new DrillParser274xSettings();
 
         /// <summary>
         /// Фабрика комманд
@@ -40,24 +39,24 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
             try
             {
                 Execute();
-            } catch {
-                Console.WriteLine("");
+            }
+            catch
+            {
+                Console.WriteLine("Ошибка при выполнении парсинга.");
             }
         }
 
         /// <summary>
-        /// Выполняет парсинг Drill файлов
+        /// Выполняет парсинг Drill файлов.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Выбрасывается, если хотя бы одна команда не была выполнена</exception>
+        /// <exception cref="InvalidOperationException">Выбрасывается, если хотя бы одна команда не была выполнена.</exception>
         public override void Execute()
         {
-            Geometry geometry = null;
-
             foreach (string drill in DRILLS)
             {
                 using var stream = new StringReader(string.Join("\n", drill));
-                string line;
-                _settings = new();
+                string? line;
+                _settings = new DrillParser274xSettings();
                 _settings.ParseState = ParseState.PRE_HEADER;
                 _settings.format.ConfigureFormat(4, 3);
                 _settings.format.ConfigureMillimeters();
@@ -65,7 +64,6 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
                 _settings.RoutMode = RoutMode.DRILL;
                 while ((line = stream.ReadLine()) != null)
                 {
-
                     _settings.cmd = line;
                     _settings = ExecuteCommand();
                     if (!_settings.IsDone) break;
@@ -73,33 +71,36 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
 
                 var geom = GetResult();
 
-                if (DrillGeometry == null)
+                if (geom != null)
                 {
-                    DrillGeometry = geom;
+                    if (DrillGeometry == null)
+                    {
+                        DrillGeometry = geom;
+                    }
+                    else
+                    {
+                        DrillGeometry = DrillGeometry.Difference(geom);
+                    }
                 }
-                else
-                {
-                    DrillGeometry = DrillGeometry.Difference(geom);
-                }
-
-                //if (!_settings.IsDone)
-                //{
-                //    throw new InvalidOperationException("unterminated NC drill file");
-                //}
             }
         }
 
-        private Geometry GetResult(bool plated = true, bool unplated = true)
+        /// <summary>
+        /// Получает результат парсинга.
+        /// </summary>
+        /// <param name="plated">Учитывать платированные отверстия.</param>
+        /// <param name="unplated">Учитывать неплатированные отверстия.</param>
+        /// <returns>Геометрия результата парсинга.</returns>
+        private Geometry? GetResult(bool plated = true, bool unplated = true)
         {
-
-            Geometry result = null;
+            Geometry? result = null;
 
             if (plated)
             {
                 if (unplated)
                 {
-                    Geometry platedGeom = _settings.Pth.GetDark();
-                    Geometry unplatedGeom = _settings.Npth.GetDark();
+                    Geometry? platedGeom = _settings.Pth.GetDark();
+                    Geometry? unplatedGeom = _settings.Npth.GetDark();
 
                     if (platedGeom != null && unplatedGeom != null)
                     {
@@ -120,14 +121,14 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
                 }
             }
 
-            return result.Reverse();
+            return result?.Reverse();
         }
 
         /// <summary>
         /// Выполняет команды в зависимости от первого символа.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException">Выбрасывается, если была обнаружена неизвестная команда</exception>
+        /// <returns>Обновленные настройки парсера.</returns>
+        /// <exception cref="InvalidOperationException">Выбрасывается, если была обнаружена неизвестная команда.</exception>
         private DrillParser274xSettings ExecuteCommand()
         {
             if (_settings.ParseState == ParseState.HEADER)
