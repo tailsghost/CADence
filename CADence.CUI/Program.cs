@@ -1,5 +1,7 @@
 ﻿using CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
 using CADence.Infrastructure.LayerFabric.Readers;
+using CADence.Infrastructure.SVG_JSON;
+using CADence.Layer.Abstractions;
 
 namespace CADence.CUI
 {
@@ -76,6 +78,7 @@ namespace CADence.CUI
 
                 if (answer == "y")
                 {
+                    Console.Clear();
                     return true;
                 }
 
@@ -93,7 +96,7 @@ namespace CADence.CUI
         /// <summary>
         /// Выполняет парсинг файла по указанному пути.
         /// </summary>
-        /// <param name="path">Путь к файлу.</param>
+        /// <param name="path">Путь к файлу. Пример: C:\WorkSpace\M3CITY2REV0Gerber.zip</param>
         /// <exception cref="ArgumentNullException">Выбрасывается, если путь пустой или null.</exception>
         public static void Execute(string? path)
         {
@@ -101,13 +104,22 @@ namespace CADence.CUI
             {
                 throw new ArgumentNullException(nameof(path));
             }
+            List<LayerBase> layers;
 
             byte[] file = File.ReadAllBytes(path);
-            var stream = new MemoryStream(file);
-            BoardFileReader reader = new();
-            var data = reader.ParseArchive(stream, Path.GetFileName(path));
-            LayerFabricGerber274x fabric = new();
-            fabric.GetLayers(data);
+            using (var stream = new MemoryStream(file))
+            {
+                BoardFileReader reader = new();
+                var data = reader.ParseArchive(stream, Path.GetFileName(path));
+                LayerFabricGerber274x fabric = new();
+                layers = fabric.GetLayers(data);
+            }
+
+            var pathToSVGWriting = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "output.svg");
+            Console.WriteLine($"Путь по которому будет сохранён файл: {pathToSVGWriting}");
+
+            var svgWriter = new SVGWriter(layers, 1, pathToSVGWriting ?? throw new ArgumentNullException(nameof(pathToSVGWriting)));
+            svgWriter.Execute(false);
         }
     }
 }

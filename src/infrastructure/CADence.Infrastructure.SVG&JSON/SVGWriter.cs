@@ -5,13 +5,13 @@ using System.Text;
 
 namespace CADence.Infrastructure.SVG_JSON;
 
-public class SVGReader
+public class SVGWriter
 {
     private List<LayerBase> _layers;
     private readonly double _scale;
     private readonly string _path;
 
-    public SVGReader(List<LayerBase> layers, double scale, string path = "")
+    public SVGWriter(List<LayerBase> layers, double scale, string path = "")
     {
         _layers = layers;
         _scale = scale;

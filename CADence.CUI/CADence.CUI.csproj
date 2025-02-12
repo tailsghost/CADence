@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.LayerFabric\CADence.Infrastructure.LayerFabric.csproj" />
+    <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.SVG&amp;JSON\CADence.Infrastructure.SVG&amp;JSON.csproj" />
   </ItemGroup>
 
 </Project>
