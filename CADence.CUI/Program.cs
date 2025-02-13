@@ -33,7 +33,7 @@ namespace CADence.CUI
                 _logger.Info("Парсинг файла...");
                 try
                 {
-                    Execute(path);
+                    ExecuteAsync(path);
                     _logger.Info("Парсинг успешно завершён.");
                 }
                 catch (Exception ex)
@@ -111,7 +111,7 @@ namespace CADence.CUI
         /// </summary>
         /// <param name="path">Путь к файлу. Пример: C:\WorkSpace\M3CITY2REV0Gerber.zip</param>
         /// <exception cref="ArgumentNullException">Выбрасывается, если путь пустой или null.</exception>
-        public static void Execute(string? path)
+        public static async Task ExecuteAsync(string? path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -126,7 +126,7 @@ namespace CADence.CUI
                 BoardFileReader reader = new();
                 var data = reader.ParseArchive(stream, Path.GetFileName(path));
                 LayerFabricGerber274x fabric = new();
-                layers = fabric.GetLayers(data);
+                layers = await fabric.GetLayers(data);
             }
 
             var pathToSVGWriting = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "output.svg");

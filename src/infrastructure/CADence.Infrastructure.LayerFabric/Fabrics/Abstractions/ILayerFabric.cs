@@ -10,5 +10,5 @@ public interface ILayerFabric
     /// </summary>
     /// <param name="inputData">Объект, предоставляющий входные данные.</param>
     /// <returns>Список слоев, соответствующих входным данным.</returns>
-    List<LayerBase> GetLayers(IInputData inputData);
+    Task<List<LayerBase>> GetLayers(IInputData inputData);
 }
