@@ -80,19 +80,18 @@ public class GerberParser274X : GerberParserBase
 
                 var cmd = ss.ToString();
 
-                _settings.AmBuilder?.Append(cmd);
+                //_settings.AmBuilder?.Append(cmd);
 
                 _settings.cmd = cmd;
 
                 try
                 {
-                    if (count == 7038)
-                        Console.WriteLine(count);
+                    Console.WriteLine(string.Format("INFO: {0}", count));
                     _settings = _fabric.ExecuteCommand(_settings);
                     count++;
                 }
                 catch {
-                    Console.WriteLine(count);
+                    Console.WriteLine(string.Format("ERROR: {0}", count));
                 }
 
                 if (!_settings.IsDone)
