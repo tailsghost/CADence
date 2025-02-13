@@ -45,89 +45,100 @@ public class GerberParser274X : GerberParserBase
     /// </exception>
     public override void Execute()
     {
-        using var stream = new StringReader(FILE);
-        _settings.imode = InterpolationMode.UNDEFINED;
-        _settings.qmode = QuadrantMode.UNDEFINED;
-        _settings.Pos = new NetTopologySuite.Geometries.Point(0, 0);
-        _settings.Polarity = true;
-        _settings.apMirrorX = false;
-        _settings.apMirrorY = false;
-        _settings.apRotate = 0.0;
-        _settings.apScale = 1.0;
-        _settings.ApertureStack = new Stack<Aperture.Abstractions.ApertureBase>();
-        _settings.ApertureStack.Push(new Aperture.Abstractions.ApertureBase());
-        _settings.RegionMode = false;
-        _settings.OutlineConstructed = false;
-
-        var is_attrib = false;
-        var ss = new StringBuilder();
-
-        int count = 0;
-
-        while (stream.Peek() != -1)
+        try
         {
-            var c = (char)stream.Read();
-            if (char.IsWhiteSpace(c))
+
+            using var stream = new StringReader(FILE);
+            _settings.imode = InterpolationMode.UNDEFINED;
+            _settings.qmode = QuadrantMode.UNDEFINED;
+            _settings.Pos = new NetTopologySuite.Geometries.Point(0, 0);
+            _settings.Polarity = true;
+            _settings.apMirrorX = false;
+            _settings.apMirrorY = false;
+            _settings.apRotate = 0.0;
+            _settings.apScale = 1.0;
+            _settings.ApertureStack = new Stack<Aperture.Abstractions.ApertureBase>();
+            _settings.ApertureStack.Push(new Aperture.Abstractions.ApertureBase());
+            _settings.RegionMode = false;
+            _settings.OutlineConstructed = false;
+
+            var is_attrib = false;
+            var ss = new StringBuilder();
+
+            int count = 0;
+
+            while (stream.Peek() != -1)
             {
-                continue;
-            }
-            else if (c == '%')
-            {
-                if (ss.Length > 0) throw new InvalidOperationException("attribute mid-command");
-                if (is_attrib) _settings.AmBuilder = null;
-                is_attrib = !is_attrib;
-            }
-            else if (c == '*')
-            {
-                if (ss.Length == 0) throw new InvalidOperationException("empty command");
 
-                var cmd = ss.ToString();
-
-                //_settings.AmBuilder?.Append(cmd);
-
-                _settings.cmd = cmd;
-
-                try
+                var c = (char)stream.Read();
+                if (char.IsWhiteSpace(c))
                 {
-                    _logger.Debug(string.Format("INFO: {0}", count));
-                    _settings = _fabric.ExecuteCommand(_settings);
-                    count++;
+                    continue;
                 }
-                catch (Exception ex) {
-                    _logger.Error(ex, string.Format("ERROR: {0}", count));
-                }
-
-                if (!_settings.IsDone)
+                else if (c == '%')
                 {
-                    break;
+                    if (ss.Length > 0) throw new InvalidOperationException("attribute mid-command");
+                    if (is_attrib) _settings.AmBuilder = null;
+                    is_attrib = !is_attrib;
                 }
+                else if (c == '*')
+                {
+                    if (ss.Length == 0) throw new InvalidOperationException("empty command");
 
-                ss.Clear();
+                    var cmd = ss.ToString();
+
+                    //_settings.AmBuilder?.Append(cmd);
+
+                    _settings.cmd = cmd;
+
+                    try
+                    {
+                        _logger.Debug(string.Format("INFO: {0}", count));
+                        _settings = _fabric.ExecuteCommand(_settings);
+                        count++;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(ex, string.Format("ERROR: {0}", count));
+                    }
+
+                    if (!_settings.IsDone)
+                    {
+                        break;
+                    }
+
+                    ss.Clear();
+                }
+                else
+                {
+                    ss.Append(c);
+                }
             }
-            else
+
+            if (is_attrib)
             {
-                ss.Append(c);
+                throw new InvalidOperationException("unterminated attribute");
+            }
+
+            if (_settings.IsDone)
+            {
+                throw new InvalidOperationException("unterminated gerber file");
+            }
+
+            if (_settings.ApertureStack.Count != 1)
+            {
+                throw new InvalidOperationException("unterminated block aperture");
+            }
+
+            if (_settings.RegionMode)
+            {
+                throw new InvalidOperationException("unterminated region block");
             }
         }
-
-        if (is_attrib)
+        catch (Exception ex)
         {
-            throw new InvalidOperationException("unterminated attribute");
-        }
-
-        if (_settings.IsDone)
-        {
-            throw new InvalidOperationException("unterminated gerber file");
-        }
-
-        if (_settings.ApertureStack.Count != 1)
-        {
-            throw new InvalidOperationException("unterminated block aperture");
-        }
-
-        if (_settings.RegionMode)
-        {
-            throw new InvalidOperationException("unterminated region block");
+            _logger.Error(ex, "Ошибка при выполнении парсинга.");
+            throw new InvalidOperationException("Ошибка при выполнении парсинга.", ex);
         }
     }
 
