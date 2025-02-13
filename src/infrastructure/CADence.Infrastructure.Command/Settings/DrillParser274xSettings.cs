@@ -154,7 +154,7 @@ public class DrillParser274xSettings : DrillParserSettingsBase
 
         foreach (var coord in coordinates)
         {
-            Points.Add(new Point(Math.Round(coord.X), Math.Round(coord.Y)));
+            Points.Add(new Point(coord.X, coord.Y));
         }
     }
 }

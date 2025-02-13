@@ -12,6 +12,8 @@ namespace CADence.Infrastructure.Parser.Parsers;
 /// </summary>
 public class GerberParser274X : GerberParserBase
 {
+    private static GeometryFactory _geometryFactory = new();
+
     /// <summary>
     /// Содержит содержимое Gerber файла.
     /// </summary>
@@ -51,7 +53,7 @@ public class GerberParser274X : GerberParserBase
             using var stream = new StringReader(FILE);
             _settings.imode = InterpolationMode.UNDEFINED;
             _settings.qmode = QuadrantMode.UNDEFINED;
-            _settings.Pos = new NetTopologySuite.Geometries.Point(0, 0);
+            _settings.Pos = new Point(0, 0);
             _settings.Polarity = true;
             _settings.apMirrorX = false;
             _settings.apMirrorY = false;
@@ -96,6 +98,8 @@ public class GerberParser274X : GerberParserBase
                         _logger.Debug(string.Format("INFO: {0}", count));
                         _settings = _fabric.ExecuteCommand(_settings);
                         count++;
+                        if (count == 6372)
+                            Console.Write("");
                     }
                     catch (Exception ex)
                     {
@@ -193,8 +197,7 @@ public class GerberParser274X : GerberParserBase
             new Coordinate(envelope.MinX, envelope.MinY)
             };
 
-            GeometryFactory geometryFactory = new GeometryFactory();
-            Polygon borderBox = geometryFactory.CreatePolygon(borderBoxCoords);
+            Polygon borderBox = _geometryFactory.CreatePolygon(borderBoxCoords);
 
             Geometry updatedPolygon = largestPolygon.Difference(borderBox);
 
@@ -214,7 +217,7 @@ public class GerberParser274X : GerberParserBase
                 }
             }
 
-            return geometryFactory.CreateMultiPolygon(updatedPolygons.Cast<Polygon>().ToArray());
+            return _geometryFactory.CreateMultiPolygon(updatedPolygons.Cast<Polygon>().ToArray());
         }
 
         return multiPolygon;

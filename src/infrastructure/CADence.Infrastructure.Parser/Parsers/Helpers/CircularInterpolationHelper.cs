@@ -81,7 +81,7 @@ public class CircularInterpolationHelper
     /// </summary>
     public LineString ToLineString()
     {
-        const double angleStep = 0.05; // шаг в радианах (примерно 2.86°)
+        const double angleStep = 0.05; 
         int nVertices = (int)Math.Ceiling(Math.Abs(a2 - a1) / angleStep);
         if (nVertices < 1)
             nVertices = 1;
@@ -94,8 +94,7 @@ public class CircularInterpolationHelper
             double currentRadius = r1 + fraction * (r2 - r1);
             double x = centerX + currentRadius * Math.Cos(currentAngle);
             double y = centerY + currentRadius * Math.Sin(currentAngle);
-            // Округление до целых чисел, как и в оригинале
-            coords[i] = new Coordinate(Math.Round(x), Math.Round(y));
+            coords[i] = new Coordinate(x, y);
         }
         return _geometryFactory.CreateLineString(coords);
     }

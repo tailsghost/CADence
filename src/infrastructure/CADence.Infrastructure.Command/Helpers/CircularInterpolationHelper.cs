@@ -99,7 +99,7 @@ public class CircularInterpolationHelper
             double currentRadius = r1 + fraction * (r2 - r1);
             double x = centerX + currentRadius * Math.Cos(currentAngle);
             double y = centerY + currentRadius * Math.Sin(currentAngle);
-            coords[i] = new Coordinate(Math.Round(x), Math.Round(y));
+            coords[i] = new Coordinate(x, y);
         }
         return coords.ToList();
     }

@@ -1,6 +1,7 @@
 ﻿using CADence.Infrastructure.Aperture.NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Geometries.Utilities;
+using NetTopologySuite.Operation.Union;
 using NetTopologySuite.Simplify;
 
 namespace CADence.Infrastructure.Aperture.Abstractions;
@@ -105,21 +106,19 @@ public class ApertureBase
         }
         else
         {
-            var geomCollection = _geomFactory.CreateGeometryCollection(_accumulatedGeometries.ToArray());
-            mergedAccumulated = geomCollection.Union();
+            mergedAccumulated = CascadedPolygonUnion.Union(_accumulatedGeometries);
         }
 
         if (ACCUM_POLARITY)
         {
-            AdditiveGeometry = AdditiveGeometry.Union(mergedAccumulated);
-
+            AdditiveGeometry = CascadedPolygonUnion.Union(new List<Geometry> { AdditiveGeometry, mergedAccumulated });
             SubtractiveGeometry = SubtractiveGeometry.Difference(mergedAccumulated);
         }
         else
         {
             AdditiveGeometry =  AdditiveGeometry.Difference(mergedAccumulated);
 
-            SubtractiveGeometry = SubtractiveGeometry.Union(mergedAccumulated);
+            SubtractiveGeometry = CascadedPolygonUnion.Union(new List<Geometry> { SubtractiveGeometry, mergedAccumulated });
         }
 
         _accumulatedGeometries.Clear();
@@ -194,7 +193,7 @@ public class ApertureBase
         double scale = 1.0)
     {
         DrawPaths(aperture.AdditiveGeometry, polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
-        DrawPaths(aperture.AdditiveGeometry, !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.SubtractiveGeometry, !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
     }
 
     /// <summary>
@@ -204,7 +203,7 @@ public class ApertureBase
     public Geometry? GetClear()
     {
         CommitPaths();
-        return Simplify(SubtractiveGeometry);
+        return SubtractiveGeometry;
     }
 
     /// <summary>
@@ -214,20 +213,8 @@ public class ApertureBase
     public Geometry? GetDark()
     {
         CommitPaths();
-        return Simplify(AdditiveGeometry);
+        return AdditiveGeometry;
     }
-
-    /// <summary>
-    /// Упрощает переданную геометрию с сохранением топологии, используя допуск 1e-6.
-    /// </summary>
-    /// <param name="geometry">Геометрия для упрощения.</param>
-    /// <returns>Упрощённая геометрия.</returns>
-    private Geometry? Simplify(Geometry? geometry)
-    {
-        if (geometry == null || geometry.IsEmpty) return geometry;
-        return geometry;
-    }
-
     /// <summary>
     /// Виртуальный метод с возможностью переопределения базовой логики генерации отверстия.
     /// Если HoleDiameter меньше или равен 0, возвращается пустая коллекция геометрий.

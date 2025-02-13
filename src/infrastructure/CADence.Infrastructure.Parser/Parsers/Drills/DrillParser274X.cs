@@ -4,6 +4,7 @@ using CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.Operation.Union;
 
 namespace CADence.Infrastructure.Parser.Parsers.Drills
 {
@@ -55,6 +56,8 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
 
             Geometry geometry = null;
 
+            List<Geometry> polygons = new();
+
             foreach (string drill in DRILLS)
             {
                 using var stream = new StringReader(string.Join("\n", drill));
@@ -79,10 +82,12 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
                     if (DrillGeometry == null)
                     {
                         DrillGeometry = geom;
+                        polygons.Add(geom);
                     }
                     else
                     {
-                        DrillGeometry = DrillGeometry.Union(geom);
+                        polygons.Add(geom);
+                        DrillGeometry = CascadedPolygonUnion.Union(polygons);
                     }
                 }
             }

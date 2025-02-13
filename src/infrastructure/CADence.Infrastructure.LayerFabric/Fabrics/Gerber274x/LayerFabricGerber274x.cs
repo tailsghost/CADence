@@ -110,10 +110,10 @@ public class LayerFabricGerber274x : ILayerFabric
 
                 //_tasks.Add(DetermineLayer(key, value, Substrate));
 
-                if (extension == Layer274xFileExtensionsSupported.gbl)
-                {
-                    result.Add(new BottomCopper(new LayerFormat(), new GerberParser274X(value), Substrate));
-                }
+                //if (extension == Layer274xFileExtensionsSupported.gbl)
+                //{
+                //    result.Add(new BottomCopper(new LayerFormat(), new GerberParser274X(value), Substrate));
+                //}
 
                 if (extension == Layer274xFileExtensionsSupported.gtl)
                 {

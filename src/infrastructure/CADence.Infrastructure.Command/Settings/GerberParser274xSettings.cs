@@ -51,23 +51,21 @@ public class GerberParser274xSettings : GerberParserSettingsBase
         if (RegionAccum.Count < 3)
             return;
 
-        var geometryFactory = new GeometryFactory();
-
         Polygon region = null;
 
         try
         {
-            region = geometryFactory.CreatePolygon(RegionAccum.ToArray());
+            region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
         } catch
         {
             RegionAccum.Add(RegionAccum[0]);
-            region = geometryFactory.CreatePolygon(RegionAccum.ToArray());
+            region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
         }
 
         if (region.Area < 0)
         {
             RegionAccum.Reverse();
-            region = geometryFactory.CreatePolygon(RegionAccum.ToArray());
+            region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
         }
 
         ApertureStack.Peek().DrawPaths(region, Polarity);

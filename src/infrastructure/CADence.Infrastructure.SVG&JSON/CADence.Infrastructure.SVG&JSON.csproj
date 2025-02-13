@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>CADence.Infrastructure.SVG_JSON</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <!--<DefineConstants>TRACE</DefineConstants>
+	  <Optimize>true</Optimize>-->
   </PropertyGroup>
 
   <ItemGroup>

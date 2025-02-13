@@ -5,6 +5,7 @@ using System.Text;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
 using CADence.Infrastructure.Aperture.Gerber_274x;
+using CADence.Layer.Colors;
 
 namespace CADence.Layer.Gerber_274x;
 
@@ -16,6 +17,8 @@ public class BottomCopper : LayerBase
     {
         Layer = Enums.GerberLayer.BottomCopper;
         Substrate = substrate;
+        ColorLayer = ColorConstants.COPPER;
+        Render();
     }
 
     public override Geometry GetLayer()

@@ -1,12 +1,8 @@
 ﻿using CADence.Layer.Abstractions;
 using NetTopologySuite.Geometries;
-using System.Text;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
-using System.Globalization;
-using CADence.Models.Layer.Colors;
 using CADence.Layer.Colors;
-using CADence.Infrastructure.Aperture.NetTopologySuite;
 
 namespace CADence.Layer.Gerber_274x;
 

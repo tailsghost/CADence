@@ -39,11 +39,11 @@ public class ApertureMacro : ApertureMacroBase
         }
 
         var baseAperture = new ApertureBase();
-        int code;
+        double code;
 
         for (var j = 0; j < cmds.Count; j++)
         {
-            code = (int)Math.Round(cmds[j][0].Eval(vars));
+            code = cmds[j][0].Eval(vars);
 
             switch (code)
             {
@@ -150,14 +150,14 @@ public class ApertureMacro : ApertureMacroBase
             throw new ArgumentException("Invalid outline command in aperture macro");
 
         bool exposure = cmd[1].Eval(vars) > 0.5;
-        int nVertices = (int)Math.Round(cmd[2].Eval(vars));
-        int rotationIndex = 5 + 2 * nVertices;
+        double nVertices = cmd[2].Eval(vars);
+        double rotationIndex = 5 + 2 * nVertices;
         double rotation = cmd.Count > (5 + 2 * nVertices) ? cmd.Last().Eval(vars) : 0;
 
         if (nVertices < 3 || cmd.Count < rotationIndex || cmd.Count > rotationIndex + 1)
             throw new ArgumentException("Invalid outline command in aperture macro");
 
-        var coordinates = new Coordinate[nVertices + 1];
+        var coordinates = new Coordinate[(int)nVertices + 1];
 
         for (int i = 0; i < nVertices; i++)
         {
@@ -166,7 +166,7 @@ public class ApertureMacro : ApertureMacroBase
             coordinates[i] = new Coordinate(x, y);
         }
 
-        coordinates[nVertices] = coordinates[0];
+        coordinates[(int)nVertices] = coordinates[0];
 
         var polygon = _geometryFactory.CreatePolygon(coordinates);
 
@@ -180,13 +180,13 @@ public class ApertureMacro : ApertureMacroBase
             throw new ArgumentException("Invalid polygon command in aperture macro");
 
         bool exposure = cmd[1].Eval(vars) > 0.5;
-        int nVertices = (int)Math.Round(cmd[2].Eval(vars));
+        double nVertices = cmd[2].Eval(vars);
         double centerX = cmd[3].Eval(vars);
         double centerY = cmd[4].Eval(vars);
         double diameter = Math.Abs(cmd[5].Eval(vars));
         double rotation = cmd.Count > 6 ? cmd[6].Eval(vars) : 0;
 
-        var coordinates = new Coordinate[nVertices + 1];
+        var coordinates = new Coordinate[(int)nVertices + 1];
 
         for (int i = 0; i < nVertices; i++)
         {
@@ -196,7 +196,7 @@ public class ApertureMacro : ApertureMacroBase
             coordinates[i] = new Coordinate(x, y);
         }
 
-        coordinates[nVertices] = coordinates[0];
+        coordinates[(int)nVertices] = coordinates[0];
 
         var polygon = _geometryFactory.CreatePolygon(coordinates);
 
