@@ -16,10 +16,24 @@ namespace CADence.CUI
 
         static void Main(string[] args)
         {
-            // Простейшая настройка NLog: вывод в консоль
+            // Настройка NLog: вывод в консоль и запись в файл
             var config = new NLog.Config.LoggingConfiguration();
-            var logConsole = new NLog.Targets.ConsoleTarget("logConsole");
+
+            // Консольный таргет
+            var logConsole = new NLog.Targets.ConsoleTarget("logConsole")
+            {
+                Layout = "${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=toString}"
+            };
             config.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
+
+            // Файловый таргет
+            var logFile = new NLog.Targets.FileTarget("logFile")
+            {
+                FileName = "log.txt",
+                Layout = "${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=toString}"
+            };
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logFile);
+
             LogManager.Configuration = config;
 
             while (true)
