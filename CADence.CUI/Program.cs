@@ -24,7 +24,7 @@ namespace CADence.CUI
             {
                 Layout = "${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=toString}"
             };
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
+            config.AddRule(LogLevel.Trace, LogLevel.Fatal, logConsole);
 
             // Файловый таргет
             var logFile = new NLog.Targets.FileTarget("logFile")
