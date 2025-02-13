@@ -12,7 +12,11 @@ namespace CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
 
 public class LayerFabricGerber274x : ILayerFabric
 {
-
+    private readonly NLog.ILogger _logger;
+    public LayerFabricGerber274x()
+    {
+        _logger = NLog.LogManager.GetCurrentClassLogger();
+    }
     /// <summary>
     /// Список форматов для <see cref="_outline"/>.
     /// </summary>
@@ -53,70 +57,78 @@ public class LayerFabricGerber274x : ILayerFabric
     /// <returns>Список слоев, определенных из входных данных.</returns>
     private async Task<List<LayerBase>> Init(IDictionary<string, string> data)
     {
-        var dataCopy = data;
-
-        List<string> ids = new();
-
-        for (var i = 0; i < dataCopy.Count; i++)
+        try
         {
-            var key = data.Keys.ElementAt(i);
-            var value = data[key];
+            var dataCopy = data;
 
-            if (DetermineBoard(key, value))
+            List<string> ids = new();
+
+            for (var i = 0; i < dataCopy.Count; i++)
             {
-                ids.Add(key);
-                continue;
+                var key = data.Keys.ElementAt(i);
+                var value = data[key];
+
+                if (DetermineBoard(key, value))
+                {
+                    ids.Add(key);
+                    continue;
+                }
+
+                if (DetermineDrill(value))
+                {
+                    ids.Add(key);
+                    continue;
+                }
             }
 
-            if (DetermineDrill(value))
+            for (var i = 0; i < ids.Count; i++)
             {
-                ids.Add(key);
-                continue;
+                var key = ids[i];
+                dataCopy.Remove(key);
             }
+
+            ids = null;
+
+
+            var Substrate = new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline));
+
+            var resultTask = await Task.WhenAll(_tasks);
+            var result = resultTask.ToList();
+
+            for (var i = 0; i < dataCopy.Count; i++)
+            {
+                var key = data.Keys.ElementAt(i);
+                var ext = Path.GetExtension(key).TrimStart('.').ToLower();
+
+                if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
+                {
+                    throw new ArgumentOutOfRangeException();
+                }
+
+
+                var value = data[key];
+
+                //_tasks.Add(DetermineLayer(key, value, Substrate));
+
+                if (extension == Layer274xFileExtensionsSupported.gbl)
+                {
+                    result.Add(new BottomCopper(new LayerFormat(), new GerberParser274X(value), Substrate));
+                }
+
+                if (extension == Layer274xFileExtensionsSupported.gtl)
+                {
+                    result.Add(new TopCopper(new LayerFormat(), new GerberParser274X(value), Substrate));
+                }
+            }
+
+            result.Insert(0, Substrate);
+            return result;
         }
-
-        for(var i = 0; i< ids.Count; i++)
+        catch (Exception ex)
         {
-            var key = ids[i];
-            dataCopy.Remove(key);
+            _logger.Error(ex, ex.Message);
+            throw new Exception(ex.Message, ex);
         }
-
-        ids = null;
-
-
-        var Substrate = new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline));
-
-        var resultTask = await Task.WhenAll(_tasks);
-        var result = resultTask.ToList();
-
-        for (var i = 0;i < dataCopy.Count;i++)
-        {
-            var key = data.Keys.ElementAt(i);
-            var ext = Path.GetExtension(key).TrimStart('.').ToLower();
-
-            if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-
-            var value = data[key];
-
-            //_tasks.Add(DetermineLayer(key, value, Substrate));
-
-            if (extension == Layer274xFileExtensionsSupported.gbl)
-            {
-                result.Add(new BottomCopper(new LayerFormat(), new GerberParser274X(value), Substrate));
-            }
-
-            if (extension == Layer274xFileExtensionsSupported.gtl)
-            {
-                result.Add(new TopCopper(new LayerFormat(), new GerberParser274X(value), Substrate));
-            }
-        }
-
-        result.Insert(0, Substrate);
-        return result;
     }
 
     /// <summary>

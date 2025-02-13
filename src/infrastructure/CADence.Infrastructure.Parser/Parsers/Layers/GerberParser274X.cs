@@ -24,7 +24,7 @@ public class GerberParser274X : GerberParserBase
 
     private Gerber274xFabric _fabric = new();
 
-    private NLog.ILogger _logger;
+    private readonly NLog.ILogger _logger;
 
     /// <summary>
     /// Инициализирует новый экземпляр парсера Gerber 274X.
