@@ -8,10 +8,11 @@ namespace CADence.Layer.Gerber_274x;
 
 public class TopCopper : LayerBase
 {
-
-    public TopCopper(LayerFormatBase format, GerberParserBase parser) : base(format, parser)
+    private Substrate Substrate { get; set; }
+    public TopCopper(LayerFormatBase format, GerberParserBase parser, Substrate substrate) : base(format, parser)
     {
         Layer = Enums.GerberLayer.TopCopper;
+        Substrate = substrate;
     }
 
     public override Geometry GetLayer()

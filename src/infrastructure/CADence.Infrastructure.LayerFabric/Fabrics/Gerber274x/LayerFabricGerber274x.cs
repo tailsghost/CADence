@@ -6,6 +6,7 @@ using CADence.Infrastructure.Parser.Parsers.Drills;
 using CADence.Layer.Abstractions;
 using CADence.Layer.Gerber_274x;
 using CADence.Models.Format;
+using SharpCompress.Common;
 
 namespace CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
 
@@ -45,25 +46,69 @@ public class LayerFabricGerber274x : ILayerFabric
     /// <returns>Список слоев, определенных из входных данных.</returns>
     private async Task<List<LayerBase>> Init(IDictionary<string, string> data)
     {
-        for (var i = 0; i < data.Count; i++)
+        var dataCopy = data;
+
+        List<string> ids = new();
+
+        for (var i = 0; i < dataCopy.Count; i++)
         {
             var key = data.Keys.ElementAt(i);
             var value = data[key];
 
             if (DetermineBoard(key, value))
+            {
+                ids.Add(key);
                 continue;
+            }
 
             if (DetermineDrill(value))
+            {
+                ids.Add(key);
                 continue;
-
-            //_tasks.Add(DetermineLayer(key, value));
+            }
         }
 
-        //var resultTask = await Task.WhenAll(_tasks);
-        //var result = resultTask.ToList();
+        for(var i = 0; i< ids.Count; i++)
+        {
+            var key = ids[i];
+            dataCopy.Remove(key);
+        }
 
-        var result = new List<LayerBase>();
-        result.Add(new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline)));
+        ids = null;
+
+
+        var Substrate = new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline));
+
+        var resultTask = await Task.WhenAll(_tasks);
+        var result = resultTask.ToList();
+
+        for (var i = 0;i < dataCopy.Count;i++)
+        {
+            var key = data.Keys.ElementAt(i);
+            var ext = Path.GetExtension(key).TrimStart('.').ToLower();
+
+            if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+
+            var value = data[key];
+
+            //_tasks.Add(DetermineLayer(key, value, Substrate));
+
+            if (extension == Layer274xFileExtensionsSupported.gbl)
+            {
+                result.Add(new BottomCopper(new LayerFormat(), new GerberParser274X(value), Substrate));
+            }
+
+            if (extension == Layer274xFileExtensionsSupported.gtl)
+            {
+                result.Add(new TopCopper(new LayerFormat(), new GerberParser274X(value), Substrate));
+            }
+        }
+
+        result.Insert(0, Substrate);
         return result;
     }
 
@@ -96,32 +141,32 @@ public class LayerFabricGerber274x : ILayerFabric
         return true;
     }
 
-    /// <summary>
-    /// Определяет слой по расширению файла и создает соответствующий объект слоя.
-    /// </summary>
-    /// <param name="fileName">Имя файла.</param>
-    /// <param name="file">Содержимое файла.</param>
-    /// <returns>Задача, которая при завершении возвращает объект слоя.</returns>
-    //private Task<LayerBase> DetermineLayer(string fileName, string file)
-    //{
-    //    var ext = Path.GetExtension(fileName).TrimStart('.').ToLower();
+    // <summary>
+    // Определяет слой по расширению файла и создает соответствующий объект слоя.
+    // </summary>
+    // <param name = "fileName" > Имя файла.</param>
+    // <param name = "file" > Содержимое файла.</param>
+    // <returns>Задача, которая при завершении возвращает объект слоя.</returns>
+    private Task<LayerBase> DetermineLayer(string fileName, string file, Substrate substrate)
+    {
+        var ext = Path.GetExtension(fileName).TrimStart('.').ToLower();
 
-    //    if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
-    //    {
-    //        throw new ArgumentOutOfRangeException();
-    //    }
-        
-    //    var result = extension switch
-    //    {
-    //        Layer274xFileExtensionsSupported.gbl => Task.Run<LayerBase>(() => new BottomCopper(new LayerFormat(), new GerberParser274X(file))),
-    //        Layer274xFileExtensionsSupported.gtl => Task.Run<LayerBase>(() => new TopCopper(new LayerFormat(), new GerberParser274X(file))),
-    //        Layer274xFileExtensionsSupported.gbo => Task.Run<LayerBase>(() => new BottomSilk(new LayerFormat(), new GerberParser274X(file))),
-    //        Layer274xFileExtensionsSupported.gto => Task.Run<LayerBase>(() => new TopSilk(new LayerFormat(), new GerberParser274X(file))),
-    //        Layer274xFileExtensionsSupported.gbs => Task.Run<LayerBase>(() => new BottomMask(new LayerFormat(), new GerberParser274X(file))),
-    //        Layer274xFileExtensionsSupported.gts => Task.Run<LayerBase>(() => new TopMask(new LayerFormat(), new GerberParser274X(file))),
-    //        _ => throw new ArgumentOutOfRangeException()
-    //    };
+        if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
+        {
+            throw new ArgumentOutOfRangeException();
+        }
 
-    //    return result;
-    //}
+        var result = extension switch
+        {
+            Layer274xFileExtensionsSupported.gbl => Task.Run<LayerBase>(() => new BottomCopper(new LayerFormat(), new GerberParser274X(file), substrate)),
+            Layer274xFileExtensionsSupported.gtl => Task.Run<LayerBase>(() => new TopCopper(new LayerFormat(), new GerberParser274X(file), substrate)),
+            //Layer274xFileExtensionsSupported.gbo => Task.Run<LayerBase>(() => new BottomSilk(new LayerFormat(), new GerberParser274X(file))),
+            //Layer274xFileExtensionsSupported.gto => Task.Run<LayerBase>(() => new TopSilk(new LayerFormat(), new GerberParser274X(file))),
+            //Layer274xFileExtensionsSupported.gbs => Task.Run<LayerBase>(() => new BottomMask(new LayerFormat(), new GerberParser274X(file))),
+            //Layer274xFileExtensionsSupported.gts => Task.Run<LayerBase>(() => new TopMask(new LayerFormat(), new GerberParser274X(file))),
+            //_ => throw new ArgumentOutOfRangeException()
+        };
+
+        return result;
+    }
 }

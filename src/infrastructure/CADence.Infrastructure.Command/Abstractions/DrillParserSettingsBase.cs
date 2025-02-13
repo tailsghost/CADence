@@ -1,4 +1,5 @@
 using CADence.Infrastructure.Aperture.Abstractions;
+using CADence.Infrastructure.Aperture.Gerber_274x;
 using CADence.Infrastructure.Parser.Enums;
 using NetTopologySuite.Geometries;
 
@@ -63,10 +64,10 @@ public class DrillParserSettingsBase : SettingsBase
     /// <summary>
     /// Дырки PLATED
     /// </summary>
-    public ApertureBase Pth = new();
+    public Drill Pth = new();
 
     /// <summary>
     /// Дырки NON_PLATED
     /// </summary>
-    public ApertureBase Npth = new();
+    public Drill Npth = new();
 }

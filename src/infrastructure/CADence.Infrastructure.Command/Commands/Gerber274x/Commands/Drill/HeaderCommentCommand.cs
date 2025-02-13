@@ -16,10 +16,10 @@ public class HeaderCommentCommand : CommandBase<DrillParser274xSettings>
     /// <returns>Обновленные настройки парсера.</returns>
     public override DrillParser274xSettings Execute(DrillParser274xSettings settings)
     {
-        if (settings.cmd.Length == 16 && settings.cmd[14] == ':')
+        if (settings.cmd.Length == 15 && settings.cmd[13] == ':')
         {
-            var a = int.Parse(settings.cmd[13].ToString());
-            var b = int.Parse(settings.cmd[15].ToString());
+            var a = int.Parse(settings.cmd[12].ToString());
+            var b = int.Parse(settings.cmd[14].ToString());
             settings.format.ConfigureFormat(a, b);
         }
         else if (settings.cmd == "TYPE=PLATED")

@@ -118,7 +118,7 @@ namespace CADence.CUI
             var pathToSVGWriting = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "output.svg");
             Console.WriteLine($"Путь по которому будет сохранён файл: {pathToSVGWriting}");
 
-            var svgWriter = new SVGWriter(layers, 1, pathToSVGWriting ?? throw new ArgumentNullException(nameof(pathToSVGWriting)));
+            var svgWriter = new SVGWriter(layers, 3, pathToSVGWriting ?? throw new ArgumentNullException(nameof(pathToSVGWriting)));
             svgWriter.Execute(false);
         }
     }

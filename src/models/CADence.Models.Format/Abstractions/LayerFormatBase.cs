@@ -23,7 +23,7 @@ public abstract class LayerFormatBase
     /// <summary>
     /// Конфигурирует формат чисел.
     /// </summary>
-    public abstract void ConfigureFormat(int integerDigits, int decimalDigits, bool reverse = false);
+    public abstract void ConfigureFormat(int integerDigits, int decimalDigits);
 
     /// <summary>
     /// Устанавливает единицы измерения в дюймы.

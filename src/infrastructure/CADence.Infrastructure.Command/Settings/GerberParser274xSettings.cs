@@ -52,7 +52,17 @@ public class GerberParser274xSettings : GerberParserSettingsBase
             return;
 
         var geometryFactory = new GeometryFactory();
-        var region = geometryFactory.CreatePolygon(RegionAccum.ToArray());
+
+        Polygon region = null;
+
+        try
+        {
+            region = geometryFactory.CreatePolygon(RegionAccum.ToArray());
+        } catch
+        {
+            RegionAccum.Add(RegionAccum[0]);
+            region = geometryFactory.CreatePolygon(RegionAccum.ToArray());
+        }
 
         if (region.Area < 0)
         {

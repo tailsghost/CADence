@@ -1,4 +1,5 @@
 using CADence.Infrastructure.Aperture.Abstractions;
+using CADence.Infrastructure.Aperture.Gerber_274x;
 using CADence.Infrastructure.Aperture.NetTopologySuite;
 using CADence.Infrastructure.Command.Property.Gerber274x;
 using CADence.Infrastructure.Parser.Abstractions;
@@ -19,12 +20,12 @@ public class DrillParser274xSettings : DrillParserSettingsBase
     /// <summary>
     /// Текущая апертура
     /// </summary>
-    public ApertureBase Aperture;
+    public Drill Aperture;
 
     /// <summary>
     /// Список всех апертур
     /// </summary>
-    public Dictionary<int, ApertureBase> Apertures = [];
+    public Dictionary<int, Drill> Apertures = [];
 
     /// <summary>
     /// Текущий макрос апертуры.

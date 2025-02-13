@@ -59,6 +59,8 @@ public class GerberParser274X : GerberParserBase
         var is_attrib = false;
         var ss = new StringBuilder();
 
+        int count = 0;
+
         while (stream.Peek() != -1)
         {
             var c = (char)stream.Read();
@@ -82,7 +84,16 @@ public class GerberParser274X : GerberParserBase
 
                 _settings.cmd = cmd;
 
-                _settings = _fabric.ExecuteCommand(_settings);
+                try
+                {
+                    if (count == 7038)
+                        Console.WriteLine(count);
+                    _settings = _fabric.ExecuteCommand(_settings);
+                    count++;
+                }
+                catch {
+                    Console.WriteLine(count);
+                }
 
                 if (!_settings.IsDone)
                 {

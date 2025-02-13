@@ -52,6 +52,9 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
         /// <exception cref="InvalidOperationException">Выбрасывается, если хотя бы одна команда не была выполнена.</exception>
         public override void Execute()
         {
+
+            Geometry geometry = null;
+
             foreach (string drill in DRILLS)
             {
                 using var stream = new StringReader(string.Join("\n", drill));
@@ -79,7 +82,7 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
                     }
                     else
                     {
-                        DrillGeometry = DrillGeometry.Difference(geom);
+                        DrillGeometry = DrillGeometry.Union(geom);
                     }
                 }
             }

@@ -10,7 +10,7 @@ namespace CADence.Infrastructure.Aperture.Abstractions;
 /// </summary>
 public class ApertureBase
 {
-    private readonly List<Geometry> _accumulatedGeometries = new List<Geometry>();
+    protected readonly List<Geometry> _accumulatedGeometries = new List<Geometry>();
 
     private readonly GeometryFactory _geomFactory;
     

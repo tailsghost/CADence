@@ -11,22 +11,14 @@ public class LayerFormat : LayerFormatBase
 
     private double _conversionFactor;
 
-    private bool _addTrailingZeros;
-
-    public override void ConfigureFormat(int integerDigits, int decimalDigits, bool reverse = false)
+    public override void ConfigureFormat(int integerDigits, int decimalDigits)
     {
         EnsureReconfigurable();
         _isFormatConfigured = true;
 
-        if(reverse)
-        {
-            _integerDigits = decimalDigits;
-            _decimalDigits = integerDigits;
-        } else
-        {
-            _integerDigits = integerDigits;
-            _decimalDigits = decimalDigits;
-        }
+        _integerDigits = integerDigits;
+        _decimalDigits = decimalDigits;
+
     }
 
     public override void ConfigureInches()
@@ -51,24 +43,57 @@ public class LayerFormat : LayerFormatBase
 
     public override double ParseFixed(string value)
     {
+        EnsureConfigured();
+
         if (value.Contains('.'))
         {
             return ParseFloat(value);
         }
 
-        int totalDigits = value.Length;
-        int signOffset = (value[0] == '-' || value[0] == '+') ? 1 : 0;
-        int digitsCount = totalDigits - signOffset;
+        bool isNegative = value[0] == '-' || value[0] == '+';
+        string digits = isNegative ? value.Substring(1) : value;
 
-        if (digitsCount > _integerDigits + _decimalDigits)
+        int expectedLength = _integerDigits + _decimalDigits;
+
+        if (_addTrailingZeros && digits.Length < expectedLength)
+        {
+            digits = digits.PadRight(expectedLength, '0');
+        }
+
+        else if (digits.Length > expectedLength)
         {
             throw new FormatException($"Unexpected coordinate length: {value}");
         }
 
-        var integerDigits = _integerDigits;
+        string resultStr;
+        if (digits.Length == expectedLength)
+        {
+            string intPart = digits.Substring(0, _integerDigits);
+            string fracPart = digits.Substring(_integerDigits);
+            resultStr = intPart + "." + fracPart;
+        }
+        else
+        {
+            int pos = digits.Length - _decimalDigits;
+            if (pos <= 0)
+            {
+                resultStr = "0." + new string('0', -pos) + digits;
+            }
+            else
+            {
+                resultStr = digits.Substring(0, pos) + "." + digits.Substring(pos);
+            }
+        }
 
-        double parsed = double.Parse(value, CultureInfo.InvariantCulture);
-        double result = parsed / Math.Pow(10, integerDigits);
+        if (isNegative)
+        {
+            if (resultStr[0] != '-')
+            {
+                resultStr = "-" + resultStr;
+            }
+        }
+
+        double result = double.Parse(resultStr, CultureInfo.InvariantCulture);
 
         return AdjustValue(result);
     }
