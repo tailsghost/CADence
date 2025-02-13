@@ -24,12 +24,15 @@ public class GerberParser274X : GerberParserBase
 
     private Gerber274xFabric _fabric = new();
 
+    private NLog.ILogger _logger;
+
     /// <summary>
     /// Инициализирует новый экземпляр парсера Gerber 274X.
     /// </summary>
     /// <param name="file">Строковое содержимое Gerber файла.</param>
     public GerberParser274X(string file)
     {
+        _logger = NLog.LogManager.GetCurrentClassLogger();
         FILE = file;
         Execute();
     }
@@ -86,12 +89,12 @@ public class GerberParser274X : GerberParserBase
 
                 try
                 {
-                    Console.WriteLine(string.Format("INFO: {0}", count));
+                    _logger.Debug(string.Format("INFO: {0}", count));
                     _settings = _fabric.ExecuteCommand(_settings);
                     count++;
                 }
-                catch {
-                    Console.WriteLine(string.Format("ERROR: {0}", count));
+                catch (Exception ex) {
+                    _logger.Error(ex, string.Format("ERROR: {0}", count));
                 }
 
                 if (!_settings.IsDone)

@@ -1,14 +1,27 @@
-﻿using CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
 using CADence.Infrastructure.LayerFabric.Readers;
 using CADence.Infrastructure.SVG_JSON;
 using CADence.Layer.Abstractions;
+using NLog;
 
 namespace CADence.CUI
 {
     internal class Program
     {
+        // Получаем логгер для текущего класса
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+
         static void Main(string[] args)
         {
+            // Простейшая настройка NLog: вывод в консоль
+            var config = new NLog.Config.LoggingConfiguration();
+            var logConsole = new NLog.Targets.ConsoleTarget("logConsole");
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
+            LogManager.Configuration = config;
+
             while (true)
             {
                 string? path = GetFilePathFromUser();
@@ -17,15 +30,15 @@ namespace CADence.CUI
                     continue;
                 }
 
-                Console.WriteLine("Парсинг файла...");
+                _logger.Info("Парсинг файла...");
                 try
                 {
                     Execute(path);
-                    Console.WriteLine("Парсинг успешно завершён.");
+                    _logger.Info("Парсинг успешно завершён.");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Ошибка при выполнении парсинга: {ex.Message}");
+                    _logger.Error(ex, "Ошибка при выполнении парсинга");
                 }
 
                 if (!AskUserToContinue())
@@ -59,7 +72,7 @@ namespace CADence.CUI
                     continue;
                 }
 
-                Console.WriteLine("Некорректный ввод.\r\nНажмите любую кнопку чтобы продолжить...");
+                _logger.Warn("Некорректный ввод. Нажмите любую кнопку чтобы продолжить...");
                 Console.ReadKey();
                 Console.Clear();
             }
@@ -87,7 +100,7 @@ namespace CADence.CUI
                     return false;
                 }
 
-                Console.WriteLine("Некорректный ввод.\r\nНажмите любую кнопку чтобы продолжить...");
+                _logger.Warn("Некорректный ввод. Нажмите любую кнопку чтобы продолжить...");
                 Console.ReadKey();
                 Console.Clear();
             }
@@ -104,6 +117,7 @@ namespace CADence.CUI
             {
                 throw new ArgumentNullException(nameof(path));
             }
+
             List<LayerBase> layers;
 
             byte[] file = File.ReadAllBytes(path);
@@ -116,7 +130,7 @@ namespace CADence.CUI
             }
 
             var pathToSVGWriting = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "output.svg");
-            Console.WriteLine($"Путь по которому будет сохранён файл: {pathToSVGWriting}");
+            _logger.Info($"Путь по которому будет сохранён файл: {pathToSVGWriting}");
 
             var svgWriter = new SVGWriter(layers, 3, pathToSVGWriting ?? throw new ArgumentNullException(nameof(pathToSVGWriting)));
             svgWriter.Execute(false);

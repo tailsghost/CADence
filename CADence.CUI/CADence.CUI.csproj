@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NLog" Version="5.4.0" />
+    <PackageReference Include="NLog.Extensions.Hosting" Version="5.4.0" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.LayerFabric\CADence.Infrastructure.LayerFabric.csproj" />
     <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.SVG&amp;JSON\CADence.Infrastructure.SVG&amp;JSON.csproj" />
   </ItemGroup>
