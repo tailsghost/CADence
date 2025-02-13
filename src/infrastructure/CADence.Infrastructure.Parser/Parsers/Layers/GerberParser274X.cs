@@ -166,7 +166,6 @@ public class GerberParser274X : GerberParserBase
             return multiPolygon;
         }
 
-        // Определяем самый большой полигон по площади
         double maxArea = double.MinValue;
         Polygon largestPolygon = null;
 
@@ -188,7 +187,6 @@ public class GerberParser274X : GerberParserBase
 
         if (largestPolygon != null)
         {
-            // Создаем ограничивающий прямоугольник (borderBox) по envelope самого большого полигона
             Envelope envelope = largestPolygon.EnvelopeInternal;
             Coordinate[] borderBoxCoords = new Coordinate[]
             {
@@ -201,7 +199,6 @@ public class GerberParser274X : GerberParserBase
 
             Polygon borderBox = _geometryFactory.CreatePolygon(borderBoxCoords);
 
-            // Вычитаем все полигоны из borderBox, чтобы получить нужные вырезы (дырки)
             Geometry borderBoxWithHoles = borderBox;
             for (int i = 0; i < multiPolygon.NumGeometries; i++)
             {

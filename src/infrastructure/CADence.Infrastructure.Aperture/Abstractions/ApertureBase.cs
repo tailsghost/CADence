@@ -192,8 +192,8 @@ public class ApertureBase
         double rotate = 0.0,
         double scale = 1.0)
     {
-        DrawPaths(aperture.AdditiveGeometry, polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
-        DrawPaths(aperture.SubtractiveGeometry, !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.GetDark(), polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.GetClear(), !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
     }
 
     /// <summary>
@@ -228,7 +228,7 @@ public class ApertureBase
             return new GeometryCollection([], _geomFactory);
         }
 
-        var point = _geomFactory.CreatePoint(new Coordinate(0, 0));
+        var point = new Point(0, 0);
 
         var polygon = point.Render(HoleDiameter, false);
 
