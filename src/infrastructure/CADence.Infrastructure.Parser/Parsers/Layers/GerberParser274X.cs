@@ -87,7 +87,7 @@ public class GerberParser274X : GerberParserBase
 
                     var cmd = ss.ToString();
 
-                    //_settings.AmBuilder?.Append(cmd);
+                    _settings.AmBuilder?.Append(cmd);
 
                     _settings.cmd = cmd;
 

@@ -34,11 +34,11 @@ public class LayerFabricGerber274x : ILayerFabric
     private readonly List<Task<LayerBase>> _tasks = new();
 
 
-    public List<LayerBase> GetLayers(IInputData inputData)
+    public async Task<List<LayerBase>> GetLayers(IInputData inputData)
     {
         try
         {
-            return Init(inputData.Get());
+            return await Init(inputData.Get());
         }
         catch(Exception ex)
         {
@@ -51,7 +51,7 @@ public class LayerFabricGerber274x : ILayerFabric
     /// </summary>
     /// <param name="data">Словарь с данными, где ключ - имя файла, а значение - его содержимое.</param>
     /// <returns>Список слоев, определенных из входных данных.</returns>
-    private List<LayerBase> Init(IDictionary<string, string> data)
+    private async Task<List<LayerBase>> Init(IDictionary<string, string> data)
     {
         var dataCopy = data;
 
@@ -86,7 +86,7 @@ public class LayerFabricGerber274x : ILayerFabric
 
         var Substrate = new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline));
 
-        var resultTask = Task.WhenAll(_tasks).Result;
+        var resultTask = await Task.WhenAll(_tasks);
         var result = resultTask.ToList();
 
         for (var i = 0;i < dataCopy.Count;i++)
