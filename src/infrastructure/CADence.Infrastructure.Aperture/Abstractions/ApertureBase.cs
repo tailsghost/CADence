@@ -139,7 +139,7 @@ public class ApertureBase
     /// <param name="rotate">Угол поворота в радианах.</param>
     /// <param name="scale">Масштабирование.</param>
     /// <param name="specialFillType">Если true – фиксирует накопления до и после преобразований.</param>
-    private void DrawPaths(
+    public void DrawPaths(
         Geometry geometry,
         bool polarity,
         double translateX,
