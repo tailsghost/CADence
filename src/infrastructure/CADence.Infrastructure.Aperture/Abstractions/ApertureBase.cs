@@ -30,7 +30,7 @@ public class ApertureBase
     {
         ACCUM_POLARITY = true;
         Simplified = false;
-        _geomFactory = new GeometryFactory();
+        _geomFactory = new GeometryFactory(new PrecisionModel(1e5));
         AdditiveGeometry = _geomFactory.CreateGeometryCollection(new Geometry[0]);
         SubtractiveGeometry = _geomFactory.CreateGeometryCollection(new Geometry[0]);
     }
@@ -113,8 +113,6 @@ public class ApertureBase
             mergedAccumulated = CascadedPolygonUnion.Union(_accumulatedGeometries);
             // На этом месте, если геометрия сложная, то все ломается.
         }
-
-
 
         if (ACCUM_POLARITY)
         {
@@ -210,7 +208,7 @@ public class ApertureBase
     public Geometry? GetClear()
     {
         CommitPaths();
-        return SubtractiveGeometry;
+        return SimplifyGeometry(SubtractiveGeometry);
     }
 
     /// <summary>
@@ -220,8 +218,17 @@ public class ApertureBase
     public Geometry? GetDark()
     {
         CommitPaths();
-        return AdditiveGeometry;
+        return SimplifyGeometry(AdditiveGeometry);
     }
+
+
+    public Geometry SimplifyGeometry(Geometry geometry, double tolerance = 1e-8)
+    {
+        if (Simplified) return geometry;
+
+        return geometry;
+    }
+
     /// <summary>
     /// Виртуальный метод с возможностью переопределения базовой логики генерации отверстия.
     /// Если HoleDiameter меньше или равен 0, возвращается пустая коллекция геометрий.

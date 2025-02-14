@@ -1,7 +1,5 @@
-﻿using CADence.Aperture;
-using CADence.Layer.Abstractions;
+﻿using CADence.Layer.Abstractions;
 using NetTopologySuite.Geometries;
-using System.Text;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
 using CADence.Infrastructure.Aperture.Gerber_274x;
@@ -30,27 +28,28 @@ public class BottomCopper : LayerBase
     {
         var copper = PARSER.GetResult(false);
 
-        _geometryLayer = Substrate.GetLayer().Difference(copper);
+        _geometryLayer = Substrate.GetLayer().Intersection(copper);
 
 
-
-        double MinDistanceHole = GetMinDistanceHoleToPad(_geometryLayer);
-        double MinDistanceBetween = GetMinDistanceBetweenTracks(_geometryLayer);
+        if (_geometryLayer is MultiPolygon polygon) {
+            double MinDistanceHole = GetMinDistanceHoleToPad(polygon);
+            double MinDistanceBetween = GetMinDistanceBetweenTracks(polygon);
+        }
 
     }
 
 
 
-    private double GetMinDistanceHoleToPad(Geometry copperLayer)
+    private double GetMinDistanceHoleToPad(MultiPolygon copperLayer)
     {
         double minDistance = double.MaxValue;
 
-        if (copperLayer is NetTopologySuite.Geometries.Polygon poly)
+        foreach (NetTopologySuite.Geometries.Polygon poly in copperLayer.Geometries)
         {
             LineString outerRing = poly.ExteriorRing;
 
             if (poly.InteriorRings == null || poly.InteriorRings.Length == 0)
-                return minDistance;
+                continue;
 
             foreach (LineString innerRing in poly.InteriorRings)
             {
@@ -59,38 +58,14 @@ public class BottomCopper : LayerBase
                     minDistance = distance;
             }
         }
-        else if (copperLayer is MultiPolygon multiPoly)
-        {
-            for (int i = 0; i < multiPoly.NumGeometries; i++)
-            {
-                double distance = GetMinDistanceHoleToPad(multiPoly.GetGeometryN(i));
-                if (distance < minDistance)
-                    minDistance = distance;
-            }
-        }
 
         return minDistance;
     }
 
-    private double GetMinDistanceBetweenTracks(Geometry copperLayer)
+    private double GetMinDistanceBetweenTracks(MultiPolygon copperLayer)
     {
         double minDistance = double.MaxValue;
-        List<NetTopologySuite.Geometries.Polygon> polygons = new();
-
-        if (copperLayer is NetTopologySuite.Geometries.Polygon poly)
-        {
-            polygons.Add(poly);
-        }
-        else if (copperLayer is MultiPolygon multiPoly)
-        {
-            for (int i = 0; i < multiPoly.NumGeometries; i++)
-            {
-                if (multiPoly.GetGeometryN(i) is NetTopologySuite.Geometries.Polygon p)
-                {
-                    polygons.Add(p);
-                }
-            }
-        }
+        var polygons = copperLayer.Geometries.Cast<NetTopologySuite.Geometries.Polygon>().ToList();
 
         for (int i = 0; i < polygons.Count; i++)
         {
@@ -105,3 +80,4 @@ public class BottomCopper : LayerBase
         return minDistance;
     }
 }
+

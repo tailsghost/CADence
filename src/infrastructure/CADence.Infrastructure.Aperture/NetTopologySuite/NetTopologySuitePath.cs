@@ -7,8 +7,8 @@ public static class NetTopologySuitePath
 {
     private static BufferParameters _bufferParams = new BufferParameters
     {
-        MitreLimit = 1.0,
-        QuadrantSegments = 8
+        MitreLimit = 0.5,
+        QuadrantSegments = 24
     };
     
     public static Geometry Render(this Geometry geometry, double thickness, bool square)
