@@ -107,6 +107,7 @@ public class ApertureBase
         else
         {
             mergedAccumulated = CascadedPolygonUnion.Union(_accumulatedGeometries);
+            // На этом месте, если геометрия сложная, то все ломается.
         }
 
         if (ACCUM_POLARITY)
