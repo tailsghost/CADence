@@ -13,8 +13,6 @@ namespace CADence.Infrastructure.Parser.Parsers.Drills
     /// </summary>
     public class DrillParser274X : DrillParserBase
     {
-        private GeometryFactory _geometryFactory = new();
-
         /// <summary>
         /// Список файлов дырок.
         /// </summary>

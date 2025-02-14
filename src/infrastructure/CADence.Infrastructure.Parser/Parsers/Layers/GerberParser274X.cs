@@ -4,6 +4,7 @@ using CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.Precision;
 
 namespace CADence.Infrastructure.Parser.Parsers;
 
@@ -12,7 +13,7 @@ namespace CADence.Infrastructure.Parser.Parsers;
 /// </summary>
 public class GerberParser274X : GerberParserBase
 {
-    private static GeometryFactory _geometryFactory = new();
+    private  GeometryFactory _geometryFactory;
 
     /// <summary>
     /// Содержит содержимое Gerber файла.
@@ -36,6 +37,7 @@ public class GerberParser274X : GerberParserBase
     {
         _logger = NLog.LogManager.GetCurrentClassLogger();
         FILE = file;
+        _geometryFactory = new();
         Execute();
     }
 
@@ -159,7 +161,7 @@ public class GerberParser274X : GerberParserBase
 
 
 
-    private static Geometry FindLargestAreaPathWithoutBorderBox(Geometry multiPolygon)
+    private  Geometry FindLargestAreaPathWithoutBorderBox(Geometry multiPolygon)
     {
         if (multiPolygon == null || multiPolygon.IsEmpty)
         {
@@ -169,47 +171,28 @@ public class GerberParser274X : GerberParserBase
         double maxArea = double.MinValue;
         Polygon largestPolygon = null;
 
-        for (int i = 0; i < multiPolygon.NumGeometries; i++)
+        var envelope = multiPolygon.EnvelopeInternal;
+
+        Coordinate[] borderBoxCoords = new Coordinate[]
         {
-            Geometry subGeometry = multiPolygon.GetGeometryN(i);
-
-            if (subGeometry is Polygon polygon)
-            {
-                double area = polygon.Area;
-
-                if (area > maxArea)
-                {
-                    maxArea = area;
-                    largestPolygon = polygon;
-                }
-            }
-        }
-
-        if (largestPolygon != null)
-        {
-            Envelope envelope = largestPolygon.EnvelopeInternal;
-            Coordinate[] borderBoxCoords = new Coordinate[]
-            {
             new Coordinate(envelope.MinX, envelope.MinY),
             new Coordinate(envelope.MaxX, envelope.MinY),
             new Coordinate(envelope.MaxX, envelope.MaxY),
             new Coordinate(envelope.MinX, envelope.MaxY),
             new Coordinate(envelope.MinX, envelope.MinY)
-            };
+        };
 
-            Polygon borderBox = _geometryFactory.CreatePolygon(borderBoxCoords);
+        Polygon borderBox = _geometryFactory.CreatePolygon(borderBoxCoords);
 
-            Geometry borderBoxWithHoles = borderBox;
-            for (int i = 0; i < multiPolygon.NumGeometries; i++)
-            {
-                Geometry subGeometry = multiPolygon.GetGeometryN(i);
-                borderBoxWithHoles = borderBoxWithHoles.Difference(subGeometry);
-            }
-
-            return borderBoxWithHoles;
+        Geometry borderBoxWithHoles = borderBox;
+        for (int i = 0; i < multiPolygon.NumGeometries; i++)
+        {
+            Geometry subGeometry = multiPolygon.GetGeometryN(i);
+            borderBoxWithHoles = borderBoxWithHoles.Difference(subGeometry);
         }
 
-        return multiPolygon;
+        return borderBoxWithHoles;
+
     }
 
 }

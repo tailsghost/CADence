@@ -1,10 +1,8 @@
 using CADence.Aperture.Expression;
 using CADence.Infrastructure.Aperture.Abstractions;
-using CADence.Infrastructure.Aperture.Gerber_274x;
 using CADence.Infrastructure.Aperture.NetTopologySuite;
 using CADence.Models.Format.Abstractions;
 using NetTopologySuite.Geometries;
-using System.Collections.Concurrent;
 
 namespace CADence.Infrastructure.Aperture.Services;
 

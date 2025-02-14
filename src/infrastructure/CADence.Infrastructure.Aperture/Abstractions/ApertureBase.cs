@@ -4,7 +4,6 @@ using NetTopologySuite.Geometries.Utilities;
 using NetTopologySuite.Operation.Overlay;
 using NetTopologySuite.Operation.OverlayNG;
 using NetTopologySuite.Operation.Union;
-using NetTopologySuite.Simplify;
 
 namespace CADence.Infrastructure.Aperture.Abstractions;
 
@@ -30,7 +29,7 @@ public class ApertureBase
     {
         ACCUM_POLARITY = true;
         Simplified = false;
-        _geomFactory = new GeometryFactory(new PrecisionModel(1e5));
+        _geomFactory = new GeometryFactory();
         AdditiveGeometry = _geomFactory.CreateGeometryCollection(new Geometry[0]);
         SubtractiveGeometry = _geomFactory.CreateGeometryCollection(new Geometry[0]);
     }
