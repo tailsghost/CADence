@@ -1,6 +1,8 @@
 ﻿using CADence.Infrastructure.Aperture.NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Geometries.Utilities;
+using NetTopologySuite.Operation.Overlay;
+using NetTopologySuite.Operation.OverlayNG;
 using NetTopologySuite.Operation.Union;
 using NetTopologySuite.Simplify;
 
@@ -106,20 +108,24 @@ public class ApertureBase
         }
         else
         {
+
+            //var overlayParams = OverlayNG.Overlay();
             mergedAccumulated = CascadedPolygonUnion.Union(_accumulatedGeometries);
             // На этом месте, если геометрия сложная, то все ломается.
         }
 
+
+
         if (ACCUM_POLARITY)
         {
-            AdditiveGeometry = CascadedPolygonUnion.Union(new List<Geometry> { AdditiveGeometry, mergedAccumulated });
-            SubtractiveGeometry = SubtractiveGeometry.Difference(mergedAccumulated);
+            AdditiveGeometry = OverlayNG.Overlay(AdditiveGeometry, mergedAccumulated, SpatialFunction.Union);
+            SubtractiveGeometry = OverlayNG.Overlay(SubtractiveGeometry, mergedAccumulated, SpatialFunction.Difference);
         }
         else
         {
-            AdditiveGeometry =  AdditiveGeometry.Difference(mergedAccumulated);
+            AdditiveGeometry = OverlayNG.Overlay(AdditiveGeometry, mergedAccumulated, SpatialFunction.Difference);
 
-            SubtractiveGeometry = CascadedPolygonUnion.Union(new List<Geometry> { SubtractiveGeometry, mergedAccumulated });
+            SubtractiveGeometry = OverlayNG.Overlay(SubtractiveGeometry, mergedAccumulated, SpatialFunction.Union);
         }
 
         _accumulatedGeometries.Clear();

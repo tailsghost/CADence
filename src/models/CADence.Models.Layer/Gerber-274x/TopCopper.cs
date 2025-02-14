@@ -31,25 +31,23 @@ public class TopCopper : LayerBase
         _geometryLayer = Substrate.GetLayer().Intersection(copper);
 
 
-        if (_geometryLayer is MultiPolygon polygon)
-        {
-            double MinDistanceHole = GetMinDistanceHoleToPad(polygon);
-            double MinDistanceBetween = GetMinDistanceBetweenTracks(polygon);
-        }
+        double MinDistanceHole = GetMinDistanceHoleToPad(_geometryLayer);
+        double MinDistanceBetween = GetMinDistanceBetweenTracks(_geometryLayer);
+
     }
 
 
 
-    private double GetMinDistanceHoleToPad(MultiPolygon copperLayer)
+    private double GetMinDistanceHoleToPad(Geometry copperLayer)
     {
         double minDistance = double.MaxValue;
 
-        foreach (Polygon poly in copperLayer.Geometries)
+        if (copperLayer is Polygon poly)
         {
             LineString outerRing = poly.ExteriorRing;
 
             if (poly.InteriorRings == null || poly.InteriorRings.Length == 0)
-                continue;
+                return minDistance;
 
             foreach (LineString innerRing in poly.InteriorRings)
             {
@@ -58,14 +56,38 @@ public class TopCopper : LayerBase
                     minDistance = distance;
             }
         }
+        else if (copperLayer is MultiPolygon multiPoly)
+        {
+            for (int i = 0; i < multiPoly.NumGeometries; i++)
+            {
+                double distance = GetMinDistanceHoleToPad(multiPoly.GetGeometryN(i));
+                if (distance < minDistance)
+                    minDistance = distance;
+            }
+        }
 
         return minDistance;
     }
 
-    private double GetMinDistanceBetweenTracks(MultiPolygon copperLayer)
+    private double GetMinDistanceBetweenTracks(Geometry copperLayer)
     {
         double minDistance = double.MaxValue;
-        List<Polygon> polygons = copperLayer.Geometries.Cast<Polygon>().ToList();
+        List<Polygon> polygons = new();
+
+        if (copperLayer is Polygon poly)
+        {
+            polygons.Add(poly);
+        }
+        else if (copperLayer is MultiPolygon multiPoly)
+        {
+            for (int i = 0; i < multiPoly.NumGeometries; i++)
+            {
+                if (multiPoly.GetGeometryN(i) is Polygon p)
+                {
+                    polygons.Add(p);
+                }
+            }
+        }
 
         for (int i = 0; i < polygons.Count; i++)
         {

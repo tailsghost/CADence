@@ -44,23 +44,15 @@ public class GerberParser274xSettings : GerberParserSettingsBase
     /// </summary>
     public double MinimumThickness = double.MaxValue;
 
-    List<Coordinate> RegionAccum = new();
+    List<Coordinate> RegionAccum = new(1000);
 
     public void CommitRegion()
     {
         if (RegionAccum.Count < 3)
             return;
 
-        Polygon region = null;
-
-        try
-        {
-            region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
-        } catch
-        {
-            RegionAccum.Add(RegionAccum[0]);
-            region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
-        }
+        RegionAccum.Add(RegionAccum[0]);
+        Polygon region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
 
         if (region.Area < 0)
         {

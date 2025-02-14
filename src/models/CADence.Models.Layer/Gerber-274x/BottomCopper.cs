@@ -31,5 +31,77 @@ public class BottomCopper : LayerBase
         var copper = PARSER.GetResult(false);
 
         _geometryLayer = Substrate.GetLayer().Difference(copper);
+
+
+
+        double MinDistanceHole = GetMinDistanceHoleToPad(_geometryLayer);
+        double MinDistanceBetween = GetMinDistanceBetweenTracks(_geometryLayer);
+
+    }
+
+
+
+    private double GetMinDistanceHoleToPad(Geometry copperLayer)
+    {
+        double minDistance = double.MaxValue;
+
+        if (copperLayer is NetTopologySuite.Geometries.Polygon poly)
+        {
+            LineString outerRing = poly.ExteriorRing;
+
+            if (poly.InteriorRings == null || poly.InteriorRings.Length == 0)
+                return minDistance;
+
+            foreach (LineString innerRing in poly.InteriorRings)
+            {
+                double distance = outerRing.Distance(innerRing);
+                if (distance < minDistance)
+                    minDistance = distance;
+            }
+        }
+        else if (copperLayer is MultiPolygon multiPoly)
+        {
+            for (int i = 0; i < multiPoly.NumGeometries; i++)
+            {
+                double distance = GetMinDistanceHoleToPad(multiPoly.GetGeometryN(i));
+                if (distance < minDistance)
+                    minDistance = distance;
+            }
+        }
+
+        return minDistance;
+    }
+
+    private double GetMinDistanceBetweenTracks(Geometry copperLayer)
+    {
+        double minDistance = double.MaxValue;
+        List<NetTopologySuite.Geometries.Polygon> polygons = new();
+
+        if (copperLayer is NetTopologySuite.Geometries.Polygon poly)
+        {
+            polygons.Add(poly);
+        }
+        else if (copperLayer is MultiPolygon multiPoly)
+        {
+            for (int i = 0; i < multiPoly.NumGeometries; i++)
+            {
+                if (multiPoly.GetGeometryN(i) is NetTopologySuite.Geometries.Polygon p)
+                {
+                    polygons.Add(p);
+                }
+            }
+        }
+
+        for (int i = 0; i < polygons.Count; i++)
+        {
+            for (int j = i + 1; j < polygons.Count; j++)
+            {
+                double distance = polygons[i].Distance(polygons[j]);
+                if (distance < minDistance)
+                    minDistance = distance;
+            }
+        }
+
+        return minDistance;
     }
 }

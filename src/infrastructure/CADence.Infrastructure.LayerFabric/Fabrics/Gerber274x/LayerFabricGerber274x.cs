@@ -102,7 +102,7 @@ public class LayerFabricGerber274x : ILayerFabric
 
                 if (!Enum.TryParse(ext, true, out Layer274xFileExtensionsSupported extension))
                 {
-                    throw new ArgumentOutOfRangeException();
+                    //throw new ArgumentOutOfRangeException();
                 }
 
 

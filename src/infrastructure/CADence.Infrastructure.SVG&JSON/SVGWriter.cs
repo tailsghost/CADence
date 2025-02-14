@@ -1,6 +1,7 @@
 ﻿using CADence.Layer.Abstractions;
 using NetTopologySuite.Geometries;
 using System.Globalization;
+using System.IO;
 using System.Text;
 
 namespace CADence.Infrastructure.SVG_JSON;
@@ -38,12 +39,23 @@ public class SVGWriter
             "<g transform=\"translate({0} {1}) scale({2} -1)\" filter=\"drop-shadow(0 0 1 rgba(0, 0, 0, 0.2))\">",
             tx, ty, flipped ? "-1" : "1"));
 
-        foreach (var layer in _layers)
+        if(flipped)
         {
-            stream.Append(ParseGeometry(layer));
+            for(var i = 0; i < _layers.Count; i++)
+            {
+                var layer = _layers[i];
+                stream.Append(ParseGeometry(layer));
+            }
+        }
+        else
+        {
+            for (var i = _layers.Count - 1; i >= 0; i--)
+            {
+                var layer = _layers[i];
+                stream.Append(ParseGeometry(layer));
+            }
         }
 
-        stream.AppendLine("</g>");
         stream.AppendLine("</g>");
         stream.AppendLine("</svg>");
 
@@ -96,6 +108,7 @@ public class SVGWriter
         }
 
         Data.Append("\"/>\n");
+        Data.AppendLine("</g>");
 
         return Data;
     }
