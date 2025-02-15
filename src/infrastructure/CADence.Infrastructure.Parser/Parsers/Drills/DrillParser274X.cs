@@ -79,7 +79,7 @@ public class DrillParser274X : DrillParserBase
             MinHoleDiameter = Math.Min(_settings.MinHole, MinHoleDiameter);
         }
 
-        _drillGeometry = CascadedPolygonUnion.Union(polygons);
+        _drillGeometry = UnaryUnionOp.Union(polygons);
     }
 
     /// <summary>

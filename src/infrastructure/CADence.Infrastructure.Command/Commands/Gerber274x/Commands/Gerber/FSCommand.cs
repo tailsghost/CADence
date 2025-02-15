@@ -22,7 +22,7 @@ public class FSCommand : CommandBase<GerberParser274xSettings>
         }
 
         settings.format.ConfigureFormat(int.Parse(settings.cmd.Substring(5, 1)),
-        int.Parse(settings.cmd.Substring(6, 1)));
+                                        int.Parse(settings.cmd.Substring(6, 1)));
         settings.IsDone = true;
         return settings;
     }

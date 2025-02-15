@@ -3,6 +3,7 @@ using NetTopologySuite.Geometries;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
 using CADence.Layer.Colors;
+using CADence.Infrastructure.Aperture.Gerber_274x;
 
 namespace CADence.Layer.Gerber_274x;
 
@@ -62,10 +63,15 @@ public class BottomCopper : LayerBase
 
         _geometryLayer = Substrate.GetLayer().Intersection(copper);
 
-        if (isAccuracy && _geometryLayer is MultiPolygon polygon)
+        if (isAccuracy && _geometryLayer is MultiPolygon polygons)
         {
-            MinDistanceHole = GetMinDistanceHoleToPad(polygon);
-            MinDistanceBetween = GetMinDistanceBetweenTracks(polygon);
+            Task.Run(async () =>
+            {
+                MinDistanceHole = await Task.Run(() => GetMinDistanceHoleToPad(polygons));
+                MinDistanceBetween = await Task.Run(() => GetMinDistanceBetweenTracks(polygons));
+            });
+            //MinDistanceHole = GetMinDistanceHoleToPad(polygons);
+            //MinDistanceBetween = GetMinDistanceBetweenTracks(polygons);
         }
 
     }

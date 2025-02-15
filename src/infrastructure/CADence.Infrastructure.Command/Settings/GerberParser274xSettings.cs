@@ -39,16 +39,13 @@ public class GerberParser274xSettings : GerberParserSettingsBase
 
     public void CommitRegion()
     {
-        if (RegionAccum.Count < 3)
-            return;
-
-        Polygon region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
-
-        if (region.Area < 0)
+        var coords = RegionAccum.ToArray();
+        if (SignedArea(coords) > 0)
         {
-            RegionAccum.Reverse();
-            region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
+            Array.Reverse(coords);
         }
+
+        Polygon region = _geometryFactory.CreatePolygon(coords);
 
         ApertureStack.Peek().DrawPaths(region, Polarity);
 
@@ -148,5 +145,16 @@ public class GerberParser274xSettings : GerberParserSettingsBase
         }
         ApertureStack.Peek().DrawAperture(
             Aperture, Polarity, Pos.X, Pos.Y, apMirrorX, apMirrorY, apRotate, apScale);
+    }
+
+
+    private double SignedArea(Coordinate[] coords)
+    {
+        double sum = 0.0;
+        for (int i = 0; i < coords.Length - 1; i++)
+        {
+            sum += (coords[i + 1].X - coords[i].X) * (coords[i + 1].Y + coords[i].Y);
+        }
+        return sum;
     }
 }

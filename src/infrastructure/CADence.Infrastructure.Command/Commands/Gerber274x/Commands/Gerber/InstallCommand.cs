@@ -50,7 +50,7 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
         switch (d)
         {
             case 1:
-                if (settings is { Polarity: true, Aperture: not null })
+                if (settings.Polarity && settings.Aperture != null)
                 {
                     settings.Aperture.IsSimpleCircle(out double diameter);
                     if (diameter != 0)
@@ -64,8 +64,10 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
                 if (settings.RegionMode)
                 {
                     if(settings.RegionAccum.Count > 2)
+                    {
                         settings.RegionAccum.Add(settings.RegionAccum[0]);
-                    settings.CommitRegion();
+                        settings.CommitRegion();
+                    }
                 }
                 settings.Pos.X = parameters['X'];
                 settings.Pos.Y = parameters['Y'];

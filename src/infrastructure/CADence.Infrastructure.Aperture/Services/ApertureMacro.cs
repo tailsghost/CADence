@@ -30,7 +30,7 @@ public class ApertureMacro : ApertureMacroBase
 
     public override ApertureBase Build(List<string> csep, LayerFormatBase format)
     {
-        var vars = new Dictionary<int, double>();
+        var vars = new Dictionary<int, double>(20);
         for (int i = 1; i < csep.Count; i++)
         {
             vars[i] = double.Parse(csep[i]);
@@ -41,7 +41,7 @@ public class ApertureMacro : ApertureMacroBase
 
         for (var j = 0; j < cmds.Count; j++)
         {
-            code = cmds[j][0].Eval(vars);
+            code = (int)Math.Round(cmds[j][0].Eval(vars));
 
             switch (code)
             {
@@ -71,10 +71,9 @@ public class ApertureMacro : ApertureMacroBase
             }
         }
 
-        var AdditiveGeometry = new ApertureBase();
-        AdditiveGeometry.DrawPaths(baseAperture.GetAdditive());
+        baseAperture.DrawPaths(baseAperture.GetAdditive());
 
-        return AdditiveGeometry;
+        return baseAperture;
     }
 
     private static void HandleCircle(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase baseAperture, LayerFormatBase fmt)

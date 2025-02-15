@@ -59,59 +59,50 @@ public class LayerFabricGerber274x : ILayerFabric
     /// <returns>Список слоев, определенных из входных данных.</returns>
     private async Task<List<LayerBase>> Init(IDictionary<string, string> data)
     {
-        try
+        var dataCopy = new Dictionary<string, string>(data);
+        List<string> removeKeys = new();
+
+        foreach (var kvp in data)
         {
-            var dataCopy = new Dictionary<string, string>(data);
-            List<string> removeKeys = new();
-
-            foreach (var kvp in data)
+            if (DetermineBoard(kvp.Key, kvp.Value) || DetermineDrill(kvp.Value))
             {
-                if (DetermineBoard(kvp.Key, kvp.Value) || DetermineDrill(kvp.Value))
-                {
-                    removeKeys.Add(kvp.Key);
-                }
+                removeKeys.Add(kvp.Key);
             }
-            foreach (var key in removeKeys)
-            {
-                dataCopy.Remove(key);
-            }
-
-            var substrate = new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline));
-            _result.Add(substrate);
-
-            string fileTopCopper = GetFileString(Layer274xFileExtensionsSupported.gtl, dataCopy);
-            string fileBottomCopper = GetFileString(Layer274xFileExtensionsSupported.gbl, dataCopy);
-            string fileTopMask = GetFileString(Layer274xFileExtensionsSupported.gts, dataCopy);
-            string fileBottomMask = GetFileString(Layer274xFileExtensionsSupported.gbs, dataCopy);
-            string fileTopSilk = GetFileString(Layer274xFileExtensionsSupported.gto, dataCopy);
-            string fileBottomSilk = GetFileString(Layer274xFileExtensionsSupported.gbo, dataCopy);
-
-            Task<LayerBase> topCopperTask = CreateTopCopper(fileTopCopper, substrate);
-            Task<LayerBase> bottomCopperTask = CreateBottomCopper(fileBottomCopper, substrate);
-            Task<LayerBase> topMaskTask = CreateTopMask(fileTopMask, substrate);
-            Task<LayerBase> bottomMaskTask = CreateBottomMask(fileBottomMask, substrate);
-
-            Task<LayerBase> topSilkTask = CreateTopSilk(fileTopSilk, topMaskTask);
-            Task<LayerBase> bottomSilkTask = CreateBottomSilk(fileBottomSilk, bottomCopperTask);
-
-            Task<LayerBase> topFinishTask = CreateTopFinish(topCopperTask, topMaskTask);
-            Task<LayerBase> bottomFinishTask = CreateBottomFinish(bottomCopperTask, bottomMaskTask);
-
-
-            _tasks.AddRange(topCopperTask, bottomCopperTask, topMaskTask, bottomMaskTask,
-                topSilkTask, bottomSilkTask, topFinishTask, bottomFinishTask);
-
-           var result = await Task.WhenAll(_tasks);
-
-            _result.AddRange(result);
-
-            return _result;
         }
-        catch (Exception ex)
+        foreach (var key in removeKeys)
         {
-            _logger.Error(ex, ex.Message);
-            throw new Exception(ex.Message, ex);
+            dataCopy.Remove(key);
         }
+
+        var substrate = new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline));
+        _result.Add(substrate);
+
+        string fileTopCopper = GetFileString(Layer274xFileExtensionsSupported.gtl, dataCopy);
+        string fileBottomCopper = GetFileString(Layer274xFileExtensionsSupported.gbl, dataCopy);
+        string fileTopMask = GetFileString(Layer274xFileExtensionsSupported.gts, dataCopy);
+        string fileBottomMask = GetFileString(Layer274xFileExtensionsSupported.gbs, dataCopy);
+        string fileTopSilk = GetFileString(Layer274xFileExtensionsSupported.gto, dataCopy);
+        string fileBottomSilk = GetFileString(Layer274xFileExtensionsSupported.gbo, dataCopy);
+
+        Task<LayerBase> topCopperTask = CreateTopCopper(fileTopCopper, substrate);
+        Task<LayerBase> bottomCopperTask = CreateBottomCopper(fileBottomCopper, substrate);
+        Task<LayerBase> topMaskTask = CreateTopMask(fileTopMask, substrate);
+        Task<LayerBase> bottomMaskTask = CreateBottomMask(fileBottomMask, substrate);
+
+        Task<LayerBase> topSilkTask = CreateTopSilk(fileTopSilk, topMaskTask);
+        Task<LayerBase> bottomSilkTask = CreateBottomSilk(fileBottomSilk, bottomCopperTask);
+
+        Task<LayerBase> topFinishTask = CreateTopFinish(topCopperTask, topMaskTask);
+        Task<LayerBase> bottomFinishTask = CreateBottomFinish(bottomCopperTask, bottomMaskTask);
+
+
+        _tasks.AddRange(topMaskTask, bottomMaskTask, topCopperTask, bottomCopperTask, topSilkTask, bottomSilkTask, topFinishTask, bottomFinishTask);
+
+        var result = await Task.WhenAll(_tasks);
+
+        _result.AddRange(result);
+
+        return _result;
     }
 
     /// <summary>
@@ -154,7 +145,7 @@ public class LayerFabricGerber274x : ILayerFabric
 
         if (fileEntry.Equals(default(KeyValuePair<string, string>)))
         {
-            throw new ArgumentException($"Файл с расширением {extension} не найден в коллекции.");
+            //throw new ArgumentException($"Файл с расширением {extension} не найден в коллекции.");
         }
 
         return fileEntry.Value;
@@ -181,7 +172,7 @@ public class LayerFabricGerber274x : ILayerFabric
     private async Task<LayerBase> CreateTopSilk(string file, Task<LayerBase> topMaskTask)
     {
         LayerBase topMask = await topMaskTask;
-        var topSilkTask = Task.Run(() => (LayerBase)new TopSilk(new LayerFormat(), new GerberParser274X(file), topMask.GetLayer()));
+        var topSilkTask = Task.Run<LayerBase>(() => new TopSilk(new LayerFormat(), new GerberParser274X(file), topMask.GetLayer()));
         return await topSilkTask;
     }
 
@@ -189,14 +180,14 @@ public class LayerFabricGerber274x : ILayerFabric
     {
         LayerBase topCopper = await topCopperTask;
         LayerBase topMask = await topMaskTask;
-        var topFinishTask = Task.Run(() => (LayerBase)new TopFinish(new LayerFormat(), null, topMask.GetLayer(), topCopper.GetLayer()));
+        var topFinishTask = Task.Run<LayerBase>(() => new TopFinish(new LayerFormat(), null, topMask.GetLayer(), topCopper.GetLayer()));
         return await topFinishTask;
     }
 
     private async Task<LayerBase> CreateBottomSilk(string file, Task<LayerBase> bottomCopperTask)
     {
         LayerBase bottomCopper = await bottomCopperTask;
-        var bottomSilkTask = Task.Run(() => (LayerBase)new BottomSilk(new LayerFormat(), new GerberParser274X(file), bottomCopper.GetLayer()));
+        var bottomSilkTask = Task.Run<LayerBase>(() => new BottomSilk(new LayerFormat(), new GerberParser274X(file), bottomCopper.GetLayer()));
         return await bottomSilkTask;
     }
 
@@ -204,7 +195,7 @@ public class LayerFabricGerber274x : ILayerFabric
     {
         LayerBase bottomCopper = await bottomCopperTask;
         LayerBase bottomMask = await bottomMaskTask;
-        var bottomFinishTask = Task.Run(() => (LayerBase)new BottomFinish(new LayerFormat(), null, bottomMask.GetLayer(), bottomCopper.GetLayer()));
+        var bottomFinishTask = Task.Run<LayerBase>(() => new BottomFinish(new LayerFormat(), null, bottomMask.GetLayer(), bottomCopper.GetLayer()));
         return await bottomFinishTask;
     }
 }

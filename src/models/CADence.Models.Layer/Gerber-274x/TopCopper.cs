@@ -54,13 +54,18 @@ public class TopCopper : LayerBase
     private void Render()
     {
         var copper = PARSER.GetResult(false);
-
         _geometryLayer = Substrate.GetLayer().Intersection(copper);
+
 
         if (isAccuracy && _geometryLayer is MultiPolygon polygons)
         {
-            MinDistanceHole = GetMinDistanceHoleToPad(polygons);
-            MinDistanceBetween = GetMinDistanceBetweenTracks(polygons);
+            Task.Run(async () =>
+            {
+                MinDistanceHole = await Task.Run(() => GetMinDistanceHoleToPad(polygons));
+                MinDistanceBetween = await Task.Run(() => GetMinDistanceBetweenTracks(polygons));
+            });
+            //MinDistanceHole = GetMinDistanceHoleToPad(polygons);
+            //MinDistanceBetween = GetMinDistanceBetweenTracks(polygons);
         }
 
     }

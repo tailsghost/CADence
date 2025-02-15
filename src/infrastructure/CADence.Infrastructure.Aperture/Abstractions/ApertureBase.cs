@@ -12,7 +12,7 @@ namespace CADence.Infrastructure.Aperture.Abstractions;
 /// </summary>
 public class ApertureBase
 {
-    protected readonly List<Geometry> _accumulatedGeometries = new List<Geometry>();
+    protected readonly List<Geometry> _accumulatedGeometries = new List<Geometry>(500);
 
     private readonly GeometryFactory _geomFactory;
     
@@ -109,8 +109,13 @@ public class ApertureBase
         {
 
             //var overlayParams = OverlayNG.Overlay();
-            mergedAccumulated = CascadedPolygonUnion.Union(_accumulatedGeometries);
+            mergedAccumulated = UnaryUnionOp.Union(_accumulatedGeometries);
             // На этом месте, если геометрия сложная, то все ломается.
+        }
+
+        if (!mergedAccumulated.IsValid)
+        {
+            mergedAccumulated = mergedAccumulated.Buffer(0);
         }
 
         if (ACCUM_POLARITY)
@@ -156,8 +161,6 @@ public class ApertureBase
         if (geometry.Coordinates.Length == 0) return;
 
         if (specialFillType) CommitPaths();
-
-        DrawPaths(geometry, polarity);
 
         var scaleX = mirrorX ? -scale : scale;
         var scaleY = mirrorY ? -scale : scale;

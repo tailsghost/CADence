@@ -13,7 +13,7 @@ namespace CADence.Infrastructure.Parser.Parsers;
 /// </summary>
 public class GerberParser274X : GerberParserBase
 {
-    private  GeometryFactory _geometryFactory;
+    private GeometryFactory _geometryFactory;
 
     /// <summary>
     /// Содержит содержимое Gerber файла.
@@ -65,8 +65,6 @@ public class GerberParser274X : GerberParserBase
             var is_attrib = false;
             var ss = new StringBuilder();
 
-            int count = 0;
-
             while (stream.Peek() != -1)
             {
 
@@ -91,15 +89,7 @@ public class GerberParser274X : GerberParserBase
 
                     _settings.cmd = cmd;
 
-                    try
-                    {
-                        _logger.Debug(string.Format("INFO: {0}", count));
-                        _settings = _fabric.ExecuteCommand(_settings);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex, string.Format("ERROR: {0}", count));
-                    }
+                    _settings = _fabric.ExecuteCommand(_settings);
 
                     if (!_settings.IsDone)
                     {
