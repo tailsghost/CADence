@@ -25,8 +25,14 @@ public class GerberParser274X : GerberParserBase
     /// </summary>
     private GerberParser274xSettings _settings = new();
 
+    /// <summary>
+    /// Фабрика комманд
+    /// </summary>
     private Gerber274xFabric _fabric = new();
 
+    /// <summary>
+    /// Логирование
+    /// </summary>
     private readonly NLog.ILogger _logger;
 
     /// <summary>
@@ -53,18 +59,8 @@ public class GerberParser274X : GerberParserBase
         {
 
             using var stream = new StringReader(FILE);
-            _settings.imode = InterpolationMode.UNDEFINED;
-            _settings.qmode = QuadrantMode.UNDEFINED;
-            _settings.Pos = new Point(0, 0);
-            _settings.Polarity = true;
-            _settings.apMirrorX = false;
-            _settings.apMirrorY = false;
-            _settings.apRotate = 0.0;
-            _settings.apScale = 1.0;
-            _settings.ApertureStack = new Stack<Aperture.Abstractions.ApertureBase>();
-            _settings.ApertureStack.Push(new Aperture.Abstractions.ApertureBase());
-            _settings.RegionMode = false;
-            _settings.OutlineConstructed = false;
+
+            SetupSettings();
 
             var is_attrib = false;
             var ss = new StringBuilder();
@@ -99,9 +95,6 @@ public class GerberParser274X : GerberParserBase
                     {
                         _logger.Debug(string.Format("INFO: {0}", count));
                         _settings = _fabric.ExecuteCommand(_settings);
-                        count++;
-                        if (count == 6372)
-                            Console.Write("");
                     }
                     catch (Exception ex)
                     {
@@ -148,20 +141,29 @@ public class GerberParser274X : GerberParserBase
         }
     }
 
+    /// <summary>
+    /// Рендеринг слоя
+    /// </summary>
+    /// <param name="BoardOutLine"><c>true</c>, если слой для SUBSTRATE, <c>false</c> для других слоев</param>
+    /// <returns></returns>
     public override Geometry GetResult(bool BoardOutLine = false)
     {
 
         if (BoardOutLine)
         {
-            return FindLargestAreaPathWithoutBorderBox(_settings.ApertureStack.Peek().GetDark());
+            return FindLargestAreaPathWithoutBorderBox(_settings.ApertureStack.Peek().GetAdditive());
         }
 
-        return _settings.ApertureStack.Peek().GetDark();
+        return _settings.ApertureStack.Peek().GetAdditive();
     }
 
 
-
-    private  Geometry FindLargestAreaPathWithoutBorderBox(Geometry multiPolygon)
+    /// <summary>
+    /// Достает из геометрии BorderBox и вырезает из него остальные полигоны
+    /// </summary>
+    /// <param name="multiPolygon">Геометрия SUBSTRATE слоя</param>
+    /// <returns></returns>
+    private Geometry FindLargestAreaPathWithoutBorderBox(Geometry multiPolygon)
     {
         if (multiPolygon == null || multiPolygon.IsEmpty)
         {
@@ -193,6 +195,25 @@ public class GerberParser274X : GerberParserBase
 
         return borderBoxWithHoles;
 
+    }
+
+    /// <summary>
+    /// Начальная настройка параметров
+    /// </summary>
+    private void SetupSettings()
+    {
+        _settings.imode = InterpolationMode.UNDEFINED;
+        _settings.qmode = QuadrantMode.UNDEFINED;
+        _settings.Pos = new Point(0, 0);
+        _settings.Polarity = true;
+        _settings.apMirrorX = false;
+        _settings.apMirrorY = false;
+        _settings.apRotate = 0.0;
+        _settings.apScale = 1.0;
+        _settings.ApertureStack = new Stack<Aperture.Abstractions.ApertureBase>();
+        _settings.ApertureStack.Push(new Aperture.Abstractions.ApertureBase());
+        _settings.RegionMode = false;
+        _settings.OutlineConstructed = false;
     }
 
 }

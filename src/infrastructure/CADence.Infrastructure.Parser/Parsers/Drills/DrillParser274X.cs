@@ -1,4 +1,3 @@
-using System.Text;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 using CADence.Infrastructure.Parser.Enums;
@@ -6,187 +5,191 @@ using CADence.Infrastructure.Parser.Settings;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Operation.Union;
 
-namespace CADence.Infrastructure.Parser.Parsers.Drills
+namespace CADence.Infrastructure.Parser.Parsers.Drills;
+
+/// <summary>
+/// Парсер Drill файлов формата 274X.
+/// </summary>
+public class DrillParser274X : DrillParserBase
 {
     /// <summary>
-    /// Парсер Drill файлов формата 274X.
+    /// Список файлов дырок.
     /// </summary>
-    public class DrillParser274X : DrillParserBase
+    private List<string> DRILLS = new();
+
+    /// <summary>
+    /// Коллекция для хранения всех дырок
+    /// </summary>
+    private List<Geometry> polygons = new();
+
+    /// <summary>
+    /// Настройки для парсера.
+    /// </summary>
+    private DrillParser274xSettings _settings = new DrillParser274xSettings();
+
+    /// <summary>
+    /// Фабрика комманд
+    /// </summary>
+    private Drill274xFabric _fabric = new();
+
+    /// <summary>
+    /// Минимальный диаметр отверстия
+    /// </summary>
+    public double MinHoleDiameter { get; private set; } = double.MaxValue;
+
+    /// <summary>
+    /// Инициализирует новый экземпляр парсера Drill 274X.
+    /// </summary>
+    /// <param name="drills">Строковое представление файлы.</param>
+    public DrillParser274X(List<string> drills)
     {
-        /// <summary>
-        /// Список файлов дырок.
-        /// </summary>
-        private List<string> DRILLS = new();
+        DRILLS = drills;
+        Execute();
+    }
 
-        /// <summary>
-        /// Настройки для парсера.
-        /// </summary>
-        private DrillParser274xSettings _settings = new DrillParser274xSettings();
 
-        /// <summary>
-        /// Фабрика комманд
-        /// </summary>
-        private Drill274xFabric _fabric = new();
-
-        /// <summary>
-        /// Инициализирует новый экземпляр парсера Drill 274X.
-        /// </summary>
-        /// <param name="drills">Строковое представление файлы.</param>
-        public DrillParser274X(List<string> drills)
+    /// <summary>
+    /// Выполняет парсинг Drill файлов.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Выбрасывается, если хотя бы одна команда не была выполнена.</exception>
+    public override void Execute()
+    {
+        foreach (string drill in DRILLS)
         {
-            DRILLS = drills;
-            try
+            using var stream = new StringReader(string.Join("\n", drill));
+            string? line;
+
+            _settings = new DrillParser274xSettings();
+            SetupSettings();
+
+            while ((line = stream.ReadLine()) != null)
             {
-                Execute();
+                _settings.cmd = line;
+                _settings = ExecuteCommand();
+                if (!_settings.IsDone) break;
             }
-            catch
+
+            var geom = GetGeometryDrill();
+
+            if (geom != null)
             {
-                Console.WriteLine("Ошибка при выполнении парсинга.");
+                polygons.Add(geom);
             }
+
+            MinHoleDiameter = Math.Min(_settings.MinHole, MinHoleDiameter);
         }
 
-        /// <summary>
-        /// Выполняет парсинг Drill файлов.
-        /// </summary>
-        /// <exception cref="InvalidOperationException">Выбрасывается, если хотя бы одна команда не была выполнена.</exception>
-        public override void Execute()
+        _drillGeometry = CascadedPolygonUnion.Union(polygons);
+    }
+
+    /// <summary>
+    /// Получает результат парсинга.
+    /// </summary>
+    /// <param name="plated">Учитывать платированные отверстия.</param>
+    /// <param name="unplated">Учитывать неплатированные отверстия.</param>
+    /// <returns>Геометрия результата парсинга.</returns>
+    private Geometry? GetGeometryDrill(bool plated = true, bool unplated = true)
+    {
+        Geometry? result = null;
+
+        if (plated)
         {
-
-            Geometry geometry = null;
-
-            List<Geometry> polygons = new();
-
-            foreach (string drill in DRILLS)
+            if (unplated)
             {
-                using var stream = new StringReader(string.Join("\n", drill));
-                string? line;
-                _settings = new DrillParser274xSettings();
-                _settings.ParseState = ParseState.PRE_HEADER;
-                _settings.format.ConfigureFormat(4, 3);
-                _settings.format.ConfigureMillimeters();
-                _settings.Point = new Point(0, 0);
-                _settings.RoutMode = RoutMode.DRILL;
-                while ((line = stream.ReadLine()) != null)
+                Geometry? platedGeom = _settings.Pth.GetAdditive();
+                Geometry? unplatedGeom = _settings.Npth.GetAdditive();
+
+                if (platedGeom != null && unplatedGeom != null)
                 {
-                    _settings.cmd = line;
-                    _settings = ExecuteCommand();
-                    if (!_settings.IsDone) break;
+                    result = platedGeom.Union(unplatedGeom);
                 }
-
-                var geom = GetResult();
-
-                if (geom != null)
+                else if (platedGeom != null)
                 {
-                    if (DrillGeometry == null)
-                    {
-                        DrillGeometry = geom;
-                        polygons.Add(geom);
-                    }
-                    else
-                    {
-                        polygons.Add(geom);
-                        DrillGeometry = CascadedPolygonUnion.Union(polygons);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Получает результат парсинга.
-        /// </summary>
-        /// <param name="plated">Учитывать платированные отверстия.</param>
-        /// <param name="unplated">Учитывать неплатированные отверстия.</param>
-        /// <returns>Геометрия результата парсинга.</returns>
-        private Geometry? GetResult(bool plated = true, bool unplated = true)
-        {
-            Geometry? result = null;
-
-            if (plated)
-            {
-                if (unplated)
-                {
-                    Geometry? platedGeom = _settings.Pth.GetDark();
-                    Geometry? unplatedGeom = _settings.Npth.GetDark();
-
-                    if (platedGeom != null && unplatedGeom != null)
-                    {
-                        result = platedGeom.Union(unplatedGeom);
-                    }
-                    else if (platedGeom != null)
-                    {
-                        result = platedGeom;
-                    }
-                    else
-                    {
-                        result = unplatedGeom;
-                    }
+                    result = platedGeom;
                 }
                 else
                 {
-                    result = _settings.Pth.GetDark();
+                    result = unplatedGeom;
                 }
             }
-
-            return result?.Reverse();
+            else
+            {
+                result = _settings.Pth.GetAdditive();
+            }
         }
 
-        /// <summary>
-        /// Выполняет команды в зависимости от первого символа.
-        /// </summary>
-        /// <returns>Обновленные настройки парсера.</returns>
-        /// <exception cref="InvalidOperationException">Выбрасывается, если была обнаружена неизвестная команда.</exception>
-        private DrillParser274xSettings ExecuteCommand()
+        return result?.Reverse();
+    }
+
+    /// <summary>
+    /// Выполняет команды в зависимости от первого символа.
+    /// </summary>
+    /// <returns>Обновленные настройки парсера.</returns>
+    /// <exception cref="InvalidOperationException">Выбрасывается, если была обнаружена неизвестная команда.</exception>
+    private DrillParser274xSettings ExecuteCommand()
+    {
+        if (_settings.ParseState == ParseState.HEADER)
         {
-            if (_settings.ParseState == ParseState.HEADER)
+            switch (_settings.cmd[0])
+            {
+                case ';':
+                    _settings.cmd = _settings.cmd.Substring(1);
+                    return _fabric.ExecuteCommand(_settings);
+                case 'T':
+                    _settings.fcmd = _settings.cmd;
+                    _settings.cmd = "T";
+                    return _fabric.ExecuteCommand(_settings);
+                default:
+                    return _fabric.ExecuteCommand(_settings);
+            }
+        }
+        else if (_settings.ParseState == ParseState.BODY)
+        {
+            if (_settings.cmd[0] != ';')
             {
                 switch (_settings.cmd[0])
                 {
-                    case ';':
-                        _settings.cmd = _settings.cmd.Substring(1);
+                    case 'X':
+                        _settings.fcmd = _settings.cmd;
+                        _settings.cmd = "X";
+                        return _fabric.ExecuteCommand(_settings);
+                    case 'Y':
+                        _settings.fcmd = _settings.cmd;
+                        _settings.cmd = "Y";
                         return _fabric.ExecuteCommand(_settings);
                     case 'T':
                         _settings.fcmd = _settings.cmd;
                         _settings.cmd = "T";
                         return _fabric.ExecuteCommand(_settings);
-                    default:
+                    case 'G':
+                        _settings.fcmd = _settings.cmd;
+                        _settings.cmd = "G";
                         return _fabric.ExecuteCommand(_settings);
+                    case 'M':
+                        _settings.fcmd = _settings.cmd;
+                        _settings.cmd = "M";
+                        return _fabric.ExecuteCommand(_settings);
+                    default:
+                        throw new InvalidOperationException("unknown/unexpected command: " + _settings.cmd);
                 }
             }
-            else if (_settings.ParseState == ParseState.BODY)
-            {
-                if (_settings.cmd[0] != ';')
-                {
-                    switch (_settings.cmd[0])
-                    {
-                        case 'X':
-                            _settings.fcmd = _settings.cmd;
-                            _settings.cmd = "X";
-                            return _fabric.ExecuteCommand(_settings);
-                        case 'Y':
-                            _settings.fcmd = _settings.cmd;
-                            _settings.cmd = "Y";
-                            return _fabric.ExecuteCommand(_settings);
-                        case 'T':
-                            _settings.fcmd = _settings.cmd;
-                            _settings.cmd = "T";
-                            return _fabric.ExecuteCommand(_settings);
-                        case 'G':
-                            _settings.fcmd = _settings.cmd;
-                            _settings.cmd = "G";
-                            return _fabric.ExecuteCommand(_settings);
-                        case 'M':
-                            _settings.fcmd = _settings.cmd;
-                            _settings.cmd = "M";
-                            return _fabric.ExecuteCommand(_settings);
-                        default:
-                            throw new InvalidOperationException("unknown/unexpected command: " + _settings.cmd);
-                    }
-                }
-                _settings.IsDone = true;
-                return _settings;
-            }
-
-            return _fabric.ExecuteCommand(_settings);
+            _settings.IsDone = true;
+            return _settings;
         }
+
+        return _fabric.ExecuteCommand(_settings);
+    }
+
+
+    /// <summary>
+    /// Начальная настройка параметров
+    /// </summary>
+    private void SetupSettings()
+    {
+        _settings.ParseState = ParseState.PRE_HEADER;
+        _settings.format.ConfigureFormat(4, 3);
+        _settings.format.ConfigureMillimeters();
+        _settings.Point = new Point(0, 0);
+        _settings.RoutMode = RoutMode.DRILL;
     }
 }

@@ -52,9 +52,9 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
             case 1:
                 if (settings is { Polarity: true, Aperture: not null })
                 {
-                    settings.Aperture.IsSimpleCircle(out settings.MinThickness);
-                    if (settings.MinThickness != 0)
-                        settings.MinimumThickness = double.Min(settings.MinThickness, settings.MinimumThickness);
+                    settings.Aperture.IsSimpleCircle(out double diameter);
+                    if (diameter != 0)
+                        settings.MinimumDiameter = double.Min(diameter, settings.MinimumDiameter);
                 }
                 settings.Interpolate(new Point(parameters['X'], parameters['Y']), new Point(parameters['I'], parameters['J']));
                 settings.Pos.X = parameters['X'];
@@ -62,8 +62,11 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
                 break;
             case 2:
                 if (settings.RegionMode)
+                {
+                    if(settings.RegionAccum.Count > 2)
+                        settings.RegionAccum.Add(settings.RegionAccum[0]);
                     settings.CommitRegion();
-
+                }
                 settings.Pos.X = parameters['X'];
                 settings.Pos.Y = parameters['Y'];
 
@@ -83,7 +86,10 @@ public class InstallCommand : CommandBase<GerberParser274xSettings>
     }
 
 
-
+    /// <summary>
+    /// Устанавливает текущую апертуру.
+    /// </summary>
+    /// <exception cref="Exception">Выбрасывается, если нет апертуры в списке</exception>
     private GerberParser274xSettings SetupAperture(GerberParser274xSettings settings)
     {
         if (settings.cmd.StartsWith('D') && !settings.cmd.StartsWith("D0"))

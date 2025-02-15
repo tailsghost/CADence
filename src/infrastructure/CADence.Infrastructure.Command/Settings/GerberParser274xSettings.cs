@@ -30,28 +30,18 @@ public class GerberParser274xSettings : GerberParserSettingsBase
     /// </summary>
     public ApertureMacroBase AmBuilder;
 
-    public double MinThickness = double.MaxValue;
-
     /// <summary>
     /// Минимальная толщина дорожки
     /// </summary>
     public double MinimumDiameter = double.MaxValue;
 
-    public double MinDiameter = double.MaxValue;
-
-    /// <summary>
-    /// Минимальный диаметр от дырки до ободка
-    /// </summary>
-    public double MinimumThickness = double.MaxValue;
-
-    List<Coordinate> RegionAccum = new(1000);
+    public List<Coordinate> RegionAccum { get; } = new(1000);
 
     public void CommitRegion()
     {
         if (RegionAccum.Count < 3)
             return;
 
-        RegionAccum.Add(RegionAccum[0]);
         Polygon region = _geometryFactory.CreatePolygon(RegionAccum.ToArray());
 
         if (region.Area < 0)

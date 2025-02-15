@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
 using CADence.Infrastructure.LayerFabric.Readers;
@@ -14,7 +15,7 @@ namespace CADence.CUI
         // Получаем логгер для текущего класса
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // Настройка NLog: вывод в консоль и запись в файл
             var config = new NLog.Config.LoggingConfiguration();
@@ -47,7 +48,7 @@ namespace CADence.CUI
                 _logger.Info("Парсинг файла...");
                 try
                 {
-                    ExecuteAsync(path);
+                    await ExecuteAsync(path);
                     _logger.Info("Парсинг успешно завершён.");
                 }
                 catch (Exception ex)
@@ -127,6 +128,9 @@ namespace CADence.CUI
         /// <exception cref="ArgumentNullException">Выбрасывается, если путь пустой или null.</exception>
         public static async Task ExecuteAsync(string? path)
         {
+            Stopwatch wather = new();
+            wather.Start();
+
             if (string.IsNullOrWhiteSpace(path))
             {
                 throw new ArgumentNullException(nameof(path));
@@ -143,11 +147,17 @@ namespace CADence.CUI
                 layers = await fabric.GetLayers(data);
             }
 
-            var pathToSVGWriting = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "output.svg");
-            _logger.Info($"Путь по которому будет сохранён файл: {pathToSVGWriting}");
 
-            var svgWriter = new SVGWriter(layers, 3, pathToSVGWriting ?? throw new ArgumentNullException(nameof(pathToSVGWriting)));
-            svgWriter.Execute(true);
+            var pathToSVGWritingFront = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "outputFront.svg");
+            _logger.Info($"Путь по которому будет сохранён файл: {pathToSVGWritingFront}");
+            var pathToSVGWritingBack = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "outputBack.svg");
+            _logger.Info($"Путь по которому будет сохранён файл: {pathToSVGWritingBack}");
+
+            var svgWriter = new SVGWriter(layers, 3);
+            svgWriter.Execute(true, pathToSVGWritingFront);
+            svgWriter.Execute(false, pathToSVGWritingBack);
+            wather.Stop();
+            _logger.Info($"Общее время выполнения {wather.ElapsedMilliseconds / 1000.0} секунд");
         }
     }
 }

@@ -196,15 +196,15 @@ public class ApertureBase
         double rotate = 0.0,
         double scale = 1.0)
     {
-        DrawPaths(aperture.GetDark(), polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
-        DrawPaths(aperture.GetClear(), !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.GetAdditive(), polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
+        DrawPaths(aperture.GetSubtractive(), !polarity, translateX, translateY, mirrorX, mirrorY, rotate, scale);
     }
 
     /// <summary>
     /// Фиксирует все накопленные объекты и выполняет упрощение второстепенной геометрии.
     /// </summary>
     /// <returns>Упрощённая второстепенная геометрия.</returns>
-    public Geometry? GetClear()
+    public Geometry? GetSubtractive()
     {
         CommitPaths();
         return SimplifyGeometry(SubtractiveGeometry);
@@ -214,7 +214,7 @@ public class ApertureBase
     /// Фиксирует все накопленные объекты и выполняет упрощение основной геометрии.
     /// </summary>
     /// <returns>Упрощённая основная геометрия.</returns>
-    public Geometry? GetDark()
+    public Geometry? GetAdditive()
     {
         CommitPaths();
         return SimplifyGeometry(AdditiveGeometry);

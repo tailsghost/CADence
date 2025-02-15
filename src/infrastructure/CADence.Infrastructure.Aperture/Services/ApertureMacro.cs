@@ -72,7 +72,7 @@ public class ApertureMacro : ApertureMacroBase
         }
 
         var AdditiveGeometry = new ApertureBase();
-        AdditiveGeometry.DrawPaths(baseAperture.GetDark());
+        AdditiveGeometry.DrawPaths(baseAperture.GetAdditive());
 
         return AdditiveGeometry;
     }

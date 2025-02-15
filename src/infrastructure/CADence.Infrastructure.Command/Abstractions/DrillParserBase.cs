@@ -8,9 +8,19 @@ namespace CADence.Infrastructure.Parser.Abstractions;
 public abstract class DrillParserBase
 {
     /// <summary>
+    /// Результатирующая геометрия дырок
+    /// </summary>
+    protected Geometry _drillGeometry;
+
+    /// <summary>
     /// Выполняет парсинг команд для дырок.
     /// </summary>
     public abstract void Execute();
 
-    public Geometry DrillGeometry { get; protected set; }
+
+    /// <returns>Возвращает результатирующую геометрию дырок</returns>
+    public Geometry GetLayer()
+    {
+        return _drillGeometry;
+    }
 }

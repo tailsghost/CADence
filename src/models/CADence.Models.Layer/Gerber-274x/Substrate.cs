@@ -11,7 +11,7 @@ public class Substrate : LayerBase
     private Geometry _geometryLayer;
     private DrillParserBase PARSER_DRILLS { get; init; }
 
-    public Substrate(LayerFormatBase format, DrillParserBase parserDrills, GerberParserBase parser) : base(format, parser)
+    public Substrate(LayerFormatBase format, DrillParserBase parserDrills, GerberParserBase parser) : base(format, parser, 1.5)
     {
         Layer = Enums.GerberLayer.Substrate;
         PARSER_DRILLS = parserDrills;
@@ -19,9 +19,9 @@ public class Substrate : LayerBase
         Render();
     }
 
-    public override void Render()
+    private void Render()
     {
-        var drills = PARSER_DRILLS.DrillGeometry;
+        var drills = PARSER_DRILLS.GetLayer();
         var BoardOutLine = PARSER.GetResult(true);
 
         _geometryLayer = BoardOutLine.Difference(drills);
