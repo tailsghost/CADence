@@ -70,8 +70,8 @@ public class BottomCopper : LayerBase
                 MinDistanceHole = Math.Round(await Task.Run(() => GetMinDistanceHoleToPad(polygons)) / 0.005) * 0.005;
                 MinDistanceBetween = Math.Round(await Task.Run(() => GetMinDistanceBetweenTracks(polygons)) / 0.005) * 0.005;
             });
-            //MinDistanceHole = Math.Round(GetMinDistanceHoleToPad(polygons)/0.005) * 0.005;
-            //MinDistanceBetween = Math.Round(GetMinDistanceBetweenTracks(polygons) / 0.005) *0.005;
+            //MinDistanceHole = Math.Round(GetMinDistanceHoleToPad(polygons) / 0.005) * 0.005;
+            //MinDistanceBetween = Math.Round(GetMinDistanceBetweenTracks(polygons) / 0.005) * 0.005;
         }
 
     }
