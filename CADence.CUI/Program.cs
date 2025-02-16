@@ -153,9 +153,9 @@ namespace CADence.CUI
             var pathToSVGWritingBack = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "outputBack.svg");
             _logger.Info($"Путь по которому будет сохранён файл: {pathToSVGWritingBack}");
 
-            var svgWriter = new SVGWriter(layers, 3);
-            svgWriter.Execute(true, pathToSVGWritingFront);
-            svgWriter.Execute(false, pathToSVGWritingBack);
+            var svgWriter = new SVGWriter(layers, 2);
+            svgWriter.Execute(true, pathToSVGWritingBack);
+            svgWriter.Execute(false, pathToSVGWritingFront);
             wather.Stop();
             _logger.Info($"Общее время выполнения {wather.ElapsedMilliseconds / 1000.0} секунд");
         }

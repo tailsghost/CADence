@@ -59,7 +59,7 @@ public sealed class Polygon : ApertureBase
         Rotation = csep.Count > 3 ? double.Parse(csep[3]) * Math.PI / 180.0 : 0.0;
         
         HoleDiameter = csep.Count > 4 ? format.ParseFloat(csep[4]) : 0;
-        
+
         var coords = new Coordinate[NVertices + 1];
         for (var i = 0; i < NVertices; i++)
         {
@@ -68,7 +68,7 @@ public sealed class Polygon : ApertureBase
             var y = Diameter * 0.5 * Math.Sin(angle);
             coords[i] = new Coordinate(x, y);
         }
-        
+
         coords[NVertices] = coords[0];
         
         var shell = _geomFactory.CreateLinearRing(coords);

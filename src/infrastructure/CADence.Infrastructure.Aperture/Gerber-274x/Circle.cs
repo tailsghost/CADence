@@ -41,6 +41,8 @@ public sealed class Circle : ApertureBase
 
 
         var aperture = _geomFactory.CreatePoint(new Coordinate(0, 0)).Render(Diameter, false);
+
+
         
         if (HoleDiameter > 0)
         {

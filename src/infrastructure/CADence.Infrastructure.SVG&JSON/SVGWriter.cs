@@ -215,10 +215,10 @@ public class SVGWriter
     public List<LayerBase> GetOrderedLayers(bool flipped)
     {
         GerberLayer[] order = flipped
-            ? new[] { GerberLayer.TopFinish, GerberLayer.TopCopper, GerberLayer.TopMask, GerberLayer.TopSilk, GerberLayer.Substrate,
-                GerberLayer.BottomCopper,GerberLayer.BottomMask,GerberLayer.BottomSilk, GerberLayer.BottomFinish }
-            : new[] { GerberLayer.BottomFinish, GerberLayer.BottomSilk, GerberLayer.BottomMask, GerberLayer.BottomCopper, GerberLayer.Substrate,
-            GerberLayer.TopCopper, GerberLayer.TopMask, GerberLayer.TopSilk, GerberLayer.TopFinish};
+            ? new[] { GerberLayer.Substrate,GerberLayer.BottomSilk,GerberLayer.BottomCopper,GerberLayer.BottomMask,GerberLayer.BottomFinish
+                 }
+            : new[] {GerberLayer.Substrate,GerberLayer.TopCopper,GerberLayer.TopMask,GerberLayer.TopSilk, GerberLayer.TopFinish,
+            };
 
         var orderedLayers = new List<LayerBase>();
 

@@ -8,15 +8,8 @@ public static class NetTopologySuitePath
     private static BufferParameters _bufferParams = new BufferParameters
     {
         MitreLimit = 1,
-        QuadrantSegments = 10
+        QuadrantSegments = 16
     };
-    
-    public static Geometry Render(this Geometry geometry, double thickness, bool square)
-    {
-        CreateBufferParameter(square);
-        
-        return geometry.Buffer(thickness * 0.5, _bufferParams);
-    }
 
     public static Geometry Render(this LineString geometry, double thickness, bool square)
     {

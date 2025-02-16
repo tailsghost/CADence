@@ -136,5 +136,21 @@ public class LayerFormat : LayerFormatBase
     private double AdjustValue(double value)
     {
         return value * _conversionFactor;
+        //double adjustedValue = value * _conversionFactor;
+        //double step = 0.005;
+        //double quotient = adjustedValue / step;
+
+        //if (adjustedValue >= 0)
+        //{
+        //    return Math.Ceiling(quotient) * step;
+        //}
+        //else
+        //{
+        //    double floor = Math.Floor(quotient);
+        //    if (quotient == floor)
+        //        return floor * step;
+        //    else
+        //        return (floor - 1) * step;
+        //}
     }
 }
