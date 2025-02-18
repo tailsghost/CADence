@@ -2,6 +2,7 @@ using CADence.Infrastructure.Aperture.Abstractions;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Models.Format;
 using NetTopologySuite.Geometries;
+using System.Collections.Generic;
 
 namespace CADence.Infrastructure.Parser.Abstractions;
 

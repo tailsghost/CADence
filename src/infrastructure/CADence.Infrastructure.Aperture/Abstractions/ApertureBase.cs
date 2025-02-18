@@ -1,9 +1,11 @@
-﻿using CADence.Infrastructure.Aperture.NetTopologySuite;
+﻿using CADence.Infrastructure.Aperture.Enums;
+using CADence.Infrastructure.Aperture.NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Geometries.Utilities;
 using NetTopologySuite.Operation.Overlay;
 using NetTopologySuite.Operation.OverlayNG;
 using NetTopologySuite.Operation.Union;
+using NetTopologySuite.Simplify;
 
 namespace CADence.Infrastructure.Aperture.Abstractions;
 
@@ -95,7 +97,7 @@ public class ApertureBase
     /// Фиксирует накопленные геометрии, объединяя их с итоговыми.
     /// В зависимости от типа (AdditiveGeometry или SubtractiveGeometry) и полярности выполняется объединение или разность.
     /// </summary>
-    protected void CommitPaths()
+    protected void CommitPaths(CommitPathType type = CommitPathType.Additive)
     {
         if (_accumulatedGeometries.Count == 0)
             return;
@@ -107,11 +109,10 @@ public class ApertureBase
         }
         else
         {
-
-            //var overlayParams = OverlayNG.Overlay();
-            mergedAccumulated = UnaryUnionOp.Union(_accumulatedGeometries);
-            // На этом месте, если геометрия сложная, то все ломается.
+            mergedAccumulated = CascadedPolygonUnion.Union(_accumulatedGeometries);
         }
+
+        mergedAccumulated =  TopologyPreservingSimplifier.Simplify(mergedAccumulated, 0.001);
 
         if (!mergedAccumulated.IsValid)
         {
@@ -120,14 +121,17 @@ public class ApertureBase
 
         if (ACCUM_POLARITY)
         {
-            AdditiveGeometry = OverlayNG.Overlay(AdditiveGeometry, mergedAccumulated, SpatialFunction.Union);
-            SubtractiveGeometry = OverlayNG.Overlay(SubtractiveGeometry, mergedAccumulated, SpatialFunction.Difference);
+            if (type == CommitPathType.Additive)
+                AdditiveGeometry = OverlayNG.Overlay(AdditiveGeometry, mergedAccumulated, SpatialFunction.Union);
+            else
+                SubtractiveGeometry = OverlayNG.Overlay(SubtractiveGeometry, mergedAccumulated, SpatialFunction.Difference);
         }
         else
         {
-            AdditiveGeometry = OverlayNG.Overlay(AdditiveGeometry, mergedAccumulated, SpatialFunction.Difference);
-
-            SubtractiveGeometry = OverlayNG.Overlay(SubtractiveGeometry, mergedAccumulated, SpatialFunction.Union);
+            if (type == CommitPathType.Additive)
+                AdditiveGeometry = OverlayNG.Overlay(AdditiveGeometry, mergedAccumulated, SpatialFunction.Difference);
+            else
+                SubtractiveGeometry = OverlayNG.Overlay(SubtractiveGeometry, mergedAccumulated, SpatialFunction.Union);
         }
 
         _accumulatedGeometries.Clear();
@@ -209,7 +213,7 @@ public class ApertureBase
     /// <returns>Упрощённая второстепенная геометрия.</returns>
     public Geometry? GetSubtractive()
     {
-        CommitPaths();
+        CommitPaths(CommitPathType.Subtractive);
         return SimplifyGeometry(SubtractiveGeometry);
     }
 
@@ -227,8 +231,7 @@ public class ApertureBase
     public Geometry SimplifyGeometry(Geometry geometry, double tolerance = 1e-8)
     {
         if (Simplified) return geometry;
-
-        return geometry;
+        return TopologyPreservingSimplifier.Simplify(geometry, 0.001);
     }
 
     /// <summary>

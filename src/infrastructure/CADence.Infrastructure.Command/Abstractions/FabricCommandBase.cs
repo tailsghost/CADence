@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace CADence.Infrastructure.Parser.Abstractions;
 
 /// <summary>
@@ -39,9 +42,10 @@ public abstract class FabricCommandBase<T> where T : SettingsBase
     /// <returns>Обновлённые параметры. Если команда не найдена, возвращаются исходные параметры.</returns>
     public T ExecuteCommand(T settings)
     {
-        foreach(var item in _commands)
+        for (int i = 0; i < _commands.Count; i++)
         {
-            if(settings.cmd.StartsWith(item.Key))
+            var item = _commands.ElementAt(i);
+            if (settings.cmd.StartsWith(item.Key))
             {
                 return item.Value().Execute(settings);
             }

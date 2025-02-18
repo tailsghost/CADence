@@ -9,6 +9,18 @@
 	  <Optimize>true</Optimize>-->
   </PropertyGroup>
 
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Optimize>true</Optimize>
+		<RootNamespace>CADence.Infrastructure.SVG_JSON</RootNamespace>
+		<TieredCompilation>true</TieredCompilation>
+		<TieredPGO>true</TieredPGO>
+		<ReadyToRun>true</ReadyToRun>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="NLog.Extensions.Hosting" Version="5.4.0" />

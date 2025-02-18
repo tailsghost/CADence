@@ -2,6 +2,7 @@ using CADence.Infrastructure.Aperture.Abstractions;
 using CADence.Infrastructure.Aperture.Gerber_274x;
 using CADence.Infrastructure.Parser.Enums;
 using NetTopologySuite.Geometries;
+using System.Collections.Generic;
 
 namespace CADence.Infrastructure.Parser.Abstractions;
 

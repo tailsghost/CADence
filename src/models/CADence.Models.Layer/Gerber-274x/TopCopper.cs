@@ -3,6 +3,11 @@ using NetTopologySuite.Geometries;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
 using CADence.Layer.Colors;
+using NetTopologySuite.Operation.Overlay;
+using System;
+using System.Threading.Tasks;
+using NetTopologySuite.Operation.OverlayNG;
+using System.Linq;
 
 namespace CADence.Layer.Gerber_274x;
 
@@ -12,6 +17,8 @@ public class TopCopper : LayerBase
     /// Результатирующая геометрия
     /// </summary>
     private Geometry _geometryLayer;
+
+    private GeometryFactory _geometryFactory = new();
 
     /// <summary>
     /// Слой Substrate
@@ -54,18 +61,33 @@ public class TopCopper : LayerBase
     private void Render()
     {
         var copper = PARSER.GetResult(false);
-        _geometryLayer = Substrate.GetLayer().Intersection(copper);
+        _geometryLayer  = OverlayNG.Overlay(Substrate.GetLayer(), copper, SpatialFunction.Intersection);
 
 
         if (isAccuracy && _geometryLayer is MultiPolygon polygons)
         {
-            Task.Run(async () =>
+            Task.Run(() =>
             {
-                MinDistanceHole = Math.Round(await Task.Run(() => GetMinDistanceHoleToPad(polygons)) / 0.005) * 0.005;
-                MinDistanceBetween = Math.Round(await Task.Run(() => GetMinDistanceBetweenTracks(polygons)) / 0.005) * 0.005;
+                MinDistanceHole = Math.Round(GetMinDistanceHoleToPad(polygons)) / 0.005 * 0.005;
+                MinDistanceBetween = Math.Round(GetMinDistanceBetweenTracks(polygons)) / 0.005 * 0.005;
             });
             //MinDistanceHole = Math.Round(GetMinDistanceHoleToPad(polygons) / 0.005) * 0.005;
             //MinDistanceBetween = Math.Round(GetMinDistanceBetweenTracks(polygons) / 0.005) * 0.005;
+            //MinDistanceHole = GetMinDistanceHoleToPad(polygons);
+            //MinDistanceBetween = GetMinDistanceBetweenTracks(polygons);
+        }
+
+        if (isAccuracy && _geometryLayer is GeometryCollection geometry)
+        {
+            var multi = geometry.Geometries.OfType<Polygon>().ToArray();
+
+            var multiPolygon = _geometryFactory.CreateMultiPolygon(multi);
+
+            Task.Run(() =>
+            {
+                MinDistanceHole = Math.Round(GetMinDistanceHoleToPad(multiPolygon) / 0.005) * 0.005;
+                MinDistanceBetween = Math.Round(GetMinDistanceBetweenTracks(multiPolygon) / 0.005) * 0.005;
+            });
         }
 
     }

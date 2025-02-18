@@ -5,6 +5,8 @@ using CADence.Infrastructure.Command.Property.Gerber274x;
 using CADence.Infrastructure.Parser.Abstractions;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Utilities;
+using System;
+using System.Collections.Generic;
 
 namespace CADence.Infrastructure.Parser.Settings;
 

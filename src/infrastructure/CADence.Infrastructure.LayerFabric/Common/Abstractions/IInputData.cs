@@ -1,4 +1,6 @@
-﻿namespace CADence.Infrastructure.LayerFabric.Common.Abstractions
+﻿using System.Collections.Generic;
+
+namespace CADence.Infrastructure.LayerFabric.Common.Abstractions
 {
     public interface IInputData
     {

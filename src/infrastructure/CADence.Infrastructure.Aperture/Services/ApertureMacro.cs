@@ -3,6 +3,9 @@ using CADence.Infrastructure.Aperture.Abstractions;
 using CADence.Infrastructure.Aperture.NetTopologySuite;
 using CADence.Models.Format.Abstractions;
 using NetTopologySuite.Geometries;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace CADence.Infrastructure.Aperture.Services;
 

@@ -4,6 +4,9 @@ using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.Operation.Union;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace CADence.Infrastructure.Parser.Parsers.Drills;
 

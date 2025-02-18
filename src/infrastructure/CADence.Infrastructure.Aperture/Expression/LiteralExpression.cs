@@ -1,4 +1,6 @@
-﻿namespace CADence.Aperture.Expression;
+﻿using System.Collections.Generic;
+
+namespace CADence.Aperture.Expression;
 
 public class LiteralExpression : Expression
 {

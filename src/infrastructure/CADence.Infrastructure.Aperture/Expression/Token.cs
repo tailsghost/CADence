@@ -1,4 +1,7 @@
-﻿namespace CADence.Aperture.Expression;
+﻿using System;
+using System.Collections.Generic;
+
+namespace CADence.Aperture.Expression;
 
 public class Token : Expression
 {

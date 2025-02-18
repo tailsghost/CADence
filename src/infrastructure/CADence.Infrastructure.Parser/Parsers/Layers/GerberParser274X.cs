@@ -4,7 +4,8 @@ using CADence.Infrastructure.Parser.Commands.Gerber274x.Fabric;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Parser.Settings;
 using NetTopologySuite.Geometries;
-using NetTopologySuite.Precision;
+using NetTopologySuite.Operation.Overlay;
+using NetTopologySuite.Operation.OverlayNG;
 
 namespace CADence.Infrastructure.Parser.Parsers;
 
@@ -55,80 +56,72 @@ public class GerberParser274X : GerberParserBase
     /// </exception>
     public override void Execute()
     {
-        try
+        using var stream = new StringReader(FILE);
+
+        SetupSettings();
+
+        var is_attrib = false;
+        var ss = new StringBuilder();
+
+        while (stream.Peek() != -1)
         {
 
-            using var stream = new StringReader(FILE);
-
-            SetupSettings();
-
-            var is_attrib = false;
-            var ss = new StringBuilder();
-
-            while (stream.Peek() != -1)
+            var c = (char)stream.Read();
+            if (char.IsWhiteSpace(c))
             {
-
-                var c = (char)stream.Read();
-                if (char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-                else if (c == '%')
-                {
-                    if (ss.Length > 0) throw new InvalidOperationException("attribute mid-command");
-                    if (is_attrib) _settings.AmBuilder = null;
-                    is_attrib = !is_attrib;
-                }
-                else if (c == '*')
-                {
-                    if (ss.Length == 0) throw new InvalidOperationException("empty command");
-
-                    var cmd = ss.ToString();
-
-                    _settings.AmBuilder?.Append(cmd);
-
-                    _settings.cmd = cmd;
-
-                    _settings = _fabric.ExecuteCommand(_settings);
-
-                    if (!_settings.IsDone)
-                    {
-                        break;
-                    }
-
-                    ss.Clear();
-                }
-                else
-                {
-                    ss.Append(c);
-                }
+                continue;
             }
-
-            if (is_attrib)
+            else if (c == '%')
             {
-                throw new InvalidOperationException("unterminated attribute");
+                if (ss.Length > 0) throw new InvalidOperationException("attribute mid-command");
+                if (is_attrib) _settings.AmBuilder = null;
+                is_attrib = !is_attrib;
             }
-
-            if (_settings.IsDone)
+            else if (c == '*')
             {
-                throw new InvalidOperationException("unterminated gerber file");
+                if (ss.Length == 0) throw new InvalidOperationException("empty command");
+
+                var cmd = ss.ToString();
+
+                _settings.AmBuilder?.Append(cmd);
+
+                _settings.cmd = cmd;
+
+                _settings = _fabric.ExecuteCommand(_settings);
+
+                if (!_settings.IsDone)
+                {
+                    break;
+                }
+
+                ss.Clear();
             }
-
-            if (_settings.ApertureStack.Count != 1)
+            else
             {
-                throw new InvalidOperationException("unterminated block aperture");
-            }
-
-            if (_settings.RegionMode)
-            {
-                throw new InvalidOperationException("unterminated region block");
+                ss.Append(c);
             }
         }
-        catch (Exception ex)
+
+        if (is_attrib)
         {
-            _logger.Error(ex, "Ошибка при выполнении парсинга.");
-            throw new InvalidOperationException("Ошибка при выполнении парсинга.", ex);
+            throw new InvalidOperationException("unterminated attribute");
         }
+
+        if (_settings.IsDone)
+        {
+            throw new InvalidOperationException("unterminated gerber file");
+        }
+
+        if (_settings.ApertureStack.Count != 1)
+        {
+            throw new InvalidOperationException("unterminated block aperture");
+        }
+
+        if (_settings.RegionMode)
+        {
+            throw new InvalidOperationException("unterminated region block");
+        }
+
     }
 
     /// <summary>
@@ -180,7 +173,7 @@ public class GerberParser274X : GerberParserBase
         for (int i = 0; i < multiPolygon.NumGeometries; i++)
         {
             Geometry subGeometry = multiPolygon.GetGeometryN(i);
-            borderBoxWithHoles = borderBoxWithHoles.Difference(subGeometry);
+            borderBoxWithHoles = OverlayNG.Overlay(borderBoxWithHoles, subGeometry, SpatialFunction.Difference);
         }
 
         return borderBoxWithHoles;

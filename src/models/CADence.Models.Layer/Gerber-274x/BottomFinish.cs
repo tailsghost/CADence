@@ -3,6 +3,8 @@ using NetTopologySuite.Geometries;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
 using CADence.Layer.Colors;
+using NetTopologySuite.Operation.Overlay;
+using NetTopologySuite.Operation.OverlayNG;
 
 namespace CADence.Layer.Gerber_274x;
 
@@ -28,6 +30,6 @@ public class BottomFinish : LayerBase
 
     private void Render()
     {
-        _geometryLayer = _bottomCopper.Difference(_bottomMask);
+        _geometryLayer = OverlayNG.Overlay(_bottomMask, _bottomMask, SpatialFunction.Difference);
     }
 }

@@ -6,6 +6,19 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<!--<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Optimize>true</Optimize>
+		<TieredCompilation>true</TieredCompilation>
+		<TieredPGO>true</TieredPGO>
+		<ReadyToRun>true</ReadyToRun>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>-->
+
   <ItemGroup>
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="NLog.Extensions.Hosting" Version="5.4.0" />

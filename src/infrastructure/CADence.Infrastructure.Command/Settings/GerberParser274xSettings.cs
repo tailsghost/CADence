@@ -4,6 +4,9 @@ using NetTopologySuite.Geometries;
 using CADence.Infrastructure.Parser.Enums;
 using CADence.Infrastructure.Aperture.NetTopologySuite;
 using CADence.Infrastructure.Command.Helpers;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace CADence.Infrastructure.Parser.Settings;
 
@@ -24,7 +27,7 @@ public class GerberParser274xSettings : GerberParserSettingsBase
     /// <summary>
     /// Словарь апертур
     /// </summary>
-    public Dictionary<int, ApertureBase> Apertures = [];
+    public Dictionary<int, ApertureBase> Apertures = new Dictionary<int, ApertureBase>(20);
     /// <summary>
     /// Текущий макрос апертуры.
     /// </summary>
@@ -39,6 +42,7 @@ public class GerberParser274xSettings : GerberParserSettingsBase
 
     public void CommitRegion()
     {
+
         var coords = RegionAccum.ToArray();
         if (SignedArea(coords) > 0)
         {
@@ -112,7 +116,7 @@ public class GerberParser274xSettings : GerberParserSettingsBase
 
         if (RegionMode)
         {
-            RegionAccum.AddRange(coordinates.Skip(1));
+            RegionAccum.Add(coordinates[1]);
             return;
         }
 

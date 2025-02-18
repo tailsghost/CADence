@@ -1,6 +1,8 @@
 ﻿using CADence.Infrastructure.Aperture.Abstractions;
 using CADence.Models.Format;
 using NetTopologySuite.Geometries;
+using System;
+using System.Collections.Generic;
 
 namespace CADence.Infrastructure.Aperture.Gerber_274x;
 
@@ -63,7 +65,7 @@ public sealed class Polygon : ApertureBase
         var coords = new Coordinate[NVertices + 1];
         for (var i = 0; i < NVertices; i++)
         {
-            var angle = ((double)i / NVertices) * 2.0 * Math.PI + Rotation;
+            var angle = (i / NVertices) * 2.0 * Math.PI + Rotation;
             var x = Diameter * 0.5 * Math.Cos(angle);
             var y = Diameter * 0.5 * Math.Sin(angle);
             coords[i] = new Coordinate(x, y);

@@ -2,6 +2,8 @@
 using CADence.Infrastructure.Aperture.NetTopologySuite;
 using CADence.Models.Format;
 using NetTopologySuite.Geometries;
+using System;
+using System.Collections.Generic;
 
 namespace CADence.Infrastructure.Aperture.Gerber_274x;
 

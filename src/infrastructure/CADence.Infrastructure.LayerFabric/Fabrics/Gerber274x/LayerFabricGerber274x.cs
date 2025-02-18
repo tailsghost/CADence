@@ -6,6 +6,7 @@ using CADence.Infrastructure.Parser.Parsers.Drills;
 using CADence.Layer.Abstractions;
 using CADence.Layer.Gerber_274x;
 using CADence.Models.Format;
+using NetTopologySuite.Geometries.Prepared;
 using NetTopologySuite.Utilities;
 using SharpCompress.Common;
 using System.Collections.Generic;
@@ -69,9 +70,10 @@ public class LayerFabricGerber274x : ILayerFabric
                 removeKeys.Add(kvp.Key);
             }
         }
-        foreach (var key in removeKeys)
+
+        for (var i = 0; i < removeKeys.Count; i++)
         {
-            dataCopy.Remove(key);
+            dataCopy.Remove(removeKeys[i]);
         }
 
         var substrate = new Substrate(new LayerFormat(), new DrillParser274X(_drills), new GerberParser274X(_outline));
@@ -143,10 +145,10 @@ public class LayerFabricGerber274x : ILayerFabric
         var fileEntry = data.FirstOrDefault(kvp =>
             Path.GetExtension(kvp.Key).Equals(extension, StringComparison.OrdinalIgnoreCase));
 
-        if (fileEntry.Equals(default(KeyValuePair<string, string>)))
-        {
-            //throw new ArgumentException($"Файл с расширением {extension} не найден в коллекции.");
-        }
+        //if (fileEntry.Equals(default(KeyValuePair<string, string>)))
+        //{
+        //    //throw new ArgumentException($"Файл с расширением {extension} не найден в коллекции.");
+        //}
 
         return fileEntry.Value;
     }

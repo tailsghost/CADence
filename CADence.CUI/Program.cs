@@ -46,15 +46,8 @@ namespace CADence.CUI
                 }
 
                 _logger.Info("Парсинг файла...");
-                try
-                {
-                    await ExecuteAsync(path);
-                    _logger.Info("Парсинг успешно завершён.");
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex, "Ошибка при выполнении парсинга");
-                }
+                await ExecuteAsync(path);
+                _logger.Info("Парсинг успешно завершён.");
 
                 if (!AskUserToContinue())
                 {

@@ -1,4 +1,7 @@
 ﻿using RTools_NTS.Util;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace CADence.Aperture.Expression;
@@ -16,12 +19,11 @@ public abstract class Expression
             throw new Exception("empty aperture macro (sub)expression");
         }
 
-        int level;
         for (int i = 0; i < expr.Count; i++)
         {
             if (expr[i].GetToken() == '(')
             {
-                level = 1;
+                int level = 1;
                 for (int j = i + 1; j < expr.Count; j++)
                 {
                     char t = expr[j].GetToken();
@@ -38,12 +40,11 @@ public abstract class Expression
             }
         }
 
-        char oper;
         for (int i = 0; i < expr.Count - 1; i++)
         {
             if (expr[i + 1].GetToken() == '\0')
             {
-                oper = expr[i].GetToken();
+                char oper = expr[i].GetToken();
                 if (oper == '-' || oper == '+')
                 {
                     expr[i] = new UnaryExpression(oper, expr[i + 1]);
@@ -54,7 +55,7 @@ public abstract class Expression
 
         for (int i = 1; i < expr.Count - 1; i++)
         {
-            oper = expr[i].GetToken();
+            char oper = expr[i].GetToken();
             if (oper == 'x' || oper == '/' || oper == '+' || oper == '-')
             {
                 expr[i - 1] = new BinaryExpression(oper, expr[i - 1], expr[i + 1]);
@@ -77,8 +78,10 @@ public abstract class Expression
         string currentToken = "";
         bool isNumber = false;
 
-        foreach (char c in expr + " ")
+        for (int i = 0; i <= expr.Length; i++)
         {
+            char c = (i < expr.Length) ? expr[i] : ' ';
+
             if (char.IsDigit(c) || c == '.')
             {
                 currentToken += c;

@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace CADence.Infrastructure.LayerFabric.Common.Abstractions;
 
 public interface IReader

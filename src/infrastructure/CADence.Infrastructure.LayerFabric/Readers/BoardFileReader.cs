@@ -2,6 +2,10 @@
 using System.IO.Compression;
 using System.Text;
 using CADence.Infrastructure.LayerFabric.Common.Abstractions;
+using System.Collections.Generic;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace CADence.Infrastructure.LayerFabric.Readers;
 

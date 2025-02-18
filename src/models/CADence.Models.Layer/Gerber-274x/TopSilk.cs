@@ -3,6 +3,9 @@ using NetTopologySuite.Geometries;
 using CADence.Infrastructure.Parser.Abstractions;
 using CADence.Models.Format.Abstractions;
 using CADence.Layer.Colors;
+using NetTopologySuite.Operation.Overlay;
+using System.Threading.Tasks;
+using NetTopologySuite.Operation.OverlayNG;
 
 namespace CADence.Layer.Gerber_274x;
 
@@ -29,6 +32,6 @@ public class TopSilk : LayerBase
     {
         var silk = PARSER.GetResult(false);
 
-        _geometryLayer = _topMask.Intersection(silk);
+        _geometryLayer = OverlayNG.Overlay(_topMask, silk, SpatialFunction.Intersection);
     }
 }
