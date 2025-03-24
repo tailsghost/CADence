@@ -1,4 +1,5 @@
 ﻿using CADence.Abstractions.Clippers;
+using Clipper2Lib;
 
 namespace CADence.App.Abstractions.Formats;
 
@@ -12,4 +13,5 @@ public interface ILayerFormat
     double ParseFloat(string value);
     double ToFixed(double value);
     ClipperOffsetD BuildClipperOffset();
+    double GetMaxDeviation();
 }

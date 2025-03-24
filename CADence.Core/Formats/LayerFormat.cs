@@ -149,4 +149,7 @@ public class LayerFormat(double maxDeviation = 0.0001, double miterLimit = 1.0) 
     {
         return value * _conversionFactor;
     }
+
+    public double GetMaxDeviation()
+        => MAX_DEVIATION;
 }

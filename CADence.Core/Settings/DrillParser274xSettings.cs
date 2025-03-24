@@ -55,7 +55,7 @@ public class DrillParser274xSettings : IDrillSettings
         if (ccw && a1 < a0) a1 += 2.0 * Math.PI;
         if (!ccw && a0 < a1) a0 += 2.0 * Math.PI;
 
-        double epsilon = 2;
+        double epsilon = format.GetMaxDeviation();
         double f = (r > epsilon) ? (1.0 - epsilon / r) : 0.0;
         double th = Math.Acos(2.0 * f * f - 1.0) + 1e-3;
         int nVertices = (int)Math.Ceiling(Math.Abs(a1 - a0) / th);

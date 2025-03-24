@@ -29,7 +29,7 @@ public class Substrate : ILayer
         var drills = PARSER_DRILLS.GetLayer();
         var BoardOutLine = _parser.GetResult(true);
 
-        _geometryLayer = Clipper.Difference(BoardOutLine, drills, FillRule.NonZero);
+        _geometryLayer = Clipper.Difference(BoardOutLine, drills, FillRule.EvenOdd);
     }
 
     public PathsD GetLayer()

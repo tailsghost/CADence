@@ -15,7 +15,7 @@ public class TopMask : ILayer
 
     public TopMask(IGerberParser parser)
     {
-        Layer = GerberLayer.BottomMask;
+        Layer = GerberLayer.TopMask;
         ColorLayer = ColorConstants.MASK_GREEN;
         _parser = parser;
         Thickness = 0.01;

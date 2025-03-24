@@ -20,10 +20,10 @@ public class TopCopper : ILayer
 
     public TopCopper(IGerberParser parser)
     {
-        Layer = GerberLayer.BottomCopper;
+        Layer = GerberLayer.TopCopper;
         ColorLayer = ColorConstants.COPPER;
         PARSER = parser;
-        Thickness = 0.348;
+        Thickness = 0.0348;
     }
 
     /// <summary>
@@ -44,11 +44,12 @@ public class TopCopper : ILayer
     {
         var copper = PARSER.GetResult(false);
 
-        _geometry = Clipper.Intersect(Substrate, copper, FillRule.NonZero);
+        _geometry = Clipper.Intersect(Substrate, copper, FillRule.EvenOdd);
+
+        copper.Clear();
 
     }
-
-    PathsD ILayer.GetLayer()
+   public PathsD GetLayer()
     {
         return _geometry;
     }

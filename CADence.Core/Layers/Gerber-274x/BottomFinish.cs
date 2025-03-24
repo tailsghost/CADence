@@ -17,8 +17,8 @@ public class BottomFinish : ILayer
     public BottomFinish()
     {
         Layer = GerberLayer.BottomFinish;
-        ColorLayer = ColorConstants.SILK_WHITE;
-        Thickness = 0.02;
+        ColorLayer = ColorConstants.FINISH_TIN;
+        Thickness = 0.01;
     }
 
    public PathsD GetLayer()
@@ -28,7 +28,7 @@ public class BottomFinish : ILayer
 
     private void Render()
     {
-        _geometry = Clipper.Difference(_mask, _copper, FillRule.NonZero);
+        _geometry = Clipper.Difference(_copper, _mask, FillRule.EvenOdd);
     }
 
     public ILayer Init(PathsD[] param, string file = null, List<string> files = null)

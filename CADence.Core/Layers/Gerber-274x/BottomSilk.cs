@@ -41,6 +41,6 @@ public class BottomSilk : ILayer
     {
         var silk = _parser.GetResult(false);
 
-        _geometry = Clipper.Intersect(_mask, silk, FillRule.NonZero);
+        _geometry = Clipper.Intersect(_mask, silk, FillRule.EvenOdd);
     }
 }

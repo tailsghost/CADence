@@ -18,7 +18,7 @@ public class TopSilk : ILayer
 
     public TopSilk(IGerberParser parser)
     {
-        Layer = GerberLayer.BottomSilk;
+        Layer = GerberLayer.TopSilk;
         ColorLayer = ColorConstants.SILK_WHITE;
         _parser = parser;
         Thickness = 0.01;

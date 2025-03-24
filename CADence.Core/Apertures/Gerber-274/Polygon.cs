@@ -37,7 +37,7 @@ public class Polygon : ApertureBase
 
         for (int i = 0; i < NVertices; i++)
         {
-            angle = i / NVertices * 2.0 * Math.PI + Rotation;
+            angle = (i / NVertices) * 2.0 * Math.PI + Rotation;
             x = Diameter * 0.5 * Math.Cos(angle);
             y = Diameter * 0.5 * Math.Sin(angle);
             polygonPath.Add(new PointD(x, y));

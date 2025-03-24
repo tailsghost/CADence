@@ -152,6 +152,7 @@ namespace CADence.CUI
             svgWriter.Execute(layers, 2,false, pathToSVGWritingFront);
             wather.Stop();
             _logger.Info($"Общее время выполнения {wather.ElapsedMilliseconds / 1000.0} секунд");
+
         }
     }
 }

@@ -22,7 +22,7 @@ public class BottomCopper : ILayer
         Layer = GerberLayer.BottomCopper;
         PARSER = parser;
         ColorLayer = ColorConstants.COPPER;
-        Thickness = 0.348;
+        Thickness = 0.0348;
     }
 
     /// <summary>
@@ -43,11 +43,13 @@ public class BottomCopper : ILayer
     {
         var copper = PARSER.GetResult(false);
 
-        _geometry = Clipper.Intersect(Substrate, copper, FillRule.NonZero);
+        _geometry = Clipper.Intersect(Substrate, copper, FillRule.EvenOdd);
+
+        copper.Clear();
 
     }
 
-    PathsD ILayer.GetLayer()
+    public PathsD GetLayer()
     {
         return _geometry;
     }

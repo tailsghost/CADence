@@ -12,7 +12,7 @@ public class CoordinateCommand : ICommand<IDrillSettings>
 
         coordSet = false;
         settings.StartPoint = settings.CurrentPoint;
-        PointD point = new();
+        PointD point = new(settings.CurrentPoint);
         if (dict.TryGetValue('X', out var xStr))
         {
             point.x = settings.format.ParseFixed(xStr);

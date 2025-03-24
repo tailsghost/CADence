@@ -193,7 +193,7 @@ public class LayerFabricGerber274x : ILayerFabric
     {
         ILayer bottomCopper = await bottomCopperTask;
         ILayer bottomMask = await bottomMaskTask;
-        var bottomFinishTask = Task.Run<ILayer>(() => _provider.GetRequiredService<TopFinish>().Init([bottomMask.GetLayer(), bottomCopper.GetLayer()]));
+        var bottomFinishTask = Task.Run<ILayer>(() => _provider.GetRequiredService<BottomFinish>().Init([bottomMask.GetLayer(), bottomCopper.GetLayer()]));
         return await bottomFinishTask;
     }
 }

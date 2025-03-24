@@ -54,11 +54,7 @@ public class InstallCommand : ICommand<IGerberSettings>
             case 2:
                 if (settings.RegionMode)
                 {
-                    if(settings.RegionAccum.Count > 2)
-                    {
-                        settings.RegionAccum.Add(settings.RegionAccum[0]);
-                        settings.CommitRegion();
-                    }
+                    settings.CommitRegion();
                 }
                 PointD Point2 = new(parameters['X'], parameters['Y']);
                 settings.Pos = Point2;

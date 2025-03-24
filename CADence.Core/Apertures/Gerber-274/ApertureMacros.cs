@@ -3,11 +3,17 @@ using CADence.Abstractions.Apertures.Expressions;
 using CADence.Abstractions.Clippers;
 using CADence.App.Abstractions.Formats;
 using Clipper2Lib;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Apertures.Gerber_274;
 
 public class ApertureMacro : IApertureMacro
 {
+    private IServiceProvider _provider;
+    public ApertureMacro(IServiceProvider provider)
+    {
+        _provider = provider;
+    }
 
     public List<Expression> Cmd { get; set; } = [];
 
@@ -40,7 +46,7 @@ public class ApertureMacro : IApertureMacro
             vars[i] = double.Parse(csep[i]);
         }
 
-        var baseAperture = new ApertureBase();
+        var baseAperture = _provider.GetRequiredService<Unknown>();
         double code;
 
         for (var j = 0; j < cmds.Count; j++)

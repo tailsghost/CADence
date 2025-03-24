@@ -1,9 +1,17 @@
 using CADence.Abstractions.Commands;
 using Clipper2Lib;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Commands.Drill;
 public class GCommand : ICommand<IDrillSettings>
 {
+    private IServiceProvider _provider;
+
+    public GCommand(IServiceProvider provider)
+    {
+        _provider = provider;
+    }
+
     public IDrillSettings Execute(IDrillSettings settings)
     {
         var setting = settings;
@@ -14,13 +22,13 @@ public class GCommand : ICommand<IDrillSettings>
 
         if(dict.TryGetValue('X', out var Xcommand))
         {
-            var coordinate = new CoordinateCommand();
+            var coordinate = _provider.GetRequiredService<CoordinateCommand>();
             setting =  coordinate.Execute(setting);
         }
 
         if (dict.TryGetValue('Y', out var Ycommand))
         {
-            var coordinate = new CoordinateCommand();
+            var coordinate = _provider.GetRequiredService<CoordinateCommand>();
             setting = coordinate.Execute(setting);
         }
 
@@ -58,7 +66,7 @@ public class GCommand : ICommand<IDrillSettings>
                     var subCmd = setting.fcmd.Substring(0, indexG);
                     var subDict = CommandUtils.ParseRegularCommand(subCmd);
 
-                    PointD Point = new();
+                    PointD Point = new(setting.StartPoint);
                     
                     if (subDict.TryGetValue('X', out var xStr))
                         Point.x = setting.format.ParseFixed(xStr);
@@ -71,12 +79,13 @@ public class GCommand : ICommand<IDrillSettings>
                     var secondPart = setting.fcmd.Substring(indexG);
                     var secondDict = CommandUtils.ParseRegularCommand(secondPart);
 
+                    PointD Point1 = new(setting.LastPoint);
 
                     if (secondDict.TryGetValue('X', out xStr))
-                        Point.x = setting.format.ParseFixed(xStr);
+                        Point1.x = setting.format.ParseFixed(xStr);
                     
                     if (secondDict.TryGetValue('Y', out yStr))
-                        Point.y = setting.format.ParseFixed(yStr);
+                        Point1.y = setting.format.ParseFixed(yStr);
 
                     setting.LastPoint = Point;
                     
