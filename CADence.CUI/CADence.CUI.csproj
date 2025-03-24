@@ -12,14 +12,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Clipper2" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="NLog.Extensions.Hosting" Version="5.4.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.LayerFabric\CADence.Infrastructure.LayerFabric.csproj" />
-    <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.SVG&amp;JSON\CADence.Infrastructure.SVG&amp;JSON.csproj" />
+    <ProjectReference Include="..\CADence.Abstractions\CADence.Abstractions.csproj" />
+    <ProjectReference Include="..\CADence.Core\CADence.Core.csproj" />
   </ItemGroup>
 
 </Project>

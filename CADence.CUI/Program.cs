@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using CADence.Infrastructure.LayerFabric.Fabrics.Gerber274x;
-using CADence.Infrastructure.LayerFabric.Readers;
-using CADence.Infrastructure.SVG_JSON;
-using CADence.Layer.Abstractions;
+﻿using System.Diagnostics;
+using CADence.App.Abstractions.Layers;
 using NLog;
+using CADence.Core.SVG_JSON;
+using CADence.Core.Readers;
+using CADence.Core.Dependency;
+using CADence.Abstractions.Readers;
+using CADence.Abstractions.Layers;
+using CADence.Abstractions.Svg_Json;
 
 namespace CADence.CUI
 {
@@ -17,6 +17,7 @@ namespace CADence.CUI
 
         static async Task Main(string[] args)
         {
+            ServiceCollectionExtensions.Initial();
             // Настройка NLog: вывод в консоль и запись в файл
             var config = new NLog.Config.LoggingConfiguration();
 
@@ -129,14 +130,14 @@ namespace CADence.CUI
                 throw new ArgumentNullException(nameof(path));
             }
 
-            List<LayerBase> layers;
+            List<ILayer> layers;
 
             byte[] file = File.ReadAllBytes(path);
             using (var stream = new MemoryStream(file))
             {
-                BoardFileReader reader = new();
+                var reader = ServiceCollectionExtensions.GetService<IReader>();
                 var data = reader.ParseArchive(stream, Path.GetFileName(path));
-                LayerFabricGerber274x fabric = new();
+                var fabric = ServiceCollectionExtensions.GetService<ILayerFabric>();
                 layers = await fabric.GetLayers(data);
             }
 
@@ -146,9 +147,9 @@ namespace CADence.CUI
             var pathToSVGWritingBack = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "outputBack.svg");
             _logger.Info($"Путь по которому будет сохранён файл: {pathToSVGWritingBack}");
 
-            var svgWriter = new SVGWriter(layers, 2);
-            svgWriter.Execute(true, pathToSVGWritingBack);
-            svgWriter.Execute(false, pathToSVGWritingFront);
+            var svgWriter = ServiceCollectionExtensions.GetService<IWriter>();
+            svgWriter.Execute(layers, 2,true, pathToSVGWritingBack);
+            svgWriter.Execute(layers, 2,false, pathToSVGWritingFront);
             wather.Stop();
             _logger.Info($"Общее время выполнения {wather.ElapsedMilliseconds / 1000.0} секунд");
         }
