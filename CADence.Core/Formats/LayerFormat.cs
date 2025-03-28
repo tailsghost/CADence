@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace CADence.Core.Formats;
 
-public class LayerFormat(double maxDeviation = 0.0001, double miterLimit = 1.0) : ILayerFormat
+public class LayerFormat(double maxDeviation = 0.005, double miterLimit = 1.0) : ILayerFormat
 {
     private const double INCHES_TO_MILLIMETERS = 25.4;
     private const double MILLIMETERS_TO_INCHES = 1.0;

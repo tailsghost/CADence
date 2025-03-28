@@ -75,23 +75,23 @@ public class LayerFabricGerber274x : ILayerFabric
                                                         _provider.GetRequiredService<IGerberParser>().Execute(_outline));
         _result.Add(substrate);
 
-        string fileTopCopper = GetFileString(Layer274xFileExtensionsSupported.gtl, dataCopy);
-        string fileBottomCopper = GetFileString(Layer274xFileExtensionsSupported.gbl, dataCopy);
-        string fileTopMask = GetFileString(Layer274xFileExtensionsSupported.gts, dataCopy);
-        string fileBottomMask = GetFileString(Layer274xFileExtensionsSupported.gbs, dataCopy);
-        string fileTopSilk = GetFileString(Layer274xFileExtensionsSupported.gto, dataCopy);
-        string fileBottomSilk = GetFileString(Layer274xFileExtensionsSupported.gbo, dataCopy);
+        var fileTopCopper = GetFileString(Layer274xFileExtensionsSupported.gtl, dataCopy);
+        var fileBottomCopper = GetFileString(Layer274xFileExtensionsSupported.gbl, dataCopy);
+        var fileTopMask = GetFileString(Layer274xFileExtensionsSupported.gts, dataCopy);
+        var fileBottomMask = GetFileString(Layer274xFileExtensionsSupported.gbs, dataCopy);
+        var fileTopSilk = GetFileString(Layer274xFileExtensionsSupported.gto, dataCopy);
+        var fileBottomSilk = GetFileString(Layer274xFileExtensionsSupported.gbo, dataCopy);
 
-        Task<ILayer> topCopperTask = CreateTopCopper(fileTopCopper, substrate);
-        Task<ILayer> bottomCopperTask = CreateBottomCopper(fileBottomCopper, substrate);
-        Task<ILayer> topMaskTask = CreateTopMask(fileTopMask, substrate);
-        Task<ILayer> bottomMaskTask = CreateBottomMask(fileBottomMask, substrate);
+        var topCopperTask = CreateTopCopper(fileTopCopper, substrate);
+        var bottomCopperTask = CreateBottomCopper(fileBottomCopper, substrate);
+        var topMaskTask = CreateTopMask(fileTopMask, substrate);
+        var bottomMaskTask = CreateBottomMask(fileBottomMask, substrate);
 
-        Task<ILayer> topSilkTask = CreateTopSilk(fileTopSilk, topMaskTask);
-        Task<ILayer> bottomSilkTask = CreateBottomSilk(fileBottomSilk, bottomCopperTask);
+        var topSilkTask = CreateTopSilk(fileTopSilk, topMaskTask);
+        var bottomSilkTask = CreateBottomSilk(fileBottomSilk, bottomCopperTask);
 
-        Task<ILayer> topFinishTask = CreateTopFinish(topCopperTask, topMaskTask);
-        Task<ILayer> bottomFinishTask = CreateBottomFinish(bottomCopperTask, bottomMaskTask);
+        var topFinishTask = CreateTopFinish(topCopperTask, topMaskTask);
+        var bottomFinishTask = CreateBottomFinish(bottomCopperTask, bottomMaskTask);
 
 
         _tasks.AddRange(topMaskTask, bottomMaskTask, topCopperTask, bottomCopperTask, topSilkTask, bottomSilkTask, topFinishTask, bottomFinishTask);

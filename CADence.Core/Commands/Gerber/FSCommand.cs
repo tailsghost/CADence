@@ -1,5 +1,4 @@
 using CADence.Abstractions.Commands;
-using System.Windows.Input;
 
 namespace CADence.Core.Commands.Gerber;
 

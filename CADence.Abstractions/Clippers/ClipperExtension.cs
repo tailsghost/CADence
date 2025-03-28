@@ -9,12 +9,19 @@ public static class ClipperExtensions
     {
         JoinType joinType = square ? JoinType.Miter : JoinType.Round;
         EndType endType = square ? EndType.Butt : EndType.Round;
-
-        co.AddPaths(paths, joinType, endType);
-
         PathsD outPaths = new();
+        try
+        {
+            co.AddPaths(paths, joinType, endType);
 
-        co.Execute(thickness * 0.5, outPaths);
+            co.Execute(thickness * 0.5, outPaths);
+
+            return outPaths;
+        }
+        catch
+        {
+            Console.Write("Я тут");
+        }
 
         return outPaths;
     }

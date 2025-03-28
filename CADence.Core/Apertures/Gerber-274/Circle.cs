@@ -44,7 +44,13 @@ public sealed class Circle : ApertureBase
     /// <returns>True, если апертура является простым кругом (без отверстия); иначе false.</returns>
     public override bool IsSimpleCircle(out double diameter)
     {
+        if (HoleDiameter > 0.0)
+        {
+            diameter = HoleDiameter;
+            return false;
+        }
+
         diameter = this.Diameter;
-        return !(HoleDiameter > 0);
+        return true;
     }
 }

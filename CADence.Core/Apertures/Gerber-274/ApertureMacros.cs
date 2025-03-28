@@ -30,7 +30,7 @@ public class ApertureMacro : IApertureMacro
         {
             var exprList = new List<Expression>(25);
             var parts = cmd.Split(',');
-            for (int i = 0; i < parts.Length; i++)
+            for (var i = 0; i < parts.Length; i++)
             {
                 exprList.Add(Expression.Parse(parts[i]));
             }
@@ -41,17 +41,16 @@ public class ApertureMacro : IApertureMacro
     public ApertureBase Build(List<string> csep, ILayerFormat format)
     {
         var vars = new Dictionary<int, double>(20);
-        for (int i = 1; i < csep.Count; i++)
+        for (var i = 1; i < csep.Count; i++)
         {
             vars[i] = double.Parse(csep[i]);
         }
 
         var baseAperture = _provider.GetRequiredService<Unknown>();
-        double code;
 
         for (var j = 0; j < cmds.Count; j++)
         {
-            code = (int)Math.Round(cmds[j][0].Eval(vars));
+            var code = (int)Math.Round(cmds[j][0].Eval(vars));
 
             switch (code)
             {
@@ -89,18 +88,20 @@ public class ApertureMacro : IApertureMacro
     private static void HandleCircle(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
-        if (cmd.Count < 5 || cmd.Count > 6)
+        if (cmd.Count is < 5 or > 6)
             throw new ArgumentException("Invalid circle command in aperture macro");
 
-        bool exposure = cmd[1].Eval(vars) > 0.5;
-        double diameter = Math.Abs(cmd[2].Eval(vars));
-        double centerX = cmd[3].Eval(vars);
-        double centerY = cmd[4].Eval(vars);
-        double rotation = cmd.Count > 5 ? cmd[5].Eval(vars) : 0;
+        var exposure = cmd[1].Eval(vars) > 0.5;
+        var diameter = Math.Abs(cmd[2].Eval(vars));
+        var centerX = cmd[3].Eval(vars);
+        var centerY = cmd[4].Eval(vars);
+        var rotation = cmd.Count > 5 ? cmd[5].Eval(vars) : 0;
 
 
         var paths = new PathsD{ new PathD { new PointD(fmt.ToFixed(centerX), fmt.ToFixed(centerY)) }
-             }.Render(fmt.ToFixed(diameter), false, fmt.BuildClipperOffset());
+             };
+
+        var paths1 = paths.Render(fmt.ToFixed(diameter), false, fmt.BuildClipperOffset());
 
         aperture.DrawPaths(paths, exposure, 0, 0, false, false, rotation / 180 * Math.PI);
     }
@@ -108,16 +109,16 @@ public class ApertureMacro : IApertureMacro
     private static void HandleVectorLine(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
-        if (cmd.Count < 7 || cmd.Count > 8)
+        if (cmd.Count is < 7 or > 8)
             throw new ArgumentException("Invalid circle command in aperture macro");
 
-        bool exposure = cmd[1].Eval(vars) > 0.5;
-        double width = Math.Abs(cmd[2].Eval(vars));
-        double startX = cmd[3].Eval(vars);
-        double startY = cmd[4].Eval(vars);
-        double endX = cmd[5].Eval(vars);
-        double endY = cmd[6].Eval(vars);
-        double rotation = cmd.Count > 7 ? cmd[7].Eval(vars) : 0;
+        var exposure = cmd[1].Eval(vars) > 0.5;
+        var width = Math.Abs(cmd[2].Eval(vars));
+        var startX = cmd[3].Eval(vars);
+        var startY = cmd[4].Eval(vars);
+        var endX = cmd[5].Eval(vars);
+        var endY = cmd[6].Eval(vars);
+        var rotation = cmd.Count > 7 ? cmd[7].Eval(vars) : 0;
 
         var paths = new PathsD { new PathD
             {
@@ -131,15 +132,15 @@ public class ApertureMacro : IApertureMacro
 
     private static void HandleCenterLine(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
-        if (cmd.Count < 6 || cmd.Count > 7)
+        if (cmd.Count is < 6 or > 7)
             throw new ArgumentException("invalid center line command in aperture macro");
 
-        bool exposure = cmd[1].Eval(vars) > 0.5;
-        double width = Math.Abs(cmd[2].Eval(vars));
-        double height = Math.Abs(cmd[3].Eval(vars));
-        double centerX = cmd[4].Eval(vars);
-        double centerY = cmd[5].Eval(vars);
-        double rotation = cmd.Count > 6 ? cmd[6].Eval(vars) : 0;
+        var exposure = cmd[1].Eval(vars) > 0.5;
+        var width = Math.Abs(cmd[2].Eval(vars));
+        var height = Math.Abs(cmd[3].Eval(vars));
+        var centerX = cmd[4].Eval(vars);
+        var centerY = cmd[5].Eval(vars);
+        var rotation = cmd.Count > 6 ? cmd[6].Eval(vars) : 0;
 
         var paths = new PathsD
         {
@@ -161,23 +162,22 @@ public class ApertureMacro : IApertureMacro
         if (cmd.Count < 3)
             throw new ArgumentException("Invalid outline command in aperture macro");
 
-        bool exposure = cmd[1].Eval(vars) > 0.5;
-        int nVertices = (int)Math.Round(cmd[2].Eval(vars));
-        int rotationIndex = 5 + 2 * nVertices;
-        double rotation = cmd.Count > (5 + 2 * nVertices) ? cmd.Last().Eval(vars) : 0;
+        var exposure = cmd[1].Eval(vars) > 0.5;
+        var nVertices = cmd[2].Eval(vars);
+        var rotationIndex = 5 + 2 * nVertices;
+        var rotation = cmd.Count > (5 + 2 * nVertices) ? cmd.Last().Eval(vars) : 0;
 
         if (nVertices < 3 || cmd.Count < rotationIndex || cmd.Count > rotationIndex + 1)
             throw new ArgumentException("Invalid outline command in aperture macro");
 
-        var paths = new PathsD(nVertices);
+        var nVerticesInt = (int)Math.Round(nVertices);
 
-        double x;
-        double y;
+        var paths = new PathsD(nVerticesInt);
 
-        for (int i = 0; i < nVertices; i++)
+        for (var i = 0; i < nVerticesInt; i++)
         {
-            x = fmt.ToFixed(cmd[3 + 2 * i].Eval(vars));
-            y = fmt.ToFixed(cmd[4 + 2 * i].Eval(vars));
+            var x = fmt.ToFixed(cmd[3 + 2 * i].Eval(vars));
+            var y = fmt.ToFixed(cmd[4 + 2 * i].Eval(vars));
             paths.Add([new PointD(x, y)]);
         }
 
@@ -187,25 +187,26 @@ public class ApertureMacro : IApertureMacro
     private static void HandlePolygon(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
-        if (cmd.Count < 6 || cmd.Count > 7)
+        if (cmd.Count is < 6 or > 7)
             throw new ArgumentException("Invalid polygon command in aperture macro");
 
-        bool exposure = cmd[1].Eval(vars) > 0.5;
-        int nVertices = (int)Math.Round(cmd[2].Eval(vars));
-        double centerX = cmd[3].Eval(vars);
-        double centerY = cmd[4].Eval(vars);
-        double diameter = Math.Abs(cmd[5].Eval(vars));
-        double rotation = cmd.Count > 6 ? cmd[6].Eval(vars) : 0;
+        var exposure = cmd[1].Eval(vars) > 0.5;
+        var nVertices = cmd[2].Eval(vars);
+        var centerX = cmd[3].Eval(vars);
+        var centerY = cmd[4].Eval(vars);
+        var diameter = Math.Abs(cmd[5].Eval(vars));
+        var rotation = cmd.Count > 6 ? cmd[6].Eval(vars) : 0;
 
-        var paths = new PathsD(nVertices);
-        double angle;
-        double x;
-        double y;
-        for (int i = 0; i < nVertices; i++)
+
+        var nVerticesInt = (int)Math.Round(nVertices);
+
+        var paths = new PathsD(nVerticesInt);
+
+        for (var i = 0; i < nVerticesInt; i++)
         {
-            angle = (i / nVertices) * 2.0 * Math.PI;
-            x = centerX + diameter * 0.5 * Math.Cos(angle);
-            y = centerY + diameter * 0.5 * Math.Sin(angle);
+            var angle = (i / nVertices) * 2.0 * Math.PI;
+            var x = centerX + diameter * 0.5 * Math.Cos(angle);
+            var y = centerY + diameter * 0.5 * Math.Sin(angle);
             paths.Add([new PointD(fmt.ToFixed(x), fmt.ToFixed(y))]);
         }
 

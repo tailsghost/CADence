@@ -132,7 +132,7 @@ namespace CADence.CUI
 
             List<ILayer> layers;
 
-            byte[] file = File.ReadAllBytes(path);
+            var file = File.ReadAllBytes(path);
             using (var stream = new MemoryStream(file))
             {
                 var reader = ServiceCollectionExtensions.GetService<IReader>();

@@ -43,7 +43,7 @@ public class InstallCommand : ICommand<IGerberSettings>
             case 1:
                 if (settings.Polarity && settings.Aperture != null)
                 {
-                    settings.Aperture.IsSimpleCircle(out double diameter);
+                    settings.Aperture.IsSimpleCircle(out var diameter);
                     if (diameter != 0)
                         settings.MinimumDiameter = double.Min(diameter, settings.MinimumDiameter);
                 }
@@ -53,9 +53,8 @@ public class InstallCommand : ICommand<IGerberSettings>
                 break;
             case 2:
                 if (settings.RegionMode)
-                {
                     settings.CommitRegion();
-                }
+
                 PointD Point2 = new(parameters['X'], parameters['Y']);
                 settings.Pos = Point2;
 

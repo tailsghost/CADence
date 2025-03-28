@@ -79,7 +79,7 @@ public class ApertureBase
     /// <param name="polarity">Полярность: true для объединения, false для вычитания.</param>
     public void DrawPaths(PathsD geometry, bool polarity = true)
     {
-        if (!geometry.Any())
+        if (geometry.Count == 0)
             return;
 
         if (polarity != ACCUM_POLARITY)
@@ -89,7 +89,7 @@ public class ApertureBase
 
         for (var i = 0; i < geometry.Count; i++)
         {
-            _accumulatedGeometries.Add(geometry[i]);
+            _accumulatedGeometries.Add(new PathD(geometry[i]));
         }
     }
 
@@ -99,7 +99,7 @@ public class ApertureBase
     /// </summary>
     protected void CommitPaths(CommitPathType type = CommitPathType.Additive)
     {
-        if (!_accumulatedGeometries.Any())
+        if (_accumulatedGeometries.Count == 0)
             return;
 
         _accumulatedGeometries = Clipper.SimplifyPaths(_accumulatedGeometries, 1e-6);
@@ -152,29 +152,24 @@ public class ApertureBase
 
         DrawPaths(geometry, polarity);
 
-        double ixx = mirrorX ? -scale : scale;
-        double iyy = mirrorY ? -scale : scale;
-        double sinRot = Math.Sin(rotate);
-        double cosRot = Math.Cos(rotate);
+        var ixx = mirrorX ? -scale : scale;
+        var iyy = mirrorY ? -scale : scale;
+        var sinRot = Math.Sin(rotate);
+        var cosRot = Math.Cos(rotate);
 
-        double xx = ixx * cosRot;
-        double xy = ixx * sinRot;
-        double yx = iyy * -sinRot;
-        double yy = iyy * cosRot;
-
-        double cx;
-        double cy;
-
-        PointD point;
+        var xx = ixx * cosRot;
+        var xy = ixx * sinRot;
+        var yx = iyy * -sinRot;
+        var yy = iyy * cosRot;
 
         for (var j = 0; j < geometry.Count; j++)
         {
             var pathCopy = new PathD(geometry[j].Count);
-            for (int i = 0; i < geometry[j].Count; i++)
+            for (var i = 0; i < geometry[j].Count; i++)
             {
-                point = geometry[j][i];
-                cx = point.x * xx + point.x * yx;
-                cy = point.x * xy + point.y * yy;
+                var point = geometry[j][i];
+                var cx = point.x * xx + point.y * yx;
+                var cy = point.x * xy + point.y * yy;
                 pathCopy.Add(new PointD(cx + translateX,
                     cy + translateY));
             }
@@ -191,7 +186,7 @@ public class ApertureBase
 
         if (mirrorX != mirrorY)
         {
-            for (int i = _accumulatedGeometries.Count - geometry.Count; i < _accumulatedGeometries.Count; i++)
+            for (var i = _accumulatedGeometries.Count - geometry.Count; i < _accumulatedGeometries.Count; i++)
             {
                 _accumulatedGeometries[i].Reverse();
             }

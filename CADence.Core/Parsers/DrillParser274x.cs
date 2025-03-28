@@ -44,7 +44,11 @@ public class DrillParser274X : IDrillParser
 
             if (geom != null)
             {
-                _drillGeometry = Clipper.Union(_drillGeometry, geom, FillRule.NonZero);
+                if (_drillGeometry.Count == 0)
+                    _drillGeometry = geom;
+                else
+                    for (var i = 0; i < geom.Count; i++)
+                        _drillGeometry.Add(geom[i]);
             }
 
             MinHoleDiameter = Math.Min(_settings.MinHole, MinHoleDiameter);
@@ -67,7 +71,7 @@ public class DrillParser274X : IDrillParser
 
                 if (platedGeom != null && unplatedGeom != null)
                 {
-                    result = Clipper.Union(platedGeom, unplatedGeom, FillRule.NonZero);
+                    result = Clipper.Union(platedGeom, unplatedGeom, FillRule.Positive);
                 }
                 else if (platedGeom != null)
                 {

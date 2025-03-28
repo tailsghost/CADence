@@ -37,7 +37,7 @@ public class GerberParser274xSettings : IGerberSettings
     public IApertureMacro AmBuilder { get; set; }
     public double MinimumDiameter { get; set; }
 
-    public PathD RegionAccum { get; set; } = new();
+    public PathD RegionAccum { get; set; } = new(1000);
 
     public void CommitRegion()
     {
@@ -78,6 +78,10 @@ public class GerberParser274xSettings : IGerberSettings
             coordinates.Add(Pos);
             coordinates.Add(dest);
         }
+        else
+        {
+            ///Добавить логику для другого режима.
+        }
 
 
         if (RegionMode)
@@ -91,12 +95,12 @@ public class GerberParser274xSettings : IGerberSettings
             throw new InvalidOperationException("Interpolate command before aperture set");
         }
 
-        if (!Aperture.IsSimpleCircle(out double diameter))
+        if (!Aperture.IsSimpleCircle(out var diameter))
         {
             throw new InvalidOperationException("Only simple circle apertures without a hole are supported for interpolation");
         }
 
-        double thickness = diameter * apScale;
+        var thickness = diameter * apScale;
         if (thickness == 0)
             return;
 

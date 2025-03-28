@@ -13,7 +13,6 @@ public class GerberParser274X : IGerberParser
     private IServiceProvider _provider;
     private IGerberSettings _settings { get; set; }
     private IFabricCommand<IGerberSettings> _fabric { get; set; }
-    public PathsD Geometry { get; set; }
 
     public GerberParser274X(IGerberSettings settings, IFabricCommand<IGerberSettings> fabric, IServiceProvider provider)
     {
@@ -51,7 +50,12 @@ public class GerberParser274X : IGerberParser
 
                 var cmd = ss.ToString();
 
-                _settings.AmBuilder?.Append(cmd);
+                if (_settings.AmBuilder != null)
+                {
+                    _settings.AmBuilder.Append(cmd);
+                    ss.Clear();
+                    continue;
+                }
 
                 _settings.cmd = cmd;
 
@@ -109,12 +113,12 @@ public class GerberParser274X : IGerberParser
 
     private int FindLargestAreaPath(PathsD paths)
     {
-        double maxArea = double.MinValue;
-        int count = 0;
+        var maxArea = double.MinValue;
+        var count = 0;
 
-        for (int i = 0; i < paths.Count; i++)
+        for (var i = 0; i < paths.Count; i++)
         {
-            double area = Clipper.Area(paths[i]);
+            var area = Clipper.Area(paths[i]);
             if (area > maxArea)
             {
                 maxArea = area;

@@ -4,16 +4,18 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <PublishAot>true</PublishAot>
-    <InvariantGlobalization>true</InvariantGlobalization>
-	  <!--<DefineConstants>TRACE</DefineConstants>
-	  <Optimize>true</Optimize>-->
+	  <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<Optimize>true</Optimize>
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<TieredCompilation>true</TieredCompilation>
+		<DefineConstants>TRACE</DefineConstants>
+	</PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Clipper2" Version="1.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="NLog.Extensions.Hosting" Version="5.4.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
@@ -22,6 +24,8 @@
   <ItemGroup>
     <ProjectReference Include="..\CADence.Abstractions\CADence.Abstractions.csproj" />
     <ProjectReference Include="..\CADence.Core\CADence.Core.csproj" />
+    <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.LayerFabric\CADence.Infrastructure.LayerFabric.csproj" />
+    <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.SVG&amp;JSON\CADence.Infrastructure.SVG&amp;JSON.csproj" />
   </ItemGroup>
 
 </Project>

@@ -26,7 +26,7 @@ public class ABCommand : ICommand<IGerberSettings>
             if (index < 10)
                 throw new Exception("Aperture index out of range: " + settings.cmd);
 
-            Unknown unknown = _provider.GetRequiredService<Unknown>();
+            var unknown = _provider.GetRequiredService<Unknown>();
             settings.ApertureStack.Push(unknown);
             settings.Apertures[index] = unknown;
         }

@@ -6,6 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<Optimize>true</Optimize>
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+		<TieredCompilation>true</TieredCompilation>
+		<DefineConstants>TRACE</DefineConstants>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Clipper2" Version="1.4.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
