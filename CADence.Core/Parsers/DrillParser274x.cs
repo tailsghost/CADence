@@ -1,9 +1,11 @@
 ﻿using CADence.Abstractions.Commands;
 using CADence.App.Abstractions.Parsers;
 using CADence.Core.Apertures.Gerber_274;
-using Clipper2Lib;
 using Microsoft.Extensions.DependencyInjection;
 using System.Drawing;
+using ExtensionClipper2;
+using ExtensionClipper2.Core;
+using ExtensionClipper2.Enums;
 
 namespace CADence.Core.Parsers;
 

@@ -1,4 +1,4 @@
-﻿using Clipper2Lib;
+﻿using ExtensionClipper2.Core;
 
 namespace CADence.Abstractions.Helpers;
 
@@ -8,18 +8,18 @@ public static class CalculateBorderBox
     {
         var bounds = new RectD
         {
-            left = double.MaxValue,
-            bottom = double.MaxValue,
-            right = double.MinValue,
-            top = double.MinValue
+            Left = double.MaxValue,
+            Bottom = double.MaxValue,
+            Right = double.MinValue,
+            Top = double.MinValue
         };
 
         foreach (var point in border[0])
         {
-            bounds.left = Math.Min(bounds.left, point.x);
-            bounds.right = Math.Max(bounds.right, point.x);
-            bounds.bottom = Math.Min(bounds.bottom, point.y);
-            bounds.top = Math.Max(bounds.top, point.y);
+            bounds.Left = Math.Min(bounds.Left, point.X);
+            bounds.Right = Math.Max(bounds.Right, point.X);
+            bounds.Bottom = Math.Min(bounds.Bottom, point.Y);
+            bounds.Top = Math.Max(bounds.Top, point.Y);
         }
 
         return bounds;

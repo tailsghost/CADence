@@ -3,7 +3,8 @@ using CADence.Abstractions.Clippers;
 using CADence.Abstractions.Commands;
 using CADence.App.Abstractions.Formats;
 using CADence.Core.Apertures.Gerber_274;
-using Clipper2Lib;
+using ExtensionClipper2;
+using ExtensionClipper2.Core;
 
 namespace CADence.Core.Settings;
 
@@ -62,7 +63,7 @@ public class GerberParser274xSettings : IGerberSettings
             throw new InvalidOperationException("Flash command before aperture set");
         }
         ApertureStack.Peek().DrawAperture(
-            Aperture, Polarity, Pos.x, Pos.y, apMirrorX, apMirrorY, apRotate, apScale);
+            Aperture, Polarity, Pos.X, Pos.Y, apMirrorX, apMirrorY, apRotate, apScale);
     }
 
     public void Interpolate(PointD dest, PointD center)

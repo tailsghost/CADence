@@ -1,6 +1,8 @@
 ﻿using CADence.Abstractions.Clippers;
 using CADence.App.Abstractions.Formats;
-using Clipper2Lib;
+using ExtensionClipper2;
+using ExtensionClipper2.Core;
+using ExtensionClipper2.Enums;
 
 namespace CADence.Abstractions.Apertures;
 
@@ -102,8 +104,6 @@ public class ApertureBase
         if (_accumulatedGeometries.Count == 0)
             return;
 
-        _accumulatedGeometries = Clipper.SimplifyPaths(_accumulatedGeometries, 1e-6);
-
         if (ACCUM_POLARITY)
         {
             if (type == CommitPathType.Additive)
@@ -168,8 +168,8 @@ public class ApertureBase
             for (var i = 0; i < geometry[j].Count; i++)
             {
                 var point = geometry[j][i];
-                var cx = point.x * xx + point.y * yx;
-                var cy = point.x * xy + point.y * yy;
+                var cx = point.X * xx + point.Y * yx;
+                var cy = point.X * xy + point.Y * yy;
                 pathCopy.Add(new PointD(cx + translateX,
                     cy + translateY));
             }
@@ -252,12 +252,10 @@ public class ApertureBase
         if (type == CommitPathType.Additive)
         {
             AdditiveGeometry = Clipper.Union(AdditiveGeometry, FillRule.EvenOdd);
-            AdditiveGeometry = Clipper.SimplifyPaths(AdditiveGeometry, 1e-6);
         }
-        else
+        else 
         {
             SubtractiveGeometry = Clipper.Union(SubtractiveGeometry, FillRule.EvenOdd);
-            SubtractiveGeometry = Clipper.SimplifyPaths(SubtractiveGeometry, 1e-6);
         }
 
         Simplified = true;
@@ -283,7 +281,7 @@ public class ApertureBase
         };
 
         var paths = new PathsD { holePath }.Render(HoleDiameter,
-            false, format.BuildClipperOffset());
+            false, format.BuildClipperDrillOffset());
 
         Clipper.ReversePaths(paths);
 

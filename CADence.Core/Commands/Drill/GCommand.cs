@@ -1,5 +1,5 @@
 using CADence.Abstractions.Commands;
-using Clipper2Lib;
+using ExtensionClipper2.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Commands.Drill;
@@ -69,10 +69,10 @@ public class GCommand : ICommand<IDrillSettings>
                     PointD Point = new(setting.StartPoint);
                     
                     if (subDict.TryGetValue('X', out var xStr))
-                        Point.x = setting.format.ParseFixed(xStr);
+                        Point.X = setting.format.ParseFixed(xStr);
                     
                     if (subDict.TryGetValue('Y', out var yStr))
-                        Point.y = setting.format.ParseFixed(yStr);
+                        Point.Y = setting.format.ParseFixed(yStr);
 
                     setting.StartPoint = Point;
 
@@ -82,10 +82,10 @@ public class GCommand : ICommand<IDrillSettings>
                     PointD Point1 = new(setting.LastPoint);
 
                     if (secondDict.TryGetValue('X', out xStr))
-                        Point1.x = setting.format.ParseFixed(xStr);
+                        Point1.X = setting.format.ParseFixed(xStr);
                     
                     if (secondDict.TryGetValue('Y', out yStr))
-                        Point1.y = setting.format.ParseFixed(yStr);
+                        Point1.Y = setting.format.ParseFixed(yStr);
 
                     setting.LastPoint = Point;
                     

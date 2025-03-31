@@ -7,6 +7,7 @@ using CADence.Core.Dependency;
 using CADence.Abstractions.Readers;
 using CADence.Abstractions.Layers;
 using CADence.Abstractions.Svg_Json;
+using ExtensionClipper2;
 
 namespace CADence.CUI
 {
@@ -20,6 +21,7 @@ namespace CADence.CUI
             ServiceCollectionExtensions.Initial();
             // Настройка NLog: вывод в консоль и запись в файл
             var config = new NLog.Config.LoggingConfiguration();
+            Epsilon.SetEpsilonValue(1e-10);
 
             // Консольный таргет
             var logConsole = new NLog.Targets.ConsoleTarget("logConsole")

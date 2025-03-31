@@ -17,6 +17,8 @@ using CADence.Core.Settings;
 using CADence.Core.SVG_JSON;
 using Microsoft.Extensions.DependencyInjection;
 using System.Dynamic;
+using CADence.Abstractions.Accuracy;
+using CADence.Core.Accuracy;
 using GCommand = CADence.Core.Commands.Drill.GCommand;
 
 namespace CADence.Core.Dependency;
@@ -63,6 +65,8 @@ public static class ServiceCollectionExtensions
         collection.AddTransient<Polygon>();
         collection.AddTransient<Rectangle>();
         collection.AddTransient<Unknown>();
+
+        collection.AddSingleton<ICalculateAccuracy, CalculateAccuracy>();
 
         // ApertureMacro
         collection.AddTransient<IApertureMacro, ApertureMacro>();

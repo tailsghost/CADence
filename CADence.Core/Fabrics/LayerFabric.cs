@@ -3,9 +3,6 @@ using CADence.Abstractions.Readers;
 using CADence.App.Abstractions.Layers;
 using CADence.App.Abstractions.Layers.Gerber_274x;
 using CADence.App.Abstractions.Parsers;
-using CADence.Core.Formats;
-using CADence.Core.Parsers;
-using Clipper2Lib;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Fabrics;

@@ -34,16 +34,16 @@ public class SVGWriter : IWriter
 
         var bounds = CalculateBorderBox.GetBounds(layers[0].GetLayer());
 
-        double width = (bounds.right - bounds.left) + 20;
-        double height = (bounds.top - bounds.bottom) + 20;
+        double width = (bounds.Right - bounds.Left) + 20;
+        double height = (bounds.Top - bounds.Bottom) + 20;
 
         stream.AppendLine(string.Format(CultureInfo.InvariantCulture,
             "<svg viewBox=\"0 0 {0} {1}\" width=\"{2}\" height=\"{3}\" xmlns=\"http://www.w3.org/2000/svg\">",
             width, height, width * scale, height * scale));
 
 
-        double tx = 10 - (flipped ? (-bounds.right) : bounds.left);
-        double ty = 10 + bounds.top;
+        double tx = 10 - (flipped ? (-bounds.Right) : bounds.Left);
+        double ty = 10 + bounds.Top;
 
         stream.AppendLine(string.Format(CultureInfo.InvariantCulture,
             "<g transform=\"translate({0} {1}) scale({2} -1)\" filter=\"drop-shadow(0 0 1 rgba(0, 0, 0, 0.2))\">",
@@ -99,11 +99,11 @@ public class SVGWriter : IWriter
 
         for (int i = 0; i < paths.Count; i++)
         {
-            Data.Append(string.Format(CultureInfo.InvariantCulture, "M {0} {1} ", paths[i].Last().x, paths[i].Last().y));
+            Data.Append(string.Format(CultureInfo.InvariantCulture, "M {0} {1} ", paths[i].Last().X, paths[i].Last().Y));
 
             for (int j = 0; j < paths[i].Count; j++)
             {
-                Data.Append(string.Format(CultureInfo.InvariantCulture, "L {0} {1} ", paths[i][j].x, paths[i][j].y));
+                Data.Append(string.Format(CultureInfo.InvariantCulture, "L {0} {1} ", paths[i][j].X, paths[i][j].Y));
             }
         }
 

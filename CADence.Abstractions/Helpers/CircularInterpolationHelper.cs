@@ -1,4 +1,4 @@
-﻿using Clipper2Lib;
+﻿using ExtensionClipper2.Core;
 
 namespace CADence.Abstractions.Helpers;
 
@@ -26,10 +26,10 @@ public class CircularInterpolationHelper
     /// </summary>
     public CircularInterpolationHelper(PointD start, PointD end, PointD center, bool ccw, bool multi)
     {
-        centerX = center.x;
-        centerY = center.y;
-        ToPolar(start.x, start.y, out r1, out a1);
-        ToPolar(end.x, end.y, out r2, out a2);
+        centerX = center.X;
+        centerY = center.Y;
+        ToPolar(start.X, start.Y, out r1, out a1);
+        ToPolar(end.X, end.Y, out r2, out a2);
 
         if (multi)
         {
@@ -81,18 +81,18 @@ public class CircularInterpolationHelper
     public PathD ToCoordinates()
     {
         const double angleStep = 0.05;
-        int nVertices = (int)Math.Ceiling(Math.Abs(a2 - a1) / angleStep);
+        var nVertices = (int)Math.Ceiling(Math.Abs(a2 - a1) / angleStep);
         if (nVertices < 1)
             nVertices = 1;
 
-        PathD coords = new PathD(nVertices + 1);
-        for (int i = 0; i <= nVertices; i++)
+        var coords = new PathD(nVertices + 1);
+        for (var i = 0; i <= nVertices; i++)
         {
-            double fraction = (double)i / nVertices;
-            double currentAngle = a1 + fraction * (a2 - a1);
-            double currentRadius = r1 + fraction * (r2 - r1);
-            double x = centerX + currentRadius * Math.Cos(currentAngle);
-            double y = centerY + currentRadius * Math.Sin(currentAngle);
+            var fraction = (double)i / nVertices;
+            var currentAngle = a1 + fraction * (a2 - a1);
+            var currentRadius = r1 + fraction * (r2 - r1);
+            var x = centerX + currentRadius * Math.Cos(currentAngle);
+            var y = centerY + currentRadius * Math.Sin(currentAngle);
             coords.Add(new PointD(x, y));
         }
         return coords;

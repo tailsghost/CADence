@@ -1,5 +1,5 @@
 using CADence.Abstractions.Commands;
-using Clipper2Lib;
+using ExtensionClipper2.Core;
 
 namespace CADence.Core.Commands.Gerber;
 
@@ -7,7 +7,7 @@ public class InstallCommand : ICommand<IGerberSettings>
 {
     public IGerberSettings Execute(IGerberSettings settings)
     {
-        var parameters = new Dictionary<char, double> { { 'X', settings.Pos.x }, { 'Y', settings.Pos.y }, { 'I', 0 }, { 'J', 0 } };
+        var parameters = new Dictionary<char, double> { { 'X', settings.Pos.X }, { 'Y', settings.Pos.Y }, { 'I', 0 }, { 'J', 0 } };
         var d = -1;
         var code = ' ';
         var start = 0;

@@ -2,7 +2,7 @@
 using CADence.Abstractions.Apertures.Expressions;
 using CADence.Abstractions.Clippers;
 using CADence.App.Abstractions.Formats;
-using Clipper2Lib;
+using ExtensionClipper2.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Apertures.Gerber_274;
@@ -97,11 +97,8 @@ public class ApertureMacro : IApertureMacro
         var centerY = cmd[4].Eval(vars);
         var rotation = cmd.Count > 5 ? cmd[5].Eval(vars) : 0;
 
-
         var paths = new PathsD{ new PathD { new PointD(fmt.ToFixed(centerX), fmt.ToFixed(centerY)) }
-             };
-
-        var paths1 = paths.Render(fmt.ToFixed(diameter), false, fmt.BuildClipperOffset());
+                            }.Render(fmt.ToFixed(diameter), false, fmt.BuildClipperOffset());
 
         aperture.DrawPaths(paths, exposure, 0, 0, false, false, rotation / 180 * Math.PI);
     }
@@ -216,11 +213,11 @@ public class ApertureMacro : IApertureMacro
     private static void HandleMoire(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
-        
+
     }
 
     private static void HandleThermal(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
-       
+
     }
 }

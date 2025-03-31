@@ -1,6 +1,8 @@
 ﻿using CADence.App.Abstractions.Formats;
 using CADence.App.Abstractions.Parsers;
-using Clipper2Lib;
+using ExtensionClipper2;
+using ExtensionClipper2.Core;
+using ExtensionClipper2.Enums;
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
 

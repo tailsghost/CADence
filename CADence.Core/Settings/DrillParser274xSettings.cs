@@ -2,7 +2,7 @@
 using CADence.Abstractions.Clippers;
 using CADence.Abstractions.Commands;
 using CADence.App.Abstractions.Formats;
-using Clipper2Lib;
+using ExtensionClipper2.Core;
 
 namespace CADence.Core.Settings;
 
@@ -35,29 +35,29 @@ public class DrillParser274xSettings : IDrillSettings
 
     public void AddArc(PointD startPoint, PointD endPoint, double radius, bool ccw)
     {
-        double x0 = startPoint.x;
-        double y0 = startPoint.y;
-        double x1 = endPoint.x;
-        double y1 = endPoint.y;
-        double r = radius;
+        var x0 = startPoint.X;
+        var y0 = startPoint.Y;
+        var x1 = endPoint.X;
+        var y1 = endPoint.Y;
+        var r = radius;
 
-        double d = Math.Sqrt(Math.Pow(x0 - x1, 2) + Math.Pow(y0 - y1, 2));
-        double e = 2.0 * r / d;
+        var d = Math.Sqrt(Math.Pow(x0 - x1, 2) + Math.Pow(y0 - y1, 2));
+        var e = 2.0 * r / d;
         e = (e < 1.0) ? 0.0 : Math.Sqrt(e * e - 1.0) * (ccw ? 1 : -1);
 
-        double ax = (x0 - x1) / 2;
-        double ay = (y0 - y1) / 2;
-        double xc = ax + ay * e;
-        double yc = ay - ax * e;
+        var ax = (x0 - x1) / 2;
+        var ay = (y0 - y1) / 2;
+        var xc = ax + ay * e;
+        var yc = ay - ax * e;
 
-        double a0 = Math.Atan2(y0 - yc, x0 - xc);
-        double a1 = Math.Atan2(y1 - yc, x1 - xc);
+        var a0 = Math.Atan2(y0 - yc, x0 - xc);
+        var a1 = Math.Atan2(y1 - yc, x1 - xc);
         if (ccw && a1 < a0) a1 += 2.0 * Math.PI;
         if (!ccw && a0 < a1) a0 += 2.0 * Math.PI;
 
-        double epsilon = format.GetMaxDeviation();
-        double f = (r > epsilon) ? (1.0 - epsilon / r) : 0.0;
-        double th = Math.Acos(2.0 * f * f - 1.0) + 1e-3;
+        var epsilon = format.GetMaxDeviation();
+        var f = (r > epsilon) ? (1.0 - epsilon / r) : 0.0;
+        var th = Math.Acos(2.0 * f * f - 1.0) + 1e-3;
         int nVertices = (int)Math.Ceiling(Math.Abs(a1 - a0) / th);
 
         double f1;
@@ -86,7 +86,7 @@ public class DrillParser274xSettings : IDrillSettings
 
         MinHole = Math.Min(MinHole, Tool.diameter);
 
-        var offset = format.BuildClipperOffset();
+        var offset = format.BuildClipperDrillOffset();
 
         if (Tool.plated)
         {
@@ -96,13 +96,13 @@ public class DrillParser274xSettings : IDrillSettings
             }
             else if (Points.Count == 2)
             {
-                PathD line = new PathD { Points[0], Points[1] };
+                var line = new PathD { Points[0], Points[1] };
 
                 Pth.DrawPaths(new PathsD { line }.Render(Tool.diameter, false, offset));
             }
             else if (Points.Count > 2)
             {
-                PathsD coords = new PathsD(Points.Count);
+                var coords = new PathsD(Points.Count);
                 coords.AddRange(Points);
                 Pth.DrawPaths(coords.Render(Tool.diameter, false, offset));
             }
@@ -121,7 +121,7 @@ public class DrillParser274xSettings : IDrillSettings
             }
             else if (Points.Count > 2)
             {
-                PathsD coords = new PathsD(Points.Count);
+                var coords = new PathsD(Points.Count);
                 coords.AddRange(Points);
                 Npth.DrawPaths(coords.Render(Tool.diameter, false, offset));
             }

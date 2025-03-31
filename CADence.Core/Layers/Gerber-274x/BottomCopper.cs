@@ -1,7 +1,8 @@
-﻿using CADence.App.Abstractions.Layers;
-using CADence.App.Abstractions.Formats;
-using CADence.App.Abstractions.Parsers;
-using Clipper2Lib;
+﻿using CADence.App.Abstractions.Parsers;
+using CADence.Abstractions.Accuracy;
+using ExtensionClipper2;
+using ExtensionClipper2.Core;
+using ExtensionClipper2.Enums;
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
 
@@ -9,6 +10,7 @@ public class BottomCopper : ILayer
 {
     private PathsD Substrate;
     private PathsD _geometry;
+    private ICalculateAccuracy _accuracy;
     private IGerberParser PARSER { get; set; }
     public double MinimumThickness { get; private set; } = 0;
     public double MinDistanceHole { get; private set; } = 0;
@@ -17,12 +19,13 @@ public class BottomCopper : ILayer
     public Color ColorLayer { get; set; }
     public double Thickness { get; }
 
-    public BottomCopper(IGerberParser parser)
+    public BottomCopper(IGerberParser parser, ICalculateAccuracy accuracy)
     {
         Layer = GerberLayer.BottomCopper;
         PARSER = parser;
         ColorLayer = ColorConstants.COPPER;
         Thickness = 0.0348;
+        _accuracy = accuracy;
     }
 
     /// <summary>
@@ -47,6 +50,7 @@ public class BottomCopper : ILayer
 
         copper.Clear();
 
+        _accuracy.StartCalculate(_geometry);
     }
 
     public PathsD GetLayer()

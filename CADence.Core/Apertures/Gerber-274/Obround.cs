@@ -1,7 +1,7 @@
 ﻿using CADence.Abstractions.Apertures;
 using CADence.Abstractions.Clippers;
 using CADence.App.Abstractions.Formats;
-using Clipper2Lib;
+using ExtensionClipper2.Core;
 
 namespace CADence.Core.Apertures.Gerber_274;
 
@@ -25,7 +25,7 @@ public sealed class Obround : ApertureBase
         y -= r;
 
         var paths = new PathsD{ new PathD { new PointD(-x, -y), new PointD(x, y) }
-                }.Render(r * 2.0, false, format.BuildClipperOffset());
+                }.Render(r * 2.0, false, format.BuildClipperDrillOffset());
 
         if (HoleDiameter > 0)
         {

@@ -1,7 +1,7 @@
 ﻿using CADence.Abstractions.Apertures;
 using CADence.Abstractions.Clippers;
 using CADence.App.Abstractions.Formats;
-using Clipper2Lib;
+using ExtensionClipper2.Core;
 
 namespace CADence.Core.Apertures.Gerber_274;
 
@@ -23,7 +23,7 @@ public sealed class Circle : ApertureBase
         HoleDiameter = csep.Count > 2 ? format.ParseFloat(csep[2]) : 0;
 
         var paths = new PathsD{ new PathD { new PointD(0, 0) }
-            }.Render(Diameter, false, format.BuildClipperOffset());
+            }.Render(Diameter, false, format.BuildClipperDrillOffset());
 
         if (HoleDiameter > 0)
         {

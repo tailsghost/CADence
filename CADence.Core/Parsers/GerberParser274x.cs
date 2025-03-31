@@ -2,9 +2,10 @@
 using CADence.Abstractions.Commands;
 using CADence.App.Abstractions.Formats;
 using CADence.App.Abstractions.Parsers;
-using Clipper2Lib;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
+using ExtensionClipper2;
+using ExtensionClipper2.Core;
 
 namespace CADence.Core.Parsers;
 

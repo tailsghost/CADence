@@ -1,5 +1,5 @@
 using CADence.Abstractions.Commands;
-using Clipper2Lib;
+using ExtensionClipper2.Core;
 
 namespace CADence.Core.Commands.Drill;
 
@@ -15,13 +15,13 @@ public class CoordinateCommand : ICommand<IDrillSettings>
         PointD point = new(settings.CurrentPoint);
         if (dict.TryGetValue('X', out var xStr))
         {
-            point.x = settings.format.ParseFixed(xStr);
+            point.X = settings.format.ParseFixed(xStr);
             coordSet = true;
         }
         
         if (dict.TryGetValue('Y', out var yStr))
         {
-            point.y = settings.format.ParseFixed(yStr);
+            point.Y = settings.format.ParseFixed(yStr);
             coordSet = true;
         }
         settings.CurrentPoint = point;

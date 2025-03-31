@@ -24,8 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CADence.Abstractions\CADence.Abstractions.csproj" />
     <ProjectReference Include="..\CADence.Core\CADence.Core.csproj" />
-    <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.LayerFabric\CADence.Infrastructure.LayerFabric.csproj" />
-    <ProjectReference Include="..\src\infrastructure\CADence.Infrastructure.SVG&amp;JSON\CADence.Infrastructure.SVG&amp;JSON.csproj" />
   </ItemGroup>
 
 </Project>
