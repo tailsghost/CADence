@@ -5,16 +5,25 @@ using ExtensionClipper2.Core;
 
 namespace CADence.Core.Apertures.Gerber_274;
 
-public sealed class Circle : ApertureBase
+/// <summary>
+/// Represents a circle aperture.
+/// </summary>
+internal sealed class Circle : ApertureBase
 {
     /// <summary>
-    /// Диаметр круга.
+    /// The diameter of the circle.
     /// </summary>
     private double Diameter { get; set; }
 
+    /// <summary>
+    /// Renders the circle aperture based on the given parameters.
+    /// </summary>
+    /// <param name="csep">List of parameters as strings.</param>
+    /// <param name="format">Layer format instance for parsing.</param>
+    /// <returns>The rendered aperture.</returns>
     public ApertureBase Render(List<string> csep, ILayerFormat format)
     {
-        if (csep.Count < 2 || csep.Count > 3)
+        if (csep.Count is < 2 or > 3)
         {
             throw new ArgumentException("Invalid circle aperture");
         }
@@ -37,11 +46,11 @@ public sealed class Circle : ApertureBase
     }
 
     /// <summary>
-    /// Метод, определяющий, является ли апертура простым кругом (без отверстия).
-    /// Если отверстие задано (HoleDiameter > 0), то апертура не является простым кругом.
+    /// Determines whether the aperture is a simple circle (without a hole).
+    /// If a hole is defined (HoleDiameter > 0), then the aperture is not simple.
     /// </summary>
-    /// <param name="diameter">Диаметр отверстия.</param>
-    /// <returns>True, если апертура является простым кругом (без отверстия); иначе false.</returns>
+    /// <param name="diameter">Outputs the diameter value.</param>
+    /// <returns>True if it is a simple circle; otherwise, false.</returns>
     public override bool IsSimpleCircle(out double diameter)
     {
         if (HoleDiameter > 0.0)

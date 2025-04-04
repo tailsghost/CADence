@@ -4,7 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Commands.Gerber;
 
-public class ABCommand : ICommand<IGerberSettings>
+/// <summary>
+/// Command to handle aperture block closing and opening in Gerber files.
+/// </summary>
+internal class ABCommand : ICommand<IGerberSettings>
 {
     private IServiceProvider _provider;
     public ABCommand(IServiceProvider provider)
@@ -12,6 +15,11 @@ public class ABCommand : ICommand<IGerberSettings>
         _provider = provider;
     }
 
+    /// <summary>
+    /// Executes the AB command to close or open an aperture block.
+    /// </summary>
+    /// <param name="settings">The current Gerber settings.</param>
+    /// <returns>The updated Gerber settings.</returns>
     public IGerberSettings Execute(IGerberSettings settings)
     {
         if (settings.cmd == "AB")

@@ -5,14 +5,22 @@ using System.Windows.Input;
 
 namespace CADence.Core.Commands.Gerber;
 
-
-public class ADCommand : ICommand<IGerberSettings>
+/// <summary>
+/// Command for defining an aperture (AD command) in Gerber files.
+/// </summary>
+internal class ADCommand : ICommand<IGerberSettings>
 {
     IServiceProvider _provider;
     public ADCommand(IServiceProvider provider)
     {
         _provider = provider;
     }
+
+    /// <summary>
+    /// Executes the AD command by parsing the aperture definition and creating the aperture.
+    /// </summary>
+    /// <param name="settings">The current Gerber settings.</param>
+    /// <returns>The updated Gerber settings.</returns>
     public IGerberSettings Execute(IGerberSettings settings)
     {
         if (settings.cmd.Length < 3 || settings.cmd[2] != 'D')
@@ -33,7 +41,7 @@ public class ADCommand : ICommand<IGerberSettings>
             throw new Exception("Aperture index out of range: " + settings.cmd);
         }
 
-        List<string> csep = [];
+        List<string> csep = new();
         start = i;
 
         while (i < settings.cmd.Length)

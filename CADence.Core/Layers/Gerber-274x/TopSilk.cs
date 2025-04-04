@@ -5,7 +5,10 @@ using ExtensionClipper2.Enums;
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
 
-public class TopSilk : ILayer
+/// <summary>
+/// Represents the TopSilk layer (silkscreen for the top layer).
+/// </summary>
+internal class TopSilk : ILayer
 {
     private PathsD _geometry;
     private PathsD _mask;
@@ -15,7 +18,9 @@ public class TopSilk : ILayer
     public double Thickness { get; set; }
     public Color ColorLayer { get; set; }
 
-
+    /// <summary>
+    /// Initializes the TopSilk layer.
+    /// </summary>
     public TopSilk(IGerberParser parser)
     {
         Layer = GerberLayer.TopSilk;
@@ -24,6 +29,9 @@ public class TopSilk : ILayer
         Thickness = 0.01;
     }
 
+    /// <summary>
+    /// Initializes the layer with mask data and parses the file.
+    /// </summary>
     public ILayer Init(PathsD[] param, string file, List<string> files = null)
     {
         _mask = param[0];
@@ -32,11 +40,17 @@ public class TopSilk : ILayer
         return this;
     }
 
-    PathsD ILayer.GetLayer()
+    /// <summary>
+    /// Retrieves the computed layer geometry.
+    /// </summary>
+    public PathsD GetLayer()
     {
         return _geometry;
     }
 
+    /// <summary>
+    /// Renders the top silk geometry.
+    /// </summary>
     private void Render()
     {
         var silk = _parser.GetResult(false);

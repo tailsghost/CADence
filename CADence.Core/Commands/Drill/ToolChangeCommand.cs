@@ -5,7 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Commands.Drill;
 
-public class ToolChangeCommand : ICommand<IDrillSettings>
+/// <summary>
+/// Command to change the current tool.
+/// </summary>
+internal class ToolChangeCommand : ICommand<IDrillSettings>
 {
     private readonly IServiceProvider _provider;
     public ToolChangeCommand(IServiceProvider provider)
@@ -13,7 +16,12 @@ public class ToolChangeCommand : ICommand<IDrillSettings>
         _provider = provider;
     }
 
-    public  IDrillSettings Execute(IDrillSettings settings)
+    /// <summary>
+    /// Executes the tool change command based on the current parse state.
+    /// </summary>
+    /// <param name="settings">The current drill settings.</param>
+    /// <returns>The updated drill settings.</returns>
+    public IDrillSettings Execute(IDrillSettings settings)
     {
         if (settings.ParseState == ParseState.BODY)
         {

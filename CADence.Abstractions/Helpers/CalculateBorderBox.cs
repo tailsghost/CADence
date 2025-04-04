@@ -2,8 +2,16 @@
 
 namespace CADence.Abstractions.Helpers;
 
+/// <summary>
+/// Helper class for calculating the bounding rectangle for a given border defined by multiple paths.
+/// </summary>
 public static class CalculateBorderBox
 {
+    /// <summary>
+    /// Computes the bounding rectangle of a border represented as a list of paths.
+    /// </summary>
+    /// <param name="border">A collection of paths representing the border.</param>
+    /// <returns>A RectD structure that defines the bounds of the border.</returns>
     public static RectD GetBounds(PathsD border)
     {
         var bounds = new RectD

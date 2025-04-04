@@ -4,8 +4,17 @@ using ExtensionClipper2.Core;
 
 namespace CADence.Core.Apertures.Gerber_274;
 
-public class Polygon : ApertureBase
+/// <summary>
+/// Represents a polygon aperture.
+/// </summary>
+internal class Polygon : ApertureBase
 {
+    /// <summary>
+    /// Renders the polygon aperture based on the given parameters.
+    /// </summary>
+    /// <param name="csep">List of parameters as strings.</param>
+    /// <param name="fmt">Layer format instance for parsing.</param>
+    /// <returns>The rendered aperture.</returns>
     public override ApertureBase Render(List<string> csep, ILayerFormat fmt)
     {
         if (csep.Count is < 3 or > 5)
@@ -14,7 +23,7 @@ public class Polygon : ApertureBase
         }
 
         var diameter = fmt.ParseFloat(csep[1]);
-        var nVertices = int.Parse(csep[2]);
+        var nVertices = fmt.ParseFloat(csep[2]);
 
         if (nVertices < 3)
         {
@@ -24,8 +33,8 @@ public class Polygon : ApertureBase
         var rotation = csep.Count > 3 ? double.Parse(csep[3]) * Math.PI / 180.0 : 0.0;
         HoleDiameter = csep.Count > 4 ? fmt.ParseFloat(csep[4]) : 0;
 
-        PathsD paths = [];
-        var polygonPath = new PathD(nVertices);
+        PathsD paths = new();
+        var polygonPath = new PathD((int)nVertices);
 
 
         for (var i = 0; i < nVertices; i++)

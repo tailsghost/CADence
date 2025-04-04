@@ -3,8 +3,16 @@ using ExtensionClipper2.Core;
 
 namespace CADence.Core.Commands.Drill;
 
-public class CoordinateCommand : ICommand<IDrillSettings>
+/// <summary>
+/// Command for handling coordinate updates.
+/// </summary>
+internal class CoordinateCommand : ICommand<IDrillSettings>
 {
+    /// <summary>
+    /// Executes the coordinate command by parsing X and Y values from the command string.
+    /// </summary>
+    /// <param name="settings">The current drill settings.</param>
+    /// <returns>The updated drill settings.</returns>
     public IDrillSettings Execute(IDrillSettings settings)
     {
         var dict = CommandUtils.ParseRegularCommand(settings.fcmd);

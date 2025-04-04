@@ -3,8 +3,17 @@ using ExtensionClipper2.Core;
 
 namespace CADence.Core.Commands.Gerber;
 
-public class InstallCommand : ICommand<IGerberSettings>
+/// <summary>
+/// Command to process flash and interpolation commands in Gerber files.
+/// </summary>
+internal class InstallCommand : ICommand<IGerberSettings>
 {
+
+    /// <summary>
+    /// Executes the Install command by parsing parameters and performing flash/interpolation.
+    /// </summary>
+    /// <param name="settings">The current Gerber settings.</param>
+    /// <returns>The updated Gerber settings.</returns>
     public IGerberSettings Execute(IGerberSettings settings)
     {
         var parameters = new Dictionary<char, double> { { 'X', settings.Pos.X }, { 'Y', settings.Pos.Y }, { 'I', 0 }, { 'J', 0 } };
@@ -45,7 +54,7 @@ public class InstallCommand : ICommand<IGerberSettings>
                 {
                     settings.Aperture.IsSimpleCircle(out var diameter);
                     if (diameter != 0)
-                        settings.MinimumDiameter = double.Min(diameter, settings.MinimumDiameter);
+                        settings.MinimumDiameter = Math.Min(diameter, settings.MinimumDiameter);
                 }
                 settings.Interpolate(new PointD(parameters['X'], parameters['Y']), new PointD(parameters['I'], parameters['J']));
                 PointD Point = new(parameters['X'], parameters['Y']);
@@ -73,6 +82,11 @@ public class InstallCommand : ICommand<IGerberSettings>
         return settings;
     }
 
+    /// <summary>
+    /// Sets up the aperture if the command indicates an aperture selection.
+    /// </summary>
+    /// <param name="settings">The current Gerber settings.</param>
+    /// <returns>The updated Gerber settings.</returns>
     private IGerberSettings SetupAperture(IGerberSettings settings)
     {
         if (settings.cmd.StartsWith('D') && !settings.cmd.StartsWith("D0"))

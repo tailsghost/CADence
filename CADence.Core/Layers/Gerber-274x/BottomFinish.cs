@@ -4,7 +4,10 @@ using ExtensionClipper2.Enums;
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
 
-public class BottomFinish : ILayer
+/// <summary>
+/// Represents the BottomFinish layer (final coating for the bottom layer) with precision calculation capabilities.
+/// </summary>
+internal class BottomFinish : ILayer
 {
     private PathsD _geometry;
     private PathsD _mask;
@@ -13,6 +16,10 @@ public class BottomFinish : ILayer
     public GerberLayer Layer { get; set; }
     public double Thickness { get; }
     public Color ColorLayer { get; set; }
+
+    /// <summary>
+    /// Initializes the BottomFinish layer.
+    /// </summary>
     public BottomFinish()
     {
         Layer = GerberLayer.BottomFinish;
@@ -20,16 +27,25 @@ public class BottomFinish : ILayer
         Thickness = 0.01;
     }
 
-   public PathsD GetLayer()
+    /// <summary>
+    /// Retrieves the geometric representation of the BottomFinish layer.
+    /// </summary>
+    public PathsD GetLayer()
     {
         return _geometry;
     }
 
+    /// <summary>
+    /// Renders the bottom finish geometry.
+    /// </summary>
     private void Render()
     {
         _geometry = Clipper.Difference(_copper, _mask, FillRule.EvenOdd);
     }
 
+    /// <summary>
+    /// Initializes the layer with copper and mask data.
+    /// </summary>
     public ILayer Init(PathsD[] param, string file = null, List<string> files = null)
     {
         _mask = param[0];

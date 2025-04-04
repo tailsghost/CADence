@@ -3,15 +3,28 @@ using ExtensionClipper2.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Commands.Drill;
-public class GCommand : ICommand<IDrillSettings>
+
+/// <summary>
+/// Command to process G-code commands in drill files.
+/// </summary>
+internal class GCommand : ICommand<IDrillSettings>
 {
     private IServiceProvider _provider;
 
+    /// <summary>
+    /// Initializes a new instance with the specified service provider.
+    /// </summary>
+    /// <param name="provider">The service provider for dependency injection.</param>
     public GCommand(IServiceProvider provider)
     {
         _provider = provider;
     }
 
+    /// <summary>
+    /// Executes the G command by parsing the command and performing the corresponding operation.
+    /// </summary>
+    /// <param name="settings">The current drill settings.</param>
+    /// <returns>The updated drill settings.</returns>
     public IDrillSettings Execute(IDrillSettings settings)
     {
         var setting = settings;

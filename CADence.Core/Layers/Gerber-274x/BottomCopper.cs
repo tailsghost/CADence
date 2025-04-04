@@ -8,7 +8,10 @@ using CADence.Abstractions.Layers;
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
 
-public class BottomCopper : ILayer, ICopper
+/// <summary>
+/// Represents the bottom copper layer with accuracy calculations.
+/// </summary>
+internal class BottomCopper : ILayer, ICopper
 {
     private PathsD Substrate;
     private PathsD _geometry;
@@ -16,16 +19,14 @@ public class BottomCopper : ILayer, ICopper
     private IGerberParser PARSER { get; set; }
 
     private Task<AccuracyBox> _calculate = null;
-
-    public double MinimumThickness { get; private set; } = 0;
-    public double MinDistanceHole { get; private set; } = 0;
-    public double MinDistanceBetween { get; private set; } = 0;
     public GerberLayer Layer { get; set; }
     public Color ColorLayer { get; set; }
     public double Thickness { get; }
 
 
-
+    /// <summary>
+    /// Initializes a new instance of the BottomCopper layer.
+    /// </summary>
     public BottomCopper(IGerberParser parser, ICalculateAccuracy accuracy)
     {
         Layer = GerberLayer.BottomCopper;
@@ -35,6 +36,9 @@ public class BottomCopper : ILayer, ICopper
         _accuracy = accuracy;
     }
 
+    /// <summary>
+    /// Initializes the layer with substrate data and parses the file.
+    /// </summary>
     public ILayer Init(PathsD[] param, string file = null, List<string> files = null)
     {
         Substrate = param[0];
@@ -43,6 +47,9 @@ public class BottomCopper : ILayer, ICopper
         return this;
     }
 
+    /// <summary>
+    /// Renders the bottom copper geometry.
+    /// </summary>
     private void Render()
     {
         var copper = PARSER.GetResult(false);
@@ -55,11 +62,17 @@ public class BottomCopper : ILayer, ICopper
            _calculate = Task.Run(() => _accuracy.StartCalculate(_geometry, PARSER.GetMinimumThickness()));
     }
 
+    /// <summary>
+    /// Retrieves the computed layer geometry.
+    /// </summary>
     public PathsD GetLayer()
     {
         return _geometry;
     }
 
+    /// <summary>
+    /// Asynchronously gets the accuracy metrics for the layer.
+    /// </summary>
     public async Task<AccuracyBox> GetAccuracy()
     {
         return await _calculate;

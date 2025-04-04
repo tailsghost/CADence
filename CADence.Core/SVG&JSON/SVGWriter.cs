@@ -8,25 +8,24 @@ using System.Text;
 namespace CADence.Core.SVG_JSON;
 
 /// <summary>
-/// Класс для генерации SVG изображений на основе списка слоев.
+/// Generating SVG images based on a list of layers.
 /// </summary>
-public class SVGWriter : IWriter
+internal class SVGWriter : IWriter
 {
     /// <summary>
-    /// Генерирует SVG изображение с учетом порядка слоев.
-    /// Если <paramref name="flipped"/> равно <c>true</c>, то используется порядок: TopFinish, TopCopper, TopMask, TopSilk, Substrate.
-    /// Если <paramref name="flipped"/> равно <c>false</c>, то используется порядок: BottomFinish, BottomSilk, BottomMask, BottomCopper, Substrate.
+    /// Generates an SVG image with layers ordered according to the flipped flag.
     /// </summary>
+    /// <param name="layers">List of layers to include.</param>
+    /// <param name="scale">Scale factor for output dimensions.</param>
     /// <param name="flipped">
-    /// Флаг, определяющий порядок вывода слоев.
-    /// Если <c>true</c> — используется порядок верхних слоев, если <c>false</c> — нижних.
+    /// If true, uses the order: TopFinish, TopCopper, TopMask, TopSilk, Substrate.
+    /// If false, uses the order: BottomFinish, BottomSilk, BottomMask, BottomCopper, Substrate.
     /// </param>
     /// <param name="path">
-    /// Путь для сохранения SVG файла.
-    /// Если параметр не указан или является пустой строкой, метод возвращает сгенерированное SVG изображение в виде строки.
+    /// The file path to save the SVG file. If empty, returns the SVG as a string.
     /// </param>
     /// <returns>
-    /// Возвращает строку, содержащую SVG изображение, если путь для сохранения не указан; иначе возвращается пустая строка.
+    /// The SVG image as a string if path is not provided; otherwise, an empty string.
     /// </returns>
     public string Execute(List<ILayer> layers, double scale, bool flipped, string path)
     {
@@ -68,13 +67,13 @@ public class SVGWriter : IWriter
 
         return stream.ToString();
     }
-    
+
 
     /// <summary>
-    /// Преобразует геометрию слоя в SVG элементы.
+    /// Converts a layer's geometry into SVG elements.
     /// </summary>
-    /// <param name="layer">Объект слоя, содержащий геометрические данные.</param>
-    /// <returns>Буфер, содержащий SVG разметку для данного слоя.</returns>
+    /// <param name="layer">The layer containing geometric data.</param>
+    /// <returns>A StringBuilder with the SVG markup for the layer.</returns>
     private StringBuilder ParseGeometry(ILayer layer)
     {
         StringBuilder Data = new();
@@ -115,14 +114,14 @@ public class SVGWriter : IWriter
 
 
     /// <summary>
-    /// Возвращает список слоев в требуемом порядке.
-    /// Порядок определяется значением параметра <paramref name="flipped"/>.
+    /// Returns a list of layers ordered according to the flipped flag.
     /// </summary>
+    /// <param name="layers">The unsorted list of layers.</param>
     /// <param name="flipped">
-    /// Если <c>true</c>, то возвращается порядок: TopFinish, TopCopper, TopMask, TopSilk, Substrate.
-    /// Если <c>false</c>, то возвращается порядок: BottomFinish, BottomSilk, BottomMask, BottomCopper, Substrate.
+    /// If true, uses the order: TopFinish, TopCopper, TopMask, TopSilk, Substrate.
+    /// If false, uses the order: BottomFinish, BottomSilk, BottomMask, BottomCopper, Substrate.
     /// </param>
-    /// <returns>Список объектов <see cref="LayerBase"/>, отсортированных согласно заданному порядку.</returns>
+    /// <returns>A sorted list of layers.</returns>
     public List<ILayer> GetOrderedLayers(List<ILayer> layers, bool flipped)
     {
         GerberLayer[] order = flipped

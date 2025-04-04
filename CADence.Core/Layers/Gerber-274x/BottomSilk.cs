@@ -7,7 +7,10 @@ using ExtensionClipper2.Enums;
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
 
-public class BottomSilk : ILayer
+/// <summary>
+/// Represents the BottomSilk layer (silkscreen for the bottom layer).
+/// </summary>
+internal class BottomSilk : ILayer
 {
     private PathsD _geometry;
     private PathsD _mask;
@@ -17,7 +20,9 @@ public class BottomSilk : ILayer
     public double Thickness { get; set; }
     public Color ColorLayer { get; set; }
 
-
+    /// <summary>
+    /// Initializes the BottomSilk layer.
+    /// </summary>
     public BottomSilk(IGerberParser parser)
     {
         Layer = GerberLayer.BottomSilk;
@@ -26,7 +31,10 @@ public class BottomSilk : ILayer
         Thickness = 0.01;
     }
 
-    public ILayer Init(PathsD[] param, string file , List<string> files = null)
+    /// <summary>
+    /// Initializes the layer with mask data and parses the file.
+    /// </summary>
+    public ILayer Init(PathsD[] param, string file, List<string> files = null)
     {
         _mask = param[0];
         _parser.Execute(file);
@@ -34,11 +42,17 @@ public class BottomSilk : ILayer
         return this;
     }
 
-    PathsD ILayer.GetLayer()
+    /// <summary>
+    /// Retrieves the computed layer geometry.
+    /// </summary>
+    public PathsD GetLayer()
     {
         return _geometry;
     }
 
+    /// <summary>
+    /// Renders the bottom silkscreen geometry.
+    /// </summary>
     private void Render()
     {
         var silk = _parser.GetResult(false);

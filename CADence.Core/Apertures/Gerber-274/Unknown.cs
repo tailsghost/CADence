@@ -2,6 +2,6 @@
 
 namespace CADence.Core.Apertures.Gerber_274;
 
-public sealed class Unknown : ApertureBase
+internal sealed class Unknown : ApertureBase
 {
 }

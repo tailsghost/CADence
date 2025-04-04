@@ -4,8 +4,17 @@ using ExtensionClipper2.Core;
 
 namespace CADence.Core.Apertures.Gerber_274;
 
+/// <summary>
+/// Represents a rectangle aperture.
+/// </summary>
 internal class Rectangle : ApertureBase
 {
+    /// <summary>
+    /// Renders the rectangle aperture based on the given parameters.
+    /// </summary>
+    /// <param name="csep">List of parameters as strings.</param>
+    /// <param name="fmt">Layer format instance for parsing.</param>
+    /// <returns>The rendered aperture.</returns>
     public override ApertureBase Render(List<string> csep, ILayerFormat fmt)
     {
         if (csep.Count is < 3 or > 4)

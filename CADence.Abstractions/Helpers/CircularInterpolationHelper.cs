@@ -1,9 +1,10 @@
 ﻿using ExtensionClipper2.Core;
-using System.IO;
-using System.Runtime.Intrinsics.X86;
 
 namespace CADence.Abstractions.Helpers;
 
+/// <summary>
+/// Helper class for approximating circular arcs with line segments.
+/// </summary>
 public class CircularInterpolationHelper
 {
     private double centerX, centerY;
@@ -11,8 +12,12 @@ public class CircularInterpolationHelper
     private double a1, a2;
 
     /// <summary>
-    /// Преобразует координаты (x, y) в полярные относительно центра (centerX, centerY)
+    /// Converts Cartesian coordinates (x, y) to polar coordinates (r, a) relative to the center.
     /// </summary>
+    /// <param name="x">The x-coordinate.</param>
+    /// <param name="y">The y-coordinate.</param>
+    /// <param name="r">The computed radius.</param>
+    /// <param name="a">The computed angle in radians.</param>
     private void ToPolar(double x, double y, out double r, out double a)
     {
         x -= centerX;
@@ -22,10 +27,13 @@ public class CircularInterpolationHelper
     }
 
     /// <summary>
-    /// Конструктор задаёт дугу между точками start и end с указанным центром.
-    /// Параметры ccw и multi определяют направление (против часовой стрелки, ccw)
-    /// и режим расчёта (multi – многоквадрантная аппроксимация).
+    /// Initializes a new instance of the <see cref="CircularInterpolationHelper"/> class, defining an arc between start and end points with a specified center.
     /// </summary>
+    /// <param name="start">The starting point of the arc.</param>
+    /// <param name="end">The ending point of the arc.</param>
+    /// <param name="center">The center of the arc.</param>
+    /// <param name="ccw">If set to <c>true</c>, the arc is interpolated in a counter-clockwise direction.</param>
+    /// <param name="multi">If set to <c>true</c>, a multi-quadrant approximation is used.</param>
     public CircularInterpolationHelper(PointD start, PointD end, PointD center, bool ccw, bool multi)
     {
         centerX = center.X;
@@ -62,24 +70,28 @@ public class CircularInterpolationHelper
     }
 
     /// <summary>
-    /// Возвращает true, если дуга лежит в пределах одного квадранта.
+    /// Determines whether the arc lies within a single quadrant.
     /// </summary>
+    /// <returns><c>true</c> if the arc is within a single quadrant; otherwise, <c>false</c>.</returns>
     public bool IsSingleQuadrant()
     {
         return Math.Abs(a1 - a2) <= Math.PI / 2 + 1e-3;
     }
 
     /// <summary>
-    /// Для сравнения – возвращает максимальный из радиусов.
+    /// Returns the maximum radius used in the arc approximation.
     /// </summary>
+    /// <returns>The maximum of the two radii.</returns>
     public double Error()
     {
         return Math.Max(r1, r2);
     }
 
     /// <summary>
-    /// Создает аппроксимирующий LineString для дуги, используя фиксированный шаг по углу.
+    /// Approximates the arc with a line string using a fixed angular step.
     /// </summary>
+    /// <param name="epsilon">A small epsilon value used to adjust the approximation.</param>
+    /// <returns>A <see cref="PathD"/> representing the approximated arc.</returns>
     public PathD ToCoordinates(double epsilon)
     {
         var r = (r1 + r2) * 0.5;

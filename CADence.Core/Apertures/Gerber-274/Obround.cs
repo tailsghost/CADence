@@ -5,8 +5,17 @@ using ExtensionClipper2.Core;
 
 namespace CADence.Core.Apertures.Gerber_274;
 
-public sealed class Obround : ApertureBase
+/// <summary>
+/// Represents an obround (oval) aperture.
+/// </summary>
+internal sealed class Obround : ApertureBase
 {
+    /// <summary>
+    /// Renders the obround aperture based on the given parameters.
+    /// </summary>
+    /// <param name="csep">List of parameters as strings.</param>
+    /// <param name="format">Layer format instance for parsing.</param>
+    /// <returns>The rendered aperture.</returns>
     public ApertureBase Render(List<string> csep, ILayerFormat format)
     {
         if (csep.Count is < 3 or > 4)

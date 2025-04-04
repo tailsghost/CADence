@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace CADence.Abstractions.Readers;
 
-namespace CADence.Abstractions.Readers;
-
+/// <summary>
+/// Interface representing input data parsed from an archive.
+/// </summary>
 public interface IInputData
 {
+    /// <summary>
+    /// Returns a dictionary of file names and their content.
+    /// </summary>
     IDictionary<string, string> Get();
 }

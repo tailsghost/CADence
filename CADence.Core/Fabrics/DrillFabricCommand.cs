@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Fabrics;
 
-public class DrillFabricCommand : IFabricCommand<IDrillSettings>
+internal class DrillFabricCommand : IFabricCommand<IDrillSettings>
 {
     private readonly Dictionary<string, Func<ICommand<IDrillSettings>>> _commands = new();
 

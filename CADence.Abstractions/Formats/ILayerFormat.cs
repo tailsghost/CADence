@@ -3,6 +3,9 @@ using ExtensionClipper2;
 
 namespace CADence.App.Abstractions.Formats;
 
+/// <summary>
+/// Interface for converting and formatting layer coordinates.
+/// </summary>
 public interface ILayerFormat
 {
     void ConfigureFormat(int integerDigits, int decimalDigits);

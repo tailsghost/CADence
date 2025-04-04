@@ -2,18 +2,19 @@
 using CADence.App.Abstractions.Parsers;
 using CADence.Core.Apertures.Gerber_274;
 using Microsoft.Extensions.DependencyInjection;
-using System.Drawing;
 using ExtensionClipper2;
 using ExtensionClipper2.Core;
 using ExtensionClipper2.Enums;
 
 namespace CADence.Core.Parsers;
 
-public class DrillParser274X : IDrillParser
+/// <summary>
+/// Drill parser for 274X format.
+/// Processes drill commands and constructs the drill geometry.
+/// </summary>
+internal class DrillParser274X : IDrillParser
 {
     private IServiceProvider _provider;
-
-    private PathsD polygons = new();
     private IDrillSettings _settings;
     private IFabricCommand<IDrillSettings> _fabric { get; set; }
     public double MinHoleDiameter { get; private set; } = double.MaxValue;
@@ -25,13 +26,15 @@ public class DrillParser274X : IDrillParser
         _fabric = fabric;
     }
 
+    /// <summary>
+    /// Executes the drill parsing for each provided drill command.
+    /// </summary>
     public IDrillParser Execute(List<string> drills)
     {
         foreach (string drill in drills)
         {
             using var stream = new StringReader(string.Join("\n", drill));
             string? line;
-
             _settings = _provider.GetRequiredService<IDrillSettings>();
             SetupSettings();
 
@@ -55,11 +58,12 @@ public class DrillParser274X : IDrillParser
 
             MinHoleDiameter = Math.Min(_settings.MinHole, MinHoleDiameter);
         }
-
         return this;
-
     }
 
+    /// <summary>
+    /// Constructs the drill geometry based on plated and unplated conditions.
+    /// </summary>
     private PathsD GetGeometryDrill(bool plated = true, bool unplated = true)
     {
         PathsD result = new();
@@ -94,6 +98,9 @@ public class DrillParser274X : IDrillParser
         return result;
     }
 
+    /// <summary>
+    /// Executes a single drill command using the fabric command.
+    /// </summary>
     private IDrillSettings ExecuteCommand()
     {
         if (_settings.ParseState == ParseState.HEADER)
@@ -144,10 +151,12 @@ public class DrillParser274X : IDrillParser
             _settings.IsDone = true;
             return _settings;
         }
-
         return _fabric.ExecuteCommand(_settings);
     }
 
+    /// <summary>
+    /// Sets up the initial drill settings.
+    /// </summary>
     private void SetupSettings()
     {
         _settings.ParseState = ParseState.PRE_HEADER;
@@ -159,6 +168,9 @@ public class DrillParser274X : IDrillParser
         _settings.RoutMode = RoutMode.DRILL;
     }
 
+    /// <summary>
+    /// Returns the parsed drill geometry layer.
+    /// </summary>
     public PathsD GetLayer()
     {
         return _drillGeometry;

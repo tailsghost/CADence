@@ -1,11 +1,35 @@
 ﻿namespace CADence.Abstractions.Apertures.Expressions;
 
+/// <summary>
+/// Abstract base class for all expressions.
+/// </summary>
 public abstract class Expression
 {
+    /// <summary>
+    /// Evaluates the expression using the specified variable values.
+    /// </summary>
+    /// <param name="vars">A dictionary of variable values.</param>
+    /// <returns>The evaluated value.</returns>
     public abstract double Eval(Dictionary<int, double> vars);
+
+    /// <summary>
+    /// Returns a string representation of the expression for debugging purposes.
+    /// </summary>
+    /// <returns>A string representation of the expression.</returns>
     public abstract string Debug();
+
+    /// <summary>
+    /// Gets the token character of the expression, if applicable.
+    /// </summary>
+    /// <returns>The token character, or '\0' if not applicable.</returns>
     public virtual char GetToken() => '\0';
 
+
+    /// <summary>
+    /// Reduces a list of expressions into a single expression.
+    /// </summary>
+    /// <param name="expr">The list of expressions to reduce.</param>
+    /// <returns>The reduced expression.</returns>
     public static Expression Reduce(List<Expression> expr)
     {
         if (expr.Count == 0)
@@ -13,14 +37,14 @@ public abstract class Expression
             new Exception("empty aperture macro (sub)expression");
         }
 
-        for (int i = 0; i < expr.Count; i++)
+        for (var i = 0; i < expr.Count; i++)
         {
             if (expr[i].GetToken() == '(')
             {
-                int level = 1;
-                for (int j = i + 1; j < expr.Count; j++)
+                var level = 1;
+                for (var j = i + 1; j < expr.Count; j++)
                 {
-                    char t = expr[j].GetToken();
+                    var t = expr[j].GetToken();
                     if (t == '(') level++;
                     if (t == ')') level--;
                     if (level == 0)
@@ -34,11 +58,11 @@ public abstract class Expression
             }
         }
 
-        for (int i = 0; i < expr.Count - 1; i++)
+        for (var i = 0; i < expr.Count - 1; i++)
         {
             if (expr[i + 1].GetToken() == '\0')
             {
-                char oper = expr[i].GetToken();
+                var oper = expr[i].GetToken();
                 if (oper == '-' || oper == '+')
                 {
                     expr[i] = new UnaryExpression(oper, expr[i + 1]);
@@ -47,9 +71,9 @@ public abstract class Expression
             }
         }
 
-        for (int i = 1; i < expr.Count - 1; i++)
+        for (var i = 1; i < expr.Count - 1; i++)
         {
-            char oper = expr[i].GetToken();
+            var oper = expr[i].GetToken();
             if (oper == 'x' || oper == '/' || oper == '+' || oper == '-')
             {
                 expr[i - 1] = new BinaryExpression(oper, expr[i - 1], expr[i + 1]);
@@ -66,15 +90,20 @@ public abstract class Expression
         return expr[0];
     }
 
+    /// <summary>
+    /// Parses a string into an <see cref="Expression"/>.
+    /// </summary>
+    /// <param name="expr">The string expression to parse.</param>
+    /// <returns>The parsed expression.</returns>
     public static Expression Parse(string expr)
     {
         List<Expression> tokens = new();
-        string currentToken = "";
-        bool isNumber = false;
+        var currentToken = "";
+        var isNumber = false;
 
-        for (int i = 0; i <= expr.Length; i++)
+        for (var i = 0; i <= expr.Length; i++)
         {
-            char c = (i < expr.Length) ? expr[i] : ' ';
+            var c = (i < expr.Length) ? expr[i] : ' ';
 
             if (char.IsDigit(c) || c == '.')
             {
@@ -94,7 +123,7 @@ public abstract class Expression
                 {
                     currentToken += c;
                 }
-                else if (c == '+' || c == '-' || c == 'x' || c == '/' || c == '(' || c == ')')
+                else if (c is '+' or '-' or 'x' or '/' or '(' or ')')
                 {
                     tokens.Add(new Token(c));
                 }

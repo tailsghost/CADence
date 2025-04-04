@@ -6,7 +6,10 @@ using ExtensionClipper2.Enums;
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
 
-public class BottomMask : ILayer
+/// <summary>
+/// Represents the BottomMask layer (solder mask for the bottom layer).
+/// </summary>
+internal class BottomMask : ILayer
 {
     private PathsD _geometry;
     private PathsD Substrate;
@@ -16,6 +19,9 @@ public class BottomMask : ILayer
     public double Thickness { get; }
     public Color ColorLayer { get; set; }
 
+    /// <summary>
+    /// Initializes the BottomMask layer.
+    /// </summary>
     public BottomMask(IGerberParser parser)
     {
         Layer = GerberLayer.BottomMask;
@@ -24,6 +30,9 @@ public class BottomMask : ILayer
         Thickness = 0.01;
     }
 
+    /// <summary>
+    /// Initializes the layer with substrate data and parses the file.
+    /// </summary>
     public ILayer Init(PathsD[] param, string file, List<string> files = null)
     {
         Substrate = param[0];
@@ -32,11 +41,17 @@ public class BottomMask : ILayer
         return this;
     }
 
+    /// <summary>
+    /// Retrieves the computed layer geometry.
+    /// </summary>
     public PathsD GetLayer()
     {
         return _geometry;
     }
 
+    /// <summary>
+    /// Renders the bottom mask geometry.
+    /// </summary>
     private void Render()
     {
         var mask = _parser.GetResult(false);

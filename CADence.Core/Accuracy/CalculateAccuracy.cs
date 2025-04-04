@@ -5,13 +5,28 @@ using ExtensionClipper2.Enums;
 
 namespace CADence.Core.Accuracy;
 
+/// <summary>
+/// Implements the accuracy calculation for copper layers.
+/// </summary>
 public class CalculateAccuracy : ICalculateAccuracy
 {
+    /// <summary>
+    /// Initiates the accuracy calculation.
+    /// </summary>
+    /// <param name="copper">The copper paths.</param>
+    /// <param name="radius">The radius for error calculation.</param>
+    /// <returns>An AccuracyBox containing the results.</returns>
     public AccuracyBox StartCalculate(PathsD copper, double radius)
     {
        return GetDistance(copper, radius);
     }
 
+    /// <summary>
+    /// Performs the distance calculation using the provided copper geometry.
+    /// </summary>
+    /// <param name="copper">The copper paths.</param>
+    /// <param name="radius">The radius for dynamic error calculation.</param>
+    /// <returns>An AccuracyBox with calculated distances.</returns>
     private AccuracyBox GetDistance(PathsD copper,double radius)
     {
         PolyTreeD tree = new();
@@ -29,15 +44,21 @@ public class CalculateAccuracy : ICalculateAccuracy
         return box;
     }
 
+    /// <summary>
+    /// Calculates the minimum distance from a hole to its outline.
+    /// </summary>
+    /// <param name="copperTracks">The collection of copper track paths.</param>
+    /// <param name="radius">The radius used for error adjustment.</param>
+    /// <returns>The minimum distance.</returns>
     private double MinDistanceFromHoleToOutline(PolyPathD copperTracks, double radius)
     {
         var minDist = double.MaxValue;
 
-        for (int i = 0; i < copperTracks.Count; i++)
+        for (var i = 0; i < copperTracks.Count; i++)
         {
             var outerContour = copperTracks[i].Polygon;
 
-            for (int j = 0; j < copperTracks[i].Count; j++)
+            for (var j = 0; j < copperTracks[i].Count; j++)
             {
                 var childContour = copperTracks[i][j].Polygon;
 
@@ -53,6 +74,12 @@ public class CalculateAccuracy : ICalculateAccuracy
         return minDist;
     }
 
+    /// <summary>
+    /// Calculates the dynamic error based on the number of points in a polygon.
+    /// </summary>
+    /// <param name="polygon">The polygon path.</param>
+    /// <param name="idealRadius">The ideal radius value.</param>
+    /// <returns>The calculated error.</returns>
     private double CalculateDynamicError(PathD polygon, double idealRadius)
     {
         var N = polygon.Count;
@@ -60,10 +87,15 @@ public class CalculateAccuracy : ICalculateAccuracy
         return sagitta;
     }
 
+    /// <summary>
+    /// Calculates the minimum distance between two sets of paths.
+    /// </summary>
+    /// <param name="copperTracks">The collection of copper track paths.</param>
+    /// <returns>The minimum distance between any two paths.</returns>
     private double GetMinimumDistanceBetweenTwoPaths(PolyPathD copperTracks)
     {
         var minDistance = double.MaxValue;
-        object lockObj = new object();
+        var lockObj = new object();
 
 
         Parallel.For(0, copperTracks.Count, () => double.MaxValue, (i, state, localMin) =>
@@ -90,7 +122,12 @@ public class CalculateAccuracy : ICalculateAccuracy
         return minDistance;
     }
 
-
+    /// <summary>
+    /// Computes the minimum distance between two polygons.
+    /// </summary>
+    /// <param name="poly1">First polygon.</param>
+    /// <param name="poly2">Second polygon.</param>
+    /// <returns>The minimum distance between segments of the two polygons.</returns>
     private double MinDistanceBetweenPathD(PathD poly1, PathD poly2)
     {
         var minDist = double.MaxValue;
@@ -113,7 +150,14 @@ public class CalculateAccuracy : ICalculateAccuracy
         return minDist;
     }
 
-
+    /// <summary>
+    /// Computes the distance between two line segments.
+    /// </summary>
+    /// <param name="a1">Start point of first segment.</param>
+    /// <param name="a2">End point of first segment.</param>
+    /// <param name="b1">Start point of second segment.</param>
+    /// <param name="b2">End point of second segment.</param>
+    /// <returns>The minimum distance between the two segments.</returns>
     private double SegmentDistance(PointD a1, PointD a2, PointD b1, PointD b2)
     {
         var d1 = PointToSegmentDistance(a1, b1, b2);
@@ -123,6 +167,13 @@ public class CalculateAccuracy : ICalculateAccuracy
         return Math.Min(Math.Min(d1, d2), Math.Min(d3, d4));
     }
 
+    /// <summary>
+    /// Calculates the distance from a point to a line segment.
+    /// </summary>
+    /// <param name="p">The point.</param>
+    /// <param name="v">Start of the segment.</param>
+    /// <param name="w">End of the segment.</param>
+    /// <returns>The shortest distance from the point to the segment.</returns>
     private double PointToSegmentDistance(PointD p, PointD v, PointD w)
     {
         var l2 = DistanceSquared(v, w);
@@ -133,6 +184,9 @@ public class CalculateAccuracy : ICalculateAccuracy
         return Distance(p, projection);
     }
 
+    /// <summary>
+    /// Calculates the Euclidean distance between two points.
+    /// </summary>
     private double Distance(PointD p, PointD q)
     {
         var dx = p.X - q.X;
@@ -140,28 +194,13 @@ public class CalculateAccuracy : ICalculateAccuracy
         return Math.Sqrt(dx * dx + dy * dy);
     }
 
+    /// <summary>
+    /// Calculates the squared distance between two points.
+    /// </summary>
     private double DistanceSquared(PointD p, PointD q)
     {
         var dx = p.X - q.X;
         var dy = p.Y - q.Y;
         return dx * dx + dy * dy;
-    }
-
-    private bool IsHole(PathD poly)
-    {
-        return SignedArea(poly) < 0;
-    }
-
-    private double SignedArea(PathD poly)
-    {
-        var area = 0.0;
-        var count = poly.Count;
-        for (int i = 0; i < count; i++)
-        {
-            var current = poly[i];
-            var next = poly[(i + 1) % count];
-            area += (current.X * next.Y) - (next.X * current.Y);
-        }
-        return area / 2.0;
     }
 }

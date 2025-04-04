@@ -4,13 +4,22 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Commands.Gerber;
 
-public class AMCommand : ICommand<IGerberSettings>
+/// <summary>
+/// Command to start an aperture macro definition (AM command) in Gerber files.
+/// </summary>
+internal class AMCommand : ICommand<IGerberSettings>
 {
     private IServiceProvider _provider;
     public AMCommand(IServiceProvider provider)
     {
         _provider = provider;
     }
+
+    /// <summary>
+    /// Executes the AM command by creating a new aperture macro builder.
+    /// </summary>
+    /// <param name="settings">The current Gerber settings.</param>
+    /// <returns>The updated Gerber settings.</returns>
     public IGerberSettings Execute(IGerberSettings settings)
     {
         var name = settings.cmd[2..];

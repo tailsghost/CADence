@@ -2,41 +2,42 @@
 using CADence.App.Abstractions.Layers;
 using CADence.Core.Dependency;
 using CADence.Abstractions.Readers;
-using CADence.Abstractions.Layers;
 using CADence.Abstractions.Svg_Json;
-using ExtensionClipper2;
 using CADence.Abstractions.Global;
 using CADence.Abstractions.Helpers;
+using CADence.Abstractions.Layers;
 
 namespace CADence.CUI
 {
     internal class Program
     {
-
         static async Task Main(string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Gray;
             ServiceCollectionExtensions.Initial();
-            Epsilon.SetEpsilonValue(1e-10);
-            ExecuteAccuracy.SetExecute(true);
 
             while (true)
             {
-                string? path = GetFilePathFromUser();
+                var path = GetFilePathFromUser();
                 if (string.IsNullOrWhiteSpace(path))
                 {
                     continue;
                 }
 
-                Console.WriteLine("Парсинг файла...");
+
+                AskUserForAccuracy();
+
+                Console.WriteLine("Parsing file...");
                 try
                 {
                     await ExecuteAsync(path);
-                    Console.WriteLine("Парсинг успешно завершён.");
+                    Console.WriteLine("Parsing completed successfully.");
                 }
                 catch (Exception e)
                 {
+                    Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(e.Message);
+                    Console.ResetColor();
                     throw;
                 }
 
@@ -48,76 +49,105 @@ namespace CADence.CUI
         }
 
         /// <summary>
-        /// Запрашивает у пользователя путь к файлу и подтверждение.
+        /// Asks the user whether to execute the accuracy calculation.
         /// </summary>
-        /// <returns>Путь к файлу или null, если ввод не подтвержден.</returns>
+        private static void AskUserForAccuracy()
+        {
+            while (true)
+            {
+                Console.Write("Do you want to calculate accuracy? [y/n]: ");
+                string? answer = Console.ReadLine();
+                if (answer?.ToLower() == "y")
+                {
+                    ExecuteAccuracy.SetExecute(true);
+                    break;
+                }
+                else if (answer?.ToLower() == "n")
+                {
+                    ExecuteAccuracy.SetExecute(false);
+                    break;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid input. Please enter 'y' or 'n'.");
+                    Console.ResetColor();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Asks the user for the file path and confirmation.
+        /// </summary>
+        /// <returns>The file path if confirmed; otherwise, null.</returns>
         private static string? GetFilePathFromUser()
         {
             while (true)
             {
-                Console.Write("Введите путь к файлу: ");
+                Console.Write("Enter the file path: ");
                 string? path = Console.ReadLine();
-                Console.Write("Подтвердите ввод [y/n]: ");
+                Console.Write("Confirm input [y/n]: ");
                 string? answer = Console.ReadLine();
 
-                if (answer == "y")
+                if (answer?.ToLower() == "y")
                 {
                     return path;
                 }
-
-                if (answer == "n")
+                else if (answer?.ToLower() == "n")
                 {
                     Console.Clear();
                     continue;
                 }
-
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректный ввод. Нажмите любую кнопку чтобы продолжить...");
-                Console.ResetColor();
-                Console.ReadKey();
-                Console.Clear();
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid input. Press any key to continue...");
+                    Console.ResetColor();
+                    Console.ReadKey();
+                    Console.Clear();
+                }
             }
         }
 
         /// <summary>
-        /// Спрашивает у пользователя, хочет ли он продолжить.
+        /// Asks the user if they want to continue processing files.
         /// </summary>
-        /// <returns>true, если пользователь хочет продолжить; иначе false.</returns>
+        /// <returns>True if the user wants to continue; otherwise, false.</returns>
         private static bool AskUserToContinue()
         {
             while (true)
             {
-                Console.WriteLine("Хотите продолжить? [y/n]: ");
+                Console.Write("Do you want to continue? [y/n]: ");
                 string? answer = Console.ReadLine();
 
-                if (answer == "y")
+                if (answer?.ToLower() == "y")
                 {
                     Console.Clear();
                     return true;
                 }
-
-                if (answer == "n")
+                else if (answer?.ToLower() == "n")
                 {
                     return false;
                 }
-
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Некорректный ввод. Нажмите любую кнопку чтобы продолжить...");
-                Console.ForegroundColor = ConsoleColor.Gray;
-                Console.ReadKey();
-                Console.Clear();
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid input. Press any key to continue...");
+                    Console.ResetColor();
+                    Console.ReadKey();
+                    Console.Clear();
+                }
             }
         }
 
         /// <summary>
-        /// Выполняет парсинг файла по указанному пути.
+        /// Executes file parsing for the given file path.
         /// </summary>
-        /// <param name="path">Путь к файлу. Пример: C:\WorkSpace\M3CITY2REV0Gerber.zip</param>
-        /// <exception cref="ArgumentNullException">Выбрасывается, если путь пустой или null.</exception>
+        /// <param name="path">The path to the file (e.g., C:\WorkSpace\Example.zip).</param>
         public static async Task ExecuteAsync(string? path)
         {
-            Stopwatch wather = new();
-            wather.Start();
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
 
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -125,9 +155,7 @@ namespace CADence.CUI
             }
 
             List<ILayer> layers;
-
-            var file = File.ReadAllBytes(path);
-            using (var stream = new MemoryStream(file))
+            using (var stream = new MemoryStream(File.ReadAllBytes(path)))
             {
                 var reader = ServiceCollectionExtensions.GetService<IReader>();
                 var data = reader.ParseArchive(stream, Path.GetFileName(path));
@@ -135,45 +163,40 @@ namespace CADence.CUI
                 layers = await fabric.GetLayers(data);
             }
 
-                Console.ForegroundColor = ConsoleColor.Green;
-                var pathToSVGWritingFront =
-                    Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)),
-                        "outputFront.svg");
-                Console.WriteLine($"Путь по которому будет сохранён файл: {pathToSVGWritingFront}");
-                var pathToSVGWritingBack =
-                    Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)),
-                        "outputBack.svg");
-                Console.WriteLine($"Путь по которому будет сохранён файл: {pathToSVGWritingBack}");
+            Console.ForegroundColor = ConsoleColor.Green;
+            var directory = Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path));
+            var outputPathBack = Path.Combine(directory, "outputBack.svg");
+            var outputPathFront = Path.Combine(directory, "outputFront.svg");
+            Console.WriteLine($"SVG file will be saved to: {outputPathBack}");
+            Console.WriteLine($"SVG file will be saved to: {outputPathFront}");
 
-                var svgWriter = ServiceCollectionExtensions.GetService<IWriter>();
+            var svgWriter = ServiceCollectionExtensions.GetService<IWriter>();
 
-                var task1 = Task.Run(async () =>
+            var accuracyTask = Task.Run(async () =>
+            {
+                if (ExecuteAccuracy.GetExecute())
                 {
-                    if (ExecuteAccuracy.GetExecute())
-                    {
-                        var coppers = layers.OfType<ICopper>().ToList();
-                        var box = CalculateAccuracyHelper.Execute(await coppers[0].GetAccuracy(),
-                            await coppers[1].GetAccuracy());
+                    var coppers = layers.OfType<ICopper>().ToList();
+                    var box = CalculateAccuracyHelper.Execute(await coppers[0].GetAccuracy(),
+                                                              await coppers[1].GetAccuracy());
+                    Console.WriteLine($"Minimum distance from hole to outline: {box.DistanceFromHoleToOutline}");
+                    Console.WriteLine($"Minimum distance between tracks: {box.DistanceBetweenTracks}");
+                }
+            });
 
-                        Console.WriteLine(
-                            $"Минимальное расстояние от дырки до ободка: {box.DistanceFromHoleToOutline}");
-                        Console.WriteLine($"Минимальное расстояние между полигонами: {box.DistanceBetweenTracks}");
-                    }
-                });
+            var svgTask = Task.Run(() =>
+            {
+                svgWriter.Execute(layers, 2, true, outputPathBack);
+                svgWriter.Execute(layers, 2, false, outputPathFront);
+            });
 
-                var task2 = Task.Run(() =>
-                {
-                    svgWriter.Execute(layers, 2, true, pathToSVGWritingBack);
-                    svgWriter.Execute(layers, 2, false, pathToSVGWritingFront);
-                });
+            Task.WaitAll(accuracyTask, svgTask);
 
-                Task.WaitAll(task1, task2);
+            stopwatch.Stop();
+            var memoryUsage = GC.GetTotalMemory(false);
+            Console.WriteLine($"Total execution time: {stopwatch.ElapsedMilliseconds} ms, Memory used: {memoryUsage} bytes");
 
-                wather.Stop();
-                var memoryUsage = GC.GetTotalMemory(false);
-                Console.WriteLine($"Общее время выполнения {wather.ElapsedMilliseconds} мс, Использовано памяти: {memoryUsage} байт");
-
-                Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ResetColor();
         }
     }
 }

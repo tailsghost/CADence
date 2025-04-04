@@ -9,9 +9,15 @@ using ExtensionClipper2.Core;
 
 namespace CADence.Core.Settings;
 
-public class GerberParser274xSettings : IGerberSettings
+/// <summary>
+/// Settings for parsing Gerber files in the 274x format.
+/// </summary>
+internal class GerberParser274xSettings : IGerberSettings
 {
-
+    /// <summary>
+    /// Initializes a new instance of the Gerber parser settings.
+    /// </summary>
+    /// <param name="unknown">An instance of an unknown aperture used to initialize the stack.</param>
     public GerberParser274xSettings(Unknown unknown)
     {
         ApertureStack = new();
@@ -41,6 +47,9 @@ public class GerberParser274xSettings : IGerberSettings
 
     public PathD RegionAccum { get; set; } = new(1000);
 
+    /// <summary>
+    /// Commits the current region accumulated geometry as a drawing path.
+    /// </summary>
     public void CommitRegion()
     {
 
@@ -57,6 +66,9 @@ public class GerberParser274xSettings : IGerberSettings
         RegionAccum.Clear();
     }
 
+    /// <summary>
+    /// Draws the current aperture flash at the current position with specified transformations.
+    /// </summary>
     public void DrawAperture()
     {
         if (Aperture == null)
@@ -67,6 +79,11 @@ public class GerberParser274xSettings : IGerberSettings
             Aperture, Polarity, Pos.X, Pos.Y, apMirrorX, apMirrorY, apRotate, apScale);
     }
 
+    /// <summary>
+    /// Interpolates between the current position and the destination point, optionally performing circular interpolation.
+    /// </summary>
+    /// <param name="dest">Destination point.</param>
+    /// <param name="center">Center offset for circular interpolation.</param>
     public void Interpolate(PointD dest, PointD center)
     {
         PathD coordinates = new();
@@ -96,7 +113,7 @@ public class GerberParser274xSettings : IGerberSettings
             }
             else
             {
-                for (int k = 0; k < 4; k++)
+                for (var k = 0; k < 4; k++)
                 {
                     var h2 = new CircularInterpolationHelper(
                         Pos, dest,

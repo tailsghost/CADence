@@ -2,8 +2,16 @@ using CADence.Abstractions.Commands;
 
 namespace CADence.Core.Commands.Gerber;
 
-public class MOCommand : ICommand<IGerberSettings>
+/// <summary>
+/// Command to set the unit mode (inches or millimeters) using the MO command.
+/// </summary>
+internal class MOCommand : ICommand<IGerberSettings>
 {
+    /// <summary>
+    /// Executes the MO command by configuring the unit mode.
+    /// </summary>
+    /// <param name="settings">The current Gerber settings.</param>
+    /// <returns>The updated Gerber settings.</returns>
     public IGerberSettings Execute(IGerberSettings settings)
     {
         switch (settings.cmd.Substring(2, 2))

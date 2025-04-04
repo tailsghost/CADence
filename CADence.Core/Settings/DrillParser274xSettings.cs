@@ -6,9 +6,15 @@ using ExtensionClipper2.Core;
 
 namespace CADence.Core.Settings;
 
-public class DrillParser274xSettings : IDrillSettings
+/// <summary>
+/// Settings for parsing Excellon (Drill) files in the 274x format.
+/// </summary>
+internal class DrillParser274xSettings : IDrillSettings
 {
-
+    /// <summary>
+    /// Initializes a new instance with the specified layer format.
+    /// </summary>
+    /// <param name="format">The layer format to be used for parsing.</param>
     public DrillParser274xSettings(ILayerFormat format)
     {
         this.format = format;
@@ -33,6 +39,13 @@ public class DrillParser274xSettings : IDrillSettings
     public ITool Tool { get; set; }
     public Dictionary<int, ITool> Tools { get; set; } = new(25);
 
+    /// <summary>
+    /// Adds an arc to the current path between the specified start and end points with the given radius.
+    /// </summary>
+    /// <param name="startPoint">The starting point of the arc.</param>
+    /// <param name="endPoint">The ending point of the arc.</param>
+    /// <param name="radius">The radius of the arc.</param>
+    /// <param name="ccw">True for counter-clockwise interpolation, false for clockwise.</param>
     public void AddArc(PointD startPoint, PointD endPoint, double radius, bool ccw)
     {
         var x0 = startPoint.X;
@@ -58,25 +71,22 @@ public class DrillParser274xSettings : IDrillSettings
         var epsilon = format.GetMaxDeviation();
         var f = (r > epsilon) ? (1.0 - epsilon / r) : 0.0;
         var th = Math.Acos(2.0 * f * f - 1.0) + 1e-3;
-        int nVertices = (int)Math.Ceiling(Math.Abs(a1 - a0) / th);
+        var nVertices = Math.Ceiling(Math.Abs(a1 - a0) / th);
 
-        double f1;
-        double f0;
-        double va;
-        double vx;
-        double vy;
-
-        for (int i = 1; i <= nVertices; i++)
+        for (var i = 1; i <= nVertices; i++)
         {
-            f1 = i / nVertices;
-            f0 = 1.0 - f1;
-            va = f0 * a0 + f1 * a1;
-            vx = xc + r * Math.Cos(va);
-            vy = yc + r * Math.Sin(va);
+            var f1 = i / nVertices;
+            var f0 = 1.0 - f1;
+            var va = f0 * a0 + f1 * a1;
+            var vx = xc + r * Math.Cos(va);
+            var vy = yc + r * Math.Sin(va);
             Points.Add(new PointD(vx, vy));
         }
     }
 
+    /// <summary>
+    /// Commits the current path based on the selected tool and whether it is plated or not.
+    /// </summary>
     public void CommitPath()
     {
         if (Tool == null)
@@ -103,7 +113,7 @@ public class DrillParser274xSettings : IDrillSettings
             else if (Points.Count > 2)
             {
                 var coords = new PathsD(Points.Count);
-                coords.AddRange(Points);
+                coords.Add(Points);
                 Pth.DrawPaths(coords.Render(Tool.diameter, false, offset));
             }
         }
@@ -115,14 +125,14 @@ public class DrillParser274xSettings : IDrillSettings
             }
             else if (Points.Count == 2)
             {
-                PathD line = new PathD { Points[0], Points[1] };
+                var line = new PathD { Points[0], Points[1] };
 
                 Npth.DrawPaths(new PathsD { line }.Render(Tool.diameter, false, offset));
             }
             else if (Points.Count > 2)
             {
                 var coords = new PathsD(Points.Count);
-                coords.AddRange(Points);
+                coords.Add(Points);
                 Npth.DrawPaths(coords.Render(Tool.diameter, false, offset));
             }
         }

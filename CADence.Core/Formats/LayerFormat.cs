@@ -5,12 +5,15 @@ using ExtensionClipper2;
 
 namespace CADence.Core.Formats;
 
-public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) : ILayerFormat
+/// <summary>
+/// Implements ILayerFormat for coordinate conversion and formatting.
+/// </summary>
+internal class LayerFormat : ILayerFormat
 {
     private const double INCHES_TO_MILLIMETERS = 25.4;
     private const double MILLIMETERS_TO_INCHES = 1.0;
-    private double MAX_DEVIATION = maxDeviation;
-    private double MITER_LIMIT = miterLimit;
+    private double MAX_DEVIATION;
+    private double MITER_LIMIT;
     private bool _isFormatConfigured = false;
     private int _integerDigits;
     private int _decimalDigits;
@@ -20,16 +23,27 @@ public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) :
 
     private double _conversionFactor;
 
+
+    public LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75)
+    {
+        MAX_DEVIATION = maxDeviation;
+        MITER_LIMIT = miterLimit;
+    }
+
+    /// <summary>
+    /// Configures the coordinate format.
+    /// </summary>
     public void ConfigureFormat(int integerDigits, int decimalDigits)
     {
         EnsureReconfigurable();
         _isFormatConfigured = true;
-
         _integerDigits = integerDigits;
         _decimalDigits = decimalDigits;
-
     }
 
+    /// <summary>
+    /// Configures the unit conversion to inches.
+    /// </summary>
     public void ConfigureInches()
     {
         EnsureReconfigurable();
@@ -37,6 +51,9 @@ public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) :
         _conversionFactor = INCHES_TO_MILLIMETERS;
     }
 
+    /// <summary>
+    /// Configures the unit conversion to millimeters.
+    /// </summary>
     public void ConfigureMillimeters()
     {
         EnsureReconfigurable();
@@ -44,12 +61,18 @@ public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) :
         _conversionFactor = MILLIMETERS_TO_INCHES;
     }
 
+    /// <summary>
+    /// Configures whether to add trailing zeros to the parsed coordinates.
+    /// </summary>
     public void ConfigureTrailingZeros(bool addTrailingZeros)
     {
         EnsureReconfigurable();
         _addTrailingZeros = addTrailingZeros;
     }
 
+    /// <summary>
+    /// Parses a fixed-point number from a string.
+    /// </summary>
     public double ParseFixed(string value)
     {
         EnsureConfigured();
@@ -59,10 +82,10 @@ public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) :
             return ParseFloat(value);
         }
 
-        bool isNegative = value[0] == '-' || value[0] == '+';
-        string digits = isNegative ? value.Substring(1) : value;
+        var isNegative = value[0] == '-' || value[0] == '+';
+        var digits = isNegative ? value.Substring(1) : value;
 
-        int expectedLength = _integerDigits + _decimalDigits;
+        var expectedLength = _integerDigits + _decimalDigits;
 
         if (_addTrailingZeros && digits.Length < expectedLength)
         {
@@ -77,13 +100,13 @@ public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) :
         string resultStr;
         if (digits.Length == expectedLength)
         {
-            string intPart = digits.Substring(0, _integerDigits);
-            string fracPart = digits.Substring(_integerDigits);
+            var intPart = digits.Substring(0, _integerDigits);
+            var fracPart = digits.Substring(_integerDigits);
             resultStr = intPart + "." + fracPart;
         }
         else
         {
-            int pos = digits.Length - _decimalDigits;
+            var pos = digits.Length - _decimalDigits;
             if (pos <= 0)
             {
                 resultStr = "0." + new string('0', -pos) + digits;
@@ -102,24 +125,34 @@ public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) :
             }
         }
 
-        double result = double.Parse(resultStr, CultureInfo.InvariantCulture);
+        var result = double.Parse(resultStr, CultureInfo.InvariantCulture);
 
         return AdjustValue(result);
     }
 
 
+    /// <summary>
+    /// Parses a floating-point number from a string.
+    /// </summary>
     public double ParseFloat(string value)
     {
         var result = double.Parse(value, CultureInfo.InvariantCulture);
         return ToFixed(result);
     }
 
+
+    /// <summary>
+    /// Converts a coordinate value using the conversion factor.
+    /// </summary>
     public double ToFixed(double value)
     {
         EnsureConfigured();
         return value * _conversionFactor;
     }
 
+    /// <summary>
+    /// Builds a new ClipperOffsetD object.
+    /// </summary>
     public ClipperOffsetD BuildClipperOffset()
         => new ClipperOffsetD(MITER_LIMIT, MAX_DEVIATION);
 
@@ -142,10 +175,8 @@ public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) :
     }
 
     /// <summary>
-    /// Применяет коэффициент преобразования к переданному значению.
+    /// Applies the conversion factor to the given value.
     /// </summary>
-    /// <param name="value">Число, к которому применяется коэффициент преобразования.</param>
-    /// <returns>Преобразованное значение, полученное умножением на коэффициент.</returns>
     private double AdjustValue(double value)
     {
         return value * _conversionFactor;

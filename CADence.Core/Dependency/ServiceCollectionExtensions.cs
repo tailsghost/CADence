@@ -16,17 +16,22 @@ using CADence.Core.Readers;
 using CADence.Core.Settings;
 using CADence.Core.SVG_JSON;
 using Microsoft.Extensions.DependencyInjection;
-using System.Dynamic;
 using CADence.Abstractions.Accuracy;
 using CADence.Core.Accuracy;
 using GCommand = CADence.Core.Commands.Drill.GCommand;
 
 namespace CADence.Core.Dependency;
 
+/// <summary>
+/// Contains extension methods for setting up dependency injection.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
     private static IServiceProvider _provider;
 
+    /// <summary>
+    /// Initializes the service provider by building the dependency injection container.
+    /// </summary>
     public static void Initial()
     {
         if (_provider == null)
@@ -38,13 +43,18 @@ public static class ServiceCollectionExtensions
         }
     }
 
+    /// <summary>
+    /// Retrieves a required service of type T.
+    /// </summary>
+    /// <typeparam name="T">The type of the service to retrieve.</typeparam>
+    /// <returns>An instance of type T.</returns>
     public static T GetService<T>()
     {
         try
         {
             if (_provider == null)
             {
-                Console.WriteLine("Сначала необходимо инициализировать сервисы!");
+                Console.WriteLine("Services must be initialized first!");
             }
 
             return _provider.GetRequiredService<T>();
@@ -56,6 +66,12 @@ public static class ServiceCollectionExtensions
         }
     }
 
+
+    /// <summary>
+    /// Configures the service collection with necessary dependencies.
+    /// </summary>
+    /// <param name="collection">The service collection to configure.</param>
+    /// <returns>The configured service collection.</returns>
     private static IServiceCollection InitialServiceCollection(this IServiceCollection collection)
     {
         // Aperture

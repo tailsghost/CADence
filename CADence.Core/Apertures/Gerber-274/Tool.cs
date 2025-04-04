@@ -5,7 +5,7 @@ namespace CADence.Core.Apertures.Gerber_274;
 /// <summary>
 /// Инструмент
 /// </summary>
-public class Tool : ITool
+internal class Tool : ITool
 {
     public double diameter { get; set; }
 

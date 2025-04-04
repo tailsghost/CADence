@@ -7,7 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Apertures.Gerber_274;
 
-public class ApertureMacro : IApertureMacro
+/// <summary>
+/// Implementation of the aperture macro interface.
+/// Processes and builds an aperture based on macro commands.
+/// </summary>
+internal class ApertureMacro : IApertureMacro
 {
     private IServiceProvider _provider;
     public ApertureMacro(IServiceProvider provider)
@@ -15,16 +19,27 @@ public class ApertureMacro : IApertureMacro
         _provider = provider;
     }
 
-    public List<Expression> Cmd { get; set; } = [];
+    /// <summary>
+    /// Collection of parsed expressions.
+    /// </summary>
+    public List<Expression> Cmd { get; set; } = new();
 
-    public List<List<Expression>> cmds { get; set; } = [];
+    /// <summary>
+    /// Collection of lists of parsed expressions.
+    /// </summary>
+    public List<List<Expression>> cmds { get; set; } = new();
 
+    /// <summary>
+    /// Appends a command to the macro. If the command starts with '$', splits it into two expressions.
+    /// Otherwise, splits by commas.
+    /// </summary>
+    /// <param name="cmd">The command string.</param>
     public void Append(string cmd)
     {
         if (cmd.StartsWith('$'))
         {
             var parts = cmd.Split('=');
-            cmds.Add([Expression.Parse(parts[0]), Expression.Parse(parts[1])]);
+            cmds.Add(new List<Expression> { Expression.Parse(parts[0]), Expression.Parse(parts[1])});
         }
         else
         {
@@ -38,6 +53,13 @@ public class ApertureMacro : IApertureMacro
         }
     }
 
+    /// <summary>
+    /// Builds the aperture based on the provided parameters and format.
+    /// Evaluates expressions from the command lists and calls specific handlers based on the code.
+    /// </summary>
+    /// <param name="csep">The list of string parameters.</param>
+    /// <param name="format">The aperture format.</param>
+    /// <returns>The constructed aperture.</returns>
     public ApertureBase Build(List<string> csep, ILayerFormat format)
     {
         var vars = new Dictionary<int, double>(20);
@@ -85,6 +107,9 @@ public class ApertureMacro : IApertureMacro
         return baseAperture;
     }
 
+    /// <summary>
+    /// Handles the circle command for aperture macro.
+    /// </summary>
     private static void HandleCircle(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
@@ -103,6 +128,9 @@ public class ApertureMacro : IApertureMacro
         aperture.DrawPaths(paths, exposure, 0, 0, false, false, rotation / 180 * Math.PI);
     }
 
+    /// <summary>
+    /// Handles the vector line command for aperture macro.
+    /// </summary>
     private static void HandleVectorLine(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
@@ -127,6 +155,9 @@ public class ApertureMacro : IApertureMacro
         aperture.DrawPaths(paths, exposure, 0, 0, false, false, rotation / 180 * Math.PI);
     }
 
+    /// <summary>
+    /// Handles the center line command for aperture macro.
+    /// </summary>
     private static void HandleCenterLine(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
         if (cmd.Count is < 6 or > 7)
@@ -153,6 +184,9 @@ public class ApertureMacro : IApertureMacro
         aperture.DrawPaths(paths, exposure, 0, 0, false, false, rotation / 180 * Math.PI);
     }
 
+    /// <summary>
+    /// Handles the outline command for aperture macro.
+    /// </summary>
     private static void HandleOutline(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
@@ -175,12 +209,16 @@ public class ApertureMacro : IApertureMacro
         {
             var x = fmt.ToFixed(cmd[3 + 2 * i].Eval(vars));
             var y = fmt.ToFixed(cmd[4 + 2 * i].Eval(vars));
-            paths.Add([new PointD(x, y)]);
+            paths.Add(new PathD { new PointD(x, y) });
         }
 
         aperture.DrawPaths(paths, exposure, 0, 0, false, false, rotation / 180 * Math.PI, 1.0, true);
     }
 
+    /// <summary>
+    /// Handles the polygon command for aperture macro.
+    /// Currently not implemented.
+    /// </summary>
     private static void HandlePolygon(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
@@ -204,18 +242,26 @@ public class ApertureMacro : IApertureMacro
             var angle = (i / nVertices) * 2.0 * Math.PI;
             var x = centerX + diameter * 0.5 * Math.Cos(angle);
             var y = centerY + diameter * 0.5 * Math.Sin(angle);
-            paths.Add([new PointD(fmt.ToFixed(x), fmt.ToFixed(y))]);
+            paths.Add(new PathD { new PointD(fmt.ToFixed(x), fmt.ToFixed(y)) });
         }
 
         aperture.DrawPaths(paths, exposure, 0, 0, false, false, rotation / 180 * Math.PI);
     }
 
+    /// <summary>
+    /// Handles the moire command for aperture macro.
+    /// Currently not implemented.
+    /// </summary>
     private static void HandleMoire(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 
 
     }
 
+    /// <summary>
+    /// Handles the thermal command for aperture macro.
+    /// Currently not implemented.
+    /// </summary>
     private static void HandleThermal(List<Expression> cmd, Dictionary<int, double> vars, ApertureBase aperture, ILayerFormat fmt)
     {
 

@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0;net8.0;net9.0;</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<Optimize>true</Optimize>
@@ -14,18 +14,34 @@
 		<DefineConstants>TRACE</DefineConstants>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<PackageId>CADence.Core</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>TailsGhost</Authors>
+		<Description>Library for working with Gerber files and PCB layers.</Description>
+		<PackageProjectUrl>https://github.com/tailsghost/CADence</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/tailsghost/CADence</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
   <ItemGroup>
     <Folder Include="Commands\" />
     <Folder Include="Layers\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Clipper2.Extension" Version="1.0.1" />
     <PackageReference Include="SharpCompress" Version="0.39.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ExtensionClipper2\ExtensionClipper2.csproj" />
     <ProjectReference Include="..\CADence.Abstractions\CADence.Abstractions.csproj" />
   </ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 </Project>

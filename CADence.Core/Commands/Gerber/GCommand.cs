@@ -3,8 +3,16 @@ using System.Windows.Input;
 
 namespace CADence.Core.Commands.Gerber;
 
-public class GCommand : ICommand<IGerberSettings>
+/// <summary>
+/// Command to process G-code commands in Gerber files.
+/// </summary>
+internal class GCommand : ICommand<IGerberSettings>
 {
+    /// <summary>
+    /// Executes the G command by setting interpolation and quadrant modes, and processing aperture selection.
+    /// </summary>
+    /// <param name="settings">The current Gerber settings.</param>
+    /// <returns>The updated Gerber settings.</returns>
     public IGerberSettings Execute(IGerberSettings settings)
     {
         if (settings.cmd.StartsWith("G04") || settings.cmd == "G54" || settings.cmd == "G55")

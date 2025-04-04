@@ -7,20 +7,17 @@ using ExtensionClipper2.Enums;
 namespace CADence.Abstractions.Apertures;
 
 /// <summary>
-/// Базовый класс для работы с апертурами, включающий операции рисования, трансформации и объединения геометрий.
+/// Base class for aperture operations, including drawing, transforming, and merging geometries.
 /// </summary>
 public class ApertureBase
 {
     protected PathsD _accumulatedGeometries = new(500);
 
-    /// <summary>
-    /// Диаметр отверстия, используемый при генерации отверстий в апертуре.
-    /// </summary>
     protected double HoleDiameter;
 
     /// <summary>
-    /// Конструктор базового класса апертуры.
-    /// Инициализирует параметры полярности и состояния упрощения.
+    /// Initializes a new instance of the <see cref="ApertureBase"/> class.
+    /// Sets the initial polarity and simplification state.
     /// </summary>
     public ApertureBase()
     {
@@ -30,6 +27,12 @@ public class ApertureBase
         SubtractiveGeometry = new(100);
     }
 
+    /// <summary>
+    /// Renders the aperture based on provided parameters.
+    /// </summary>
+    /// <param name="csep">A list of strings representing aperture parameters.</param>
+    /// <param name="format">The layer format to be used.</param>
+    /// <returns>The rendered <see cref="ApertureBase"/> instance.</returns>
     public virtual ApertureBase Render(List<string> csep, ILayerFormat format)
     {
         return this;
@@ -37,36 +40,32 @@ public class ApertureBase
 
 
     /// <summary>
-    /// Накопленная геометрия, хранящая временные изменения перед фиксацией.
-    /// </summary>
-    public PathsD? Accumulated { get; protected set; } = null;
-
-    /// <summary>
-    /// Текущая полярность (true - объединение, false - вычитание).
+    /// Gets or sets the current polarity (true for union, false for subtraction).
     /// </summary>
     private bool ACCUM_POLARITY { get; set; }
 
     /// <summary>
-    /// Основная (добавляемая) геометрия.
+    /// Gets or sets the primary (additive) geometry.
     /// </summary>
     protected PathsD AdditiveGeometry { get; set; }
 
+
     /// <summary>
-    /// Второстепенная (вычитаемая) геометрия.
+    /// Gets or sets the secondary (subtractive) geometry.
     /// </summary>
     protected PathsD SubtractiveGeometry { get; set; }
 
     /// <summary>
-    /// Флаг, указывающий, была ли геометрия упрощена.
+    /// Gets a value indicating whether the geometry has been simplified.
     /// </summary>
     protected bool Simplified { get; set; }
 
 
     /// <summary>
-    /// Абстрактный метод проверки апертуры 
+    /// Checks if the aperture is a simple circle.
     /// </summary>
-    /// <param name="diameter">Возвращает из апертуры диаметр.</param>
-    /// <returns>Возвращает bool значение условия полярности диаметра апертуры</returns>
+    /// <param name="diameter">Outputs the diameter of the aperture if it is a simple circle.</param>
+    /// <returns><c>true</c> if the aperture is a simple circle; otherwise, <c>false</c>.</returns>
     public virtual bool IsSimpleCircle(out double diameter)
     {
         diameter = 0;
@@ -74,11 +73,10 @@ public class ApertureBase
     }
 
     /// <summary>
-    /// Рисует (накапливает) геометрию – один или несколько контуров (в виде объекта Geometry).
-    /// В зависимости от полярности происходит дальнейшее объединение или вычитание.
+    /// Draws (accumulates) the specified geometry (one or more contours) based on the polarity.
     /// </summary>
-    /// <param name="geometry">Геометрия для рисования.</param>
-    /// <param name="polarity">Полярность: true для объединения, false для вычитания.</param>
+    /// <param name="geometry">The geometry to draw.</param>
+    /// <param name="polarity">If <c>true</c> the geometry is added (union); if <c>false</c>, it is subtracted.</param>
     public void DrawPaths(PathsD geometry, bool polarity = true)
     {
         if (geometry.Count == 0)
@@ -96,9 +94,10 @@ public class ApertureBase
     }
 
     /// <summary>
-    /// Фиксирует накопленные геометрии, объединяя их с итоговыми.
-    /// В зависимости от типа (AdditiveGeometry или SubtractiveGeometry) и полярности выполняется объединение или разность.
+    /// Commits the accumulated geometries by merging them into the final geometries.
+    /// Depending on the type (additive or subtractive) and polarity, it performs union or difference operations.
     /// </summary>
+    /// <param name="type">The commit type: additive or subtractive.</param>
     protected void CommitPaths(CommitPathType type = CommitPathType.Additive)
     {
         if (_accumulatedGeometries.Count == 0)
@@ -124,17 +123,17 @@ public class ApertureBase
     }
 
     /// <summary>
-    /// Рисует геометрию с применением аффинных преобразований: сдвиг, отражение, поворот, масштаб.
+    /// Draws the specified geometry with affine transformations (translation, reflection, rotation, scaling).
     /// </summary>
-    /// <param name="geometry">Геометрия для преобразования и рисования.</param>
-    /// <param name="polarity">Полярность для объединения или вычитания.</param>
-    /// <param name="translateX">Смещение по оси X.</param>
-    /// <param name="translateY">Смещение по оси Y.</param>
-    /// <param name="mirrorX">Отражение по оси X.</param>
-    /// <param name="mirrorY">Отражение по оси Y.</param>
-    /// <param name="rotate">Угол поворота в радианах.</param>
-    /// <param name="scale">Масштабирование.</param>
-    /// <param name="specialFillType">Если true – фиксирует накопления до и после преобразований.</param>
+    /// <param name="geometry">The geometry to transform and draw.</param>
+    /// <param name="polarity">If <c>true</c> the geometry is added; if <c>false</c> it is subtracted.</param>
+    /// <param name="translateX">Translation along the X axis.</param>
+    /// <param name="translateY">Translation along the Y axis.</param>
+    /// <param name="mirrorX">If set to <c>true</c>, mirrors the geometry along the X axis.</param>
+    /// <param name="mirrorY">If set to <c>true</c>, mirrors the geometry along the Y axis.</param>
+    /// <param name="rotate">Rotation angle in radians.</param>
+    /// <param name="scale">Scaling factor.</param>
+    /// <param name="specialFillType">If <c>true</c>, commits the accumulated geometries before and after transformation.</param>
     public void DrawPaths(
         PathsD geometry,
         bool polarity,
@@ -196,16 +195,16 @@ public class ApertureBase
     }
 
     /// <summary>
-    /// Рисует апертуру с заданными параметрами преобразования.
+    /// Draws an aperture with the specified transformation parameters.
     /// </summary>
-    /// <param name="aperture">Апертура для рисования.</param>
-    /// <param name="polarity">Полярность для объединения или вычитания.</param>
-    /// <param name="translateX">Смещение по оси X.</param>
-    /// <param name="translateY">Смещение по оси Y.</param>
-    /// <param name="mirrorX">Отражение по оси X.</param>
-    /// <param name="mirrorY">Отражение по оси Y.</param>
-    /// <param name="rotate">Угол поворота в радианах.</param>
-    /// <param name="scale">Масштабирование.</param>
+    /// <param name="aperture">The aperture to draw.</param>
+    /// <param name="polarity">If <c>true</c> the aperture is added; if <c>false</c>, it is subtracted.</param>
+    /// <param name="translateX">Translation along the X axis.</param>
+    /// <param name="translateY">Translation along the Y axis.</param>
+    /// <param name="mirrorX">If set to <c>true</c>, mirrors the aperture along the X axis.</param>
+    /// <param name="mirrorY">If set to <c>true</c>, mirrors the aperture along the Y axis.</param>
+    /// <param name="rotate">Rotation angle in radians.</param>
+    /// <param name="scale">Scaling factor.</param>
     public void DrawAperture(
         ApertureBase aperture,
         bool polarity = true,
@@ -221,9 +220,9 @@ public class ApertureBase
     }
 
     /// <summary>
-    /// Фиксирует все накопленные объекты и выполняет упрощение второстепенной геометрии.
+    /// Commits all accumulated geometries and simplifies the subtractive geometry.
     /// </summary>
-    /// <returns>Упрощённая второстепенная геометрия.</returns>
+    /// <returns>The simplified subtractive geometry.</returns>
     public PathsD? GetSubtractive()
     {
         CommitPaths(CommitPathType.Subtractive);
@@ -232,9 +231,9 @@ public class ApertureBase
     }
 
     /// <summary>
-    /// Фиксирует все накопленные объекты и выполняет упрощение основной геометрии.
+    /// Commits all accumulated geometries and simplifies the additive geometry.
     /// </summary>
-    /// <returns>Упрощённая основная геометрия.</returns>
+    /// <returns>The simplified additive geometry.</returns>
     public PathsD GetAdditive()
     {
         CommitPaths();
@@ -243,19 +242,21 @@ public class ApertureBase
     }
 
     /// <summary>
-    /// Упрощает геометрию
+    /// Simplifies the geometry.
     /// </summary>
-    /// <param name="type"></param>
+    /// <param name="type">Specifies whether to simplify additive or subtractive geometry.</param>
     private void Simplify(CommitPathType type = CommitPathType.Additive)
     {
         if (Simplified) return;
         if (type == CommitPathType.Additive)
         {
             AdditiveGeometry = Clipper.Union(AdditiveGeometry, FillRule.EvenOdd);
+            //AdditiveGeometry = Clipper.SimplifyPaths(AdditiveGeometry, 1e-10);
         }
         else 
         {
             SubtractiveGeometry = Clipper.Union(SubtractiveGeometry, FillRule.EvenOdd);
+            //SubtractiveGeometry = Clipper.SimplifyPaths(SubtractiveGeometry, 1e-10);
         }
 
         Simplified = true;
@@ -272,7 +273,7 @@ public class ApertureBase
 
         if (HoleDiameter <= 0.0)
         {
-            return [];
+            return new();
         }
 
         var holePath = new PathD

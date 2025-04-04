@@ -2,8 +2,16 @@ using CADence.Abstractions.Commands;
 
 namespace CADence.Core.Commands.Drill;
 
-public class MCommand : ICommand<IDrillSettings>
+/// <summary>
+/// Command for processing M-code commands in drill files.
+/// </summary>
+internal class MCommand : ICommand<IDrillSettings>
 {
+    /// <summary>
+    /// Executes the M command by switching routing modes or ending the file.
+    /// </summary>
+    /// <param name="settings">The current drill settings.</param>
+    /// <returns>The updated drill settings.</returns>
     public IDrillSettings Execute(IDrillSettings settings)
     {
         var dict = CommandUtils.ParseRegularCommand(settings.fcmd);

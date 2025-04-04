@@ -27,7 +27,17 @@ public interface IGerberSettings
     IApertureMacro AmBuilder { get; set; }
     double MinimumDiameter { get; set; }
     PathD RegionAccum { get; }
+
+    /// <summary>
+    /// Commits the current region.
+    /// </summary>
     void CommitRegion();
+    /// <summary>
+    /// Interpolates between points.
+    /// </summary>
     void Interpolate(PointD dest, PointD center);
+    /// <summary>
+    /// Draws the current aperture.
+    /// </summary>
     void DrawAperture();
 }

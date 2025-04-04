@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace CADence.Abstractions.Readers;
 
+/// <summary>
+/// Interface for reading archives (ZIP or RAR) and extracting file content.
+/// </summary>
 public interface IReader
 {
     /// <summary>
-    /// Парсит архив (ZIP или RAR) и извлекает файлы, возвращая их содержимое в виде словаря.
+    /// Parses an archive and extracts files, returning their content in a dictionary.
     /// </summary>
-    /// <param name="stream">Поток данных, содержащий архив.</param>
-    /// <param name="fileName">Имя архива, включая расширение.</param>
-    /// <returns>Интерфейс <see cref="IInputData"/>.</returns>
+    /// <param name="stream">The data stream containing the archive.</param>
+    /// <param name="fileName">The name of the archive including its extension.</param>
+    /// <returns>An instance of IInputData with the extracted content.</returns>
     IInputData ParseArchive(Stream stream, string fileName);
 }

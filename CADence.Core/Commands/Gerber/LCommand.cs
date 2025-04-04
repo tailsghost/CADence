@@ -2,8 +2,16 @@ using CADence.Abstractions.Commands;
 
 namespace CADence.Core.Commands.Gerber;
 
-public class LCommand : ICommand<IGerberSettings>
+/// <summary>
+/// Command to handle layer polarity and transformation commands.
+/// </summary>
+internal class LCommand : ICommand<IGerberSettings>
 {
+    /// <summary>
+    /// Executes the L command by processing polarity, mirror, rotation, and scale commands.
+    /// </summary>
+    /// <param name="settings">The current Gerber settings.</param>
+    /// <returns>The updated Gerber settings.</returns>
     public IGerberSettings Execute(IGerberSettings settings)
     {
         if(settings.cmd.StartsWith("LP"))

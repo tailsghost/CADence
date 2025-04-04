@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Fabrics;
 
-public class GerberFabricCommand : IFabricCommand<IGerberSettings>
+internal class GerberFabricCommand : IFabricCommand<IGerberSettings>
 {
     private readonly Dictionary<string, Func<ICommand<IGerberSettings>>> _commands = new();
 

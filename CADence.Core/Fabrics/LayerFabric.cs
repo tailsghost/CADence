@@ -4,14 +4,13 @@ using CADence.App.Abstractions.Layers;
 using CADence.App.Abstractions.Layers.Gerber_274x;
 using CADence.App.Abstractions.Parsers;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CADence.Core.Fabrics
 {
-    public class LayerFabricGerber274x : ILayerFabric
+    /// <summary>
+    /// Layer factory for Gerber 274x files. Creates various board layers based on the input data.
+    /// </summary>
+    internal class LayerFabricGerber274x : ILayerFabric
     {
         private readonly IServiceProvider _provider;
 
@@ -21,59 +20,62 @@ namespace CADence.Core.Fabrics
         }
 
         /// <summary>
-        /// Список форматов для <see cref="_outline"/>.
+        /// List of file formats supported for the outline.
         /// </summary>
         private readonly List<string> _boardSupported = new List<string> { "gko", "gm1", "gt3" };
 
         /// <summary>
-        /// Список дырок, нужны для формирования слоя Substrate.
+        /// List of drill files used for forming the substrate layer.
         /// </summary>
         private List<string> _drills = new();
 
         /// <summary>
-        /// Outline, нужен для формирования слоя Substrate.
+        /// Outline file content used for forming the substrate layer.
         /// </summary>
         private string _outline = string.Empty;
 
         /// <summary>
-        /// Список задач, в котором содержится информация о каждом слое.
+        /// List of tasks that process each layer.
         /// </summary>
-        private readonly List<Task<ILayer>> _tasks = new List<Task<ILayer>>();
+        private readonly List<Task<ILayer>> _tasks = new();
 
         /// <summary>
-        /// Список с готовыми слоями.
+        /// List of the final processed layers.
         /// </summary>
-        private List<ILayer> _result = new List<ILayer>();
+        private List<ILayer> _result = new();
 
+        /// <summary>
+        /// Gets layers based on the input data.
+        /// </summary>
+        /// <param name="inputData">Input data containing file contents.</param>
+        /// <returns>A list of processed layers.</returns>
         public async Task<List<ILayer>> GetLayers(IInputData inputData)
         {
             return await Init(inputData.Get());
         }
 
         /// <summary>
-        /// Инициализирует слои, проходя по данным и определяя каждый файл.
+        /// Initializes board layers by processing input files.
         /// </summary>
-        /// <param name="data">Словарь с данными, где ключ - имя файла, а значение - его содержимое.</param>
-        /// <returns>Список слоев, определенных из входных данных.</returns>
+        /// <param name="data">Dictionary of file names and their content.</param>
+        /// <returns>A list of board layers.</returns>
         private async Task<List<ILayer>> Init(IDictionary<string, string> data)
         {
             var dataCopy = new Dictionary<string, string>(data);
             var removeKeys = new List<string>();
 
-            var keys = data.Keys.ToList();
-            for (int i = 0; i < keys.Count; i++)
+            foreach (var key in data.Keys.ToList())
             {
-                string key = keys[i];
-                string value = data[key];
+                var value = data[key];
                 if (DetermineBoard(key, value) || DetermineDrill(value))
                 {
                     removeKeys.Add(key);
                 }
             }
 
-            for (var i = 0; i < removeKeys.Count; i++)
+            foreach (var key in removeKeys)
             {
-                dataCopy.Remove(removeKeys[i]);
+                dataCopy.Remove(key);
             }
 
             var substrate = new Substrate(
@@ -95,11 +97,10 @@ namespace CADence.Core.Fabrics
             var bottomMaskTask = CreateBottomMask(fileBottomMask, substrate);
 
             var topSilkTask = CreateTopSilk(fileTopSilk, topMaskTask);
-            var bottomSilkTask = CreateBottomSilk(fileBottomSilk, bottomCopperTask);
+            var bottomSilkTask = CreateBottomSilk(fileBottomSilk, bottomMaskTask);
 
             var topFinishTask = CreateTopFinish(topCopperTask, topMaskTask);
             var bottomFinishTask = CreateBottomFinish(bottomCopperTask, bottomMaskTask);
-
 
             var tasksArray = new Task<ILayer>[]
             {
@@ -113,27 +114,19 @@ namespace CADence.Core.Fabrics
                 bottomFinishTask
             };
 
-            for (var i = 0; i < tasksArray.Length; i++)
-            {
-                _tasks.Add(tasksArray[i]);
-            }
-
+            _tasks.AddRange(tasksArray);
             var result = await Task.WhenAll(_tasks);
 
-            for (var i = 0; i < result.Length; i++)
-            {
-                _result.Add(result[i]);
-            }
-
+            _result.AddRange(result);
             return _result;
         }
 
         /// <summary>
-        /// Определяет, является ли файл файлом с контуром платы.
+        /// Determines if the file is a board outline file.
         /// </summary>
-        /// <param name="fileName">Имя файла.</param>
-        /// <param name="file">Содержимое файла.</param>
-        /// <returns>True, если файл является файлом с контуром, иначе false.</returns>
+        /// <param name="fileName">Name of the file.</param>
+        /// <param name="file">Content of the file.</param>
+        /// <returns>True if the file is identified as the board outline; otherwise, false.</returns>
         private bool DetermineBoard(string fileName, string file)
         {
             if (!string.IsNullOrEmpty(_outline))
@@ -148,10 +141,10 @@ namespace CADence.Core.Fabrics
         }
 
         /// <summary>
-        /// Определяет, является ли файл файлом с отверстиями.
+        /// Determines if the file is a drill file.
         /// </summary>
-        /// <param name="file">Содержимое файла.</param>
-        /// <returns>True, если файл содержит отверстия, иначе false.</returns>
+        /// <param name="file">Content of the file.</param>
+        /// <returns>True if the file contains drill information; otherwise, false.</returns>
         private bool DetermineDrill(string file)
         {
             if (!file.Contains("M48"))
@@ -162,16 +155,16 @@ namespace CADence.Core.Fabrics
         }
 
         /// <summary>
-        /// Получает содержимое файла по заданному типу расширения.
+        /// Retrieves file content based on a specific file extension.
         /// </summary>
-        /// <param name="fileType">Тип расширения файла.</param>
-        /// <param name="data">Словарь с данными.</param>
-        /// <returns>Строка с содержимым файла.</returns>
+        /// <param name="fileType">The file extension type.</param>
+        /// <param name="data">Dictionary containing file data.</param>
+        /// <returns>The file content as a string.</returns>
         private string GetFileString(Layer274xFileExtensionsSupported fileType, Dictionary<string, string> data)
         {
             var extension = "." + fileType.ToString();
             var fileEntry = data.FirstOrDefault(kvp =>
-                Path.GetExtension(kvp.Key).Equals(extension, System.StringComparison.OrdinalIgnoreCase));
+                Path.GetExtension(kvp.Key).Equals(extension, StringComparison.OrdinalIgnoreCase));
 
             return fileEntry.Value;
         }
@@ -191,30 +184,27 @@ namespace CADence.Core.Fabrics
         private async Task<ILayer> CreateTopSilk(string file, Task<ILayer> topMaskTask)
         {
             var topMask = await topMaskTask;
-            return await Task.Run(() => _provider.GetRequiredService<TopSilk>().Init(new[] { topMask.GetLayer() }, file)); ;
+            return await Task.Run(() => _provider.GetRequiredService<TopSilk>().Init(new[] { topMask.GetLayer() }, file));
         }
 
         private async Task<ILayer> CreateTopFinish(Task<ILayer> topCopperTask, Task<ILayer> topMaskTask)
         {
             var topCopper = await topCopperTask;
             var topMask = await topMaskTask;
-            var topFinishTask = Task.Run(() => _provider.GetRequiredService<TopFinish>().Init(new[] { topMask.GetLayer(), topCopper.GetLayer() }));
-            return await topFinishTask;
+            return await Task.Run(() => _provider.GetRequiredService<TopFinish>().Init(new[] { topMask.GetLayer(), topCopper.GetLayer() }));
         }
 
         private async Task<ILayer> CreateBottomSilk(string file, Task<ILayer> bottomMaskTask)
         {
             var bottomMask = await bottomMaskTask;
-            var bottomSilkTask = Task.Run(() => _provider.GetRequiredService<BottomSilk>().Init(new[] { bottomMask.GetLayer() }, file));
-            return await bottomSilkTask;
+            return await Task.Run(() => _provider.GetRequiredService<BottomSilk>().Init(new[] { bottomMask.GetLayer() }, file));
         }
 
         private async Task<ILayer> CreateBottomFinish(Task<ILayer> bottomCopperTask, Task<ILayer> bottomMaskTask)
         {
             var bottomCopper = await bottomCopperTask;
             var bottomMask = await bottomMaskTask;
-            var bottomFinishTask = Task.Run(() => _provider.GetRequiredService<BottomFinish>().Init(new[] { bottomMask.GetLayer(), bottomCopper.GetLayer() }));
-            return await bottomFinishTask;
+            return await Task.Run(() => _provider.GetRequiredService<BottomFinish>().Init(new[] { bottomMask.GetLayer(), bottomCopper.GetLayer() }));
         }
     }
 }
