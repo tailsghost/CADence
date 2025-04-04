@@ -7,58 +7,57 @@ namespace CADence.Core.Accuracy;
 
 public class CalculateAccuracy : ICalculateAccuracy
 {
-    public void StartCalculate(PathsD copper)
+    public AccuracyBox StartCalculate(PathsD copper, double radius)
     {
-        GetDistance(copper);
+       return GetDistance(copper, radius);
     }
 
-    private void GetDistance(PathsD copper)
+    private AccuracyBox GetDistance(PathsD copper,double radius)
     {
         PolyTreeD tree = new();
         ClipperD cl = new();
         cl.AddSubject(copper);
         cl.Execute(ClipType.Xor, FillRule.NonZero, tree);
+        var box = new AccuracyBox();
+        box.DistanceFromHoleToOutline = MinDistanceFromHoleToOutline(tree, radius);
+        box.DistanceBetweenTracks = GetMinimumDistanceBetweenTwoPaths(tree);
 
-        var DistanceFromHoleToOutline = MinDistanceFromHoleToOutline(tree);
-        var DistanceBetweenTracks = GetMinimumDistanceBetweenTwoPaths(tree);
 
-        
         cl.Clear();
         tree.Clear();
+
+        return box;
     }
 
-    private double MinDistanceFromHoleToOutline(PolyPathD copperTracks)
+    private double MinDistanceFromHoleToOutline(PolyPathD copperTracks, double radius)
     {
         var minDist = double.MaxValue;
-        object lockObj = new object();
 
-        Parallel.For(0, copperTracks.Count, () => double.MaxValue, (i, state, localMin) =>
+        for (int i = 0; i < copperTracks.Count; i++)
+        {
+            var outerContour = copperTracks[i].Polygon;
+
+            for (int j = 0; j < copperTracks[i].Count; j++)
             {
-                var outherCountour = copperTracks[i].Polygon;
+                var childContour = copperTracks[i][j].Polygon;
 
-                for (var j = 0; j < copperTracks[i].Count; j++)
-                {
-                    var childContour = copperTracks[i][j].Polygon;
-                    if (!IsHole(childContour))
-                        continue;
+                var d = MinDistanceBetweenPathD(outerContour, childContour);
+                var err = CalculateDynamicError(childContour, radius /2 );
+                d += err;
 
-                    var d = MinDistanceBetweenPathD(outherCountour, childContour);
-                    if (d < minDist)
-                        localMin = d;
-                }
-
-                return localMin;
-            },
-            localMin =>
-            {
-                lock (lockObj)
-                {
-                    if(localMin < minDist)
-                        minDist = localMin;
-                }
-            });
+                if (d < minDist)
+                    minDist = d;
+            }
+        }
 
         return minDist;
+    }
+
+    private double CalculateDynamicError(PathD polygon, double idealRadius)
+    {
+        var N = polygon.Count;
+        var sagitta = idealRadius * (1 - Math.Cos(Math.PI / N));
+        return sagitta;
     }
 
     private double GetMinimumDistanceBetweenTwoPaths(PolyPathD copperTracks)
@@ -68,17 +67,17 @@ public class CalculateAccuracy : ICalculateAccuracy
 
 
         Parallel.For(0, copperTracks.Count, () => double.MaxValue, (i, state, localMin) =>
+        {
+            for (var j = i + 1; j < copperTracks.Count; j++)
             {
-                for (int j = i + 1; j < copperTracks.Count; j++)
-                {
-                    double distance = MinDistanceBetweenPathD(copperTracks[i].Polygon, copperTracks[j].Polygon);
+                var distance = MinDistanceBetweenPathD(copperTracks[i].Polygon, copperTracks[j].Polygon);
 
-                    if (distance < localMin)
-                        localMin = distance;
-                }
+                if (distance < localMin)
+                    localMin = distance;
+            }
 
-                return localMin;
-            },
+            return localMin;
+        },
             localMin =>
             {
                 lock (lockObj)
@@ -102,7 +101,7 @@ public class CalculateAccuracy : ICalculateAccuracy
         {
             var a1 = poly1[i];
             var a2 = poly1[(i + 1) % count1];
-            for (int j = 0; j < count2; j++)
+            for (var j = 0; j < count2; j++)
             {
                 var b1 = poly2[j];
                 var b2 = poly2[(j + 1) % count2];
@@ -128,7 +127,7 @@ public class CalculateAccuracy : ICalculateAccuracy
     {
         var l2 = DistanceSquared(v, w);
         if (l2 == 0.0) return Distance(p, v);
-        var t = ((p.X - v.X) * (w.X - v.X) + (p.Y - v.Y) * (w.Y- v.Y)) / l2;
+        var t = ((p.X - v.X) * (w.X - v.X) + (p.Y - v.Y) * (w.Y - v.Y)) / l2;
         t = Math.Max(0, Math.Min(1, t));
         var projection = new PointD(v.X + t * (w.X - v.X), v.Y + t * (w.Y - v.Y));
         return Distance(p, projection);
@@ -166,5 +165,3 @@ public class CalculateAccuracy : ICalculateAccuracy
         return area / 2.0;
     }
 }
-
-

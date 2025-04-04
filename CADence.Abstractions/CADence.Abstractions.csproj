@@ -15,8 +15,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Clipper2.Extension" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\ExtensionClipper2\ExtensionClipper2.csproj" />
 	</ItemGroup>
 
 </Project>

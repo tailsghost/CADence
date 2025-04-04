@@ -1,44 +1,24 @@
 ﻿using System.Diagnostics;
 using CADence.App.Abstractions.Layers;
-using NLog;
-using CADence.Core.SVG_JSON;
-using CADence.Core.Readers;
 using CADence.Core.Dependency;
 using CADence.Abstractions.Readers;
 using CADence.Abstractions.Layers;
 using CADence.Abstractions.Svg_Json;
 using ExtensionClipper2;
+using CADence.Abstractions.Global;
+using CADence.Abstractions.Helpers;
 
 namespace CADence.CUI
 {
     internal class Program
     {
-        // Получаем логгер для текущего класса
-        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         static async Task Main(string[] args)
         {
+            Console.ForegroundColor = ConsoleColor.Gray;
             ServiceCollectionExtensions.Initial();
-            // Настройка NLog: вывод в консоль и запись в файл
-            var config = new NLog.Config.LoggingConfiguration();
             Epsilon.SetEpsilonValue(1e-10);
-
-            // Консольный таргет
-            var logConsole = new NLog.Targets.ConsoleTarget("logConsole")
-            {
-                Layout = "${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=toString}"
-            };
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logConsole);
-
-            // Файловый таргет
-            var logFile = new NLog.Targets.FileTarget("logFile")
-            {
-                FileName = "log.txt",
-                Layout = "${longdate}|${level:uppercase=true}|${logger}|${message} ${exception:format=toString}"
-            };
-            config.AddRule(LogLevel.Trace, LogLevel.Fatal, logFile);
-
-            LogManager.Configuration = config;
+            ExecuteAccuracy.SetExecute(true);
 
             while (true)
             {
@@ -48,9 +28,17 @@ namespace CADence.CUI
                     continue;
                 }
 
-                _logger.Info("Парсинг файла...");
-                await ExecuteAsync(path);
-                _logger.Info("Парсинг успешно завершён.");
+                Console.WriteLine("Парсинг файла...");
+                try
+                {
+                    await ExecuteAsync(path);
+                    Console.WriteLine("Парсинг успешно завершён.");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    throw;
+                }
 
                 if (!AskUserToContinue())
                 {
@@ -83,7 +71,9 @@ namespace CADence.CUI
                     continue;
                 }
 
-                _logger.Warn("Некорректный ввод. Нажмите любую кнопку чтобы продолжить...");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректный ввод. Нажмите любую кнопку чтобы продолжить...");
+                Console.ResetColor();
                 Console.ReadKey();
                 Console.Clear();
             }
@@ -97,7 +87,7 @@ namespace CADence.CUI
         {
             while (true)
             {
-                Console.Write("Хотите продолжить? [y/n]: ");
+                Console.WriteLine("Хотите продолжить? [y/n]: ");
                 string? answer = Console.ReadLine();
 
                 if (answer == "y")
@@ -111,7 +101,9 @@ namespace CADence.CUI
                     return false;
                 }
 
-                _logger.Warn("Некорректный ввод. Нажмите любую кнопку чтобы продолжить...");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Некорректный ввод. Нажмите любую кнопку чтобы продолжить...");
+                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.ReadKey();
                 Console.Clear();
             }
@@ -143,18 +135,45 @@ namespace CADence.CUI
                 layers = await fabric.GetLayers(data);
             }
 
+                Console.ForegroundColor = ConsoleColor.Green;
+                var pathToSVGWritingFront =
+                    Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)),
+                        "outputFront.svg");
+                Console.WriteLine($"Путь по которому будет сохранён файл: {pathToSVGWritingFront}");
+                var pathToSVGWritingBack =
+                    Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)),
+                        "outputBack.svg");
+                Console.WriteLine($"Путь по которому будет сохранён файл: {pathToSVGWritingBack}");
 
-            var pathToSVGWritingFront = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "outputFront.svg");
-            _logger.Info($"Путь по которому будет сохранён файл: {pathToSVGWritingFront}");
-            var pathToSVGWritingBack = Path.Combine(Path.GetDirectoryName(path) ?? throw new ArgumentNullException(nameof(path)), "outputBack.svg");
-            _logger.Info($"Путь по которому будет сохранён файл: {pathToSVGWritingBack}");
+                var svgWriter = ServiceCollectionExtensions.GetService<IWriter>();
 
-            var svgWriter = ServiceCollectionExtensions.GetService<IWriter>();
-            svgWriter.Execute(layers, 2,true, pathToSVGWritingBack);
-            svgWriter.Execute(layers, 2,false, pathToSVGWritingFront);
-            wather.Stop();
-            _logger.Info($"Общее время выполнения {wather.ElapsedMilliseconds / 1000.0} секунд");
+                var task1 = Task.Run(async () =>
+                {
+                    if (ExecuteAccuracy.GetExecute())
+                    {
+                        var coppers = layers.OfType<ICopper>().ToList();
+                        var box = CalculateAccuracyHelper.Execute(await coppers[0].GetAccuracy(),
+                            await coppers[1].GetAccuracy());
 
+                        Console.WriteLine(
+                            $"Минимальное расстояние от дырки до ободка: {box.DistanceFromHoleToOutline}");
+                        Console.WriteLine($"Минимальное расстояние между полигонами: {box.DistanceBetweenTracks}");
+                    }
+                });
+
+                var task2 = Task.Run(() =>
+                {
+                    svgWriter.Execute(layers, 2, true, pathToSVGWritingBack);
+                    svgWriter.Execute(layers, 2, false, pathToSVGWritingFront);
+                });
+
+                Task.WaitAll(task1, task2);
+
+                wather.Stop();
+                var memoryUsage = GC.GetTotalMemory(false);
+                Console.WriteLine($"Общее время выполнения {wather.ElapsedMilliseconds} мс, Использовано памяти: {memoryUsage} байт");
+
+                Console.ForegroundColor = ConsoleColor.Gray;
         }
     }
 }

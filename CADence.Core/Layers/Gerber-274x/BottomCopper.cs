@@ -3,21 +3,28 @@ using CADence.Abstractions.Accuracy;
 using ExtensionClipper2;
 using ExtensionClipper2.Core;
 using ExtensionClipper2.Enums;
+using CADence.Abstractions.Global;
+using CADence.Abstractions.Layers;
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
 
-public class BottomCopper : ILayer
+public class BottomCopper : ILayer, ICopper
 {
     private PathsD Substrate;
     private PathsD _geometry;
     private ICalculateAccuracy _accuracy;
     private IGerberParser PARSER { get; set; }
+
+    private Task<AccuracyBox> _calculate = null;
+
     public double MinimumThickness { get; private set; } = 0;
     public double MinDistanceHole { get; private set; } = 0;
     public double MinDistanceBetween { get; private set; } = 0;
     public GerberLayer Layer { get; set; }
     public Color ColorLayer { get; set; }
     public double Thickness { get; }
+
+
 
     public BottomCopper(IGerberParser parser, ICalculateAccuracy accuracy)
     {
@@ -28,9 +35,6 @@ public class BottomCopper : ILayer
         _accuracy = accuracy;
     }
 
-    /// <summary>
-    /// (0) - Substrate layer
-    /// </summary>
     public ILayer Init(PathsD[] param, string file = null, List<string> files = null)
     {
         Substrate = param[0];
@@ -39,9 +43,6 @@ public class BottomCopper : ILayer
         return this;
     }
 
-    /// <summary>
-    /// Выполняет парсинг слоя
-    /// </summary>
     private void Render()
     {
         var copper = PARSER.GetResult(false);
@@ -50,12 +51,18 @@ public class BottomCopper : ILayer
 
         copper.Clear();
 
-        _accuracy.StartCalculate(_geometry);
+        if(ExecuteAccuracy.GetExecute())
+           _calculate = Task.Run(() => _accuracy.StartCalculate(_geometry, PARSER.GetMinimumThickness()));
     }
 
     public PathsD GetLayer()
     {
         return _geometry;
+    }
+
+    public async Task<AccuracyBox> GetAccuracy()
+    {
+        return await _calculate;
     }
 }
 

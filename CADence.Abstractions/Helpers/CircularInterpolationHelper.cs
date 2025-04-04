@@ -1,4 +1,6 @@
 ﻿using ExtensionClipper2.Core;
+using System.IO;
+using System.Runtime.Intrinsics.X86;
 
 namespace CADence.Abstractions.Helpers;
 
@@ -78,23 +80,25 @@ public class CircularInterpolationHelper
     /// <summary>
     /// Создает аппроксимирующий LineString для дуги, используя фиксированный шаг по углу.
     /// </summary>
-    public PathD ToCoordinates()
+    public PathD ToCoordinates(double epsilon)
     {
-        const double angleStep = 0.05;
-        var nVertices = (int)Math.Ceiling(Math.Abs(a2 - a1) / angleStep);
-        if (nVertices < 1)
-            nVertices = 1;
+        var r = (r1 + r2) * 0.5;
+        var x = (r > epsilon) ? (1.0 - epsilon / r) : 0.0;
+        var th = Math.Acos(2.0 * x * x - 1.0) + 1e-3;
+        var nVertices = Math.Ceiling(Math.Abs(a2 - a1) / th);
+        PathD p = new((int)nVertices);
 
-        var coords = new PathD(nVertices + 1);
-        for (var i = 0; i <= nVertices; i++)
+        for (int i = 0; i <= nVertices; i++)
         {
-            var fraction = (double)i / nVertices;
-            var currentAngle = a1 + fraction * (a2 - a1);
-            var currentRadius = r1 + fraction * (r2 - r1);
-            var x = centerX + currentRadius * Math.Cos(currentAngle);
-            var y = centerY + currentRadius * Math.Sin(currentAngle);
-            coords.Add(new PointD(x, y));
+            var f2 = i / nVertices;
+            var f1 = 1.0 - f2;
+            var vr = f1 * r1 + f2 * r2;
+            var va = f1 * a1 + f2 * a2;
+            var vx = centerX + vr * Math.Cos(va);
+            var vy = centerY + vr * Math.Sin(va);
+            p.Add(new PointD(vx, vy));
         }
-        return coords;
+
+        return p;
     }
 }

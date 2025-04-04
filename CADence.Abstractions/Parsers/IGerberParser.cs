@@ -6,4 +6,6 @@ public interface IGerberParser
 {
     IGerberParser Execute(string file);
     PathsD GetResult(bool BoardOutLine = false);
+
+    double GetMinimumThickness();
 }

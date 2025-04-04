@@ -5,7 +5,7 @@ using ExtensionClipper2;
 
 namespace CADence.Core.Formats;
 
-public class LayerFormat(double maxDeviation = 0.005, double miterLimit = 1) : ILayerFormat
+public class LayerFormat(double maxDeviation = 0.01, double miterLimit = 0.75) : ILayerFormat
 {
     private const double INCHES_TO_MILLIMETERS = 25.4;
     private const double MILLIMETERS_TO_INCHES = 1.0;
@@ -121,10 +121,8 @@ public class LayerFormat(double maxDeviation = 0.005, double miterLimit = 1) : I
     }
 
     public ClipperOffsetD BuildClipperOffset()
-        => new ClipperOffsetD(MITER_LIMIT, 0.01);
+        => new ClipperOffsetD(MITER_LIMIT, MAX_DEVIATION);
 
-    public ClipperOffsetD BuildClipperDrillOffset()
-        => new ClipperOffsetD(MITER_LIMIT, 0.00005);
 
     private void EnsureReconfigurable()
     {

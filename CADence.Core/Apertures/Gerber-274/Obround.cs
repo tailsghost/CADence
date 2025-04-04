@@ -25,7 +25,7 @@ public sealed class Obround : ApertureBase
         y -= r;
 
         var paths = new PathsD{ new PathD { new PointD(-x, -y), new PointD(x, y) }
-                }.Render(r * 2.0, false, format.BuildClipperDrillOffset());
+                }.Render(r * 2.0, false, format.BuildClipperOffset());
 
         if (HoleDiameter > 0)
         {

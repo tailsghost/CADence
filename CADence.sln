@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Core", "CADence.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CADence.Abstractions", "CADence.Abstractions\CADence.Abstractions.csproj", "{E442A570-213F-4843-A6A4-35C9046EE95E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionClipper2", "..\ExtensionClipper2\ExtensionClipper2.csproj", "{A52842A8-269B-8247-A69B-39BDB6BE5553}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E442A570-213F-4843-A6A4-35C9046EE95E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E442A570-213F-4843-A6A4-35C9046EE95E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E442A570-213F-4843-A6A4-35C9046EE95E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A52842A8-269B-8247-A69B-39BDB6BE5553}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A52842A8-269B-8247-A69B-39BDB6BE5553}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A52842A8-269B-8247-A69B-39BDB6BE5553}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A52842A8-269B-8247-A69B-39BDB6BE5553}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

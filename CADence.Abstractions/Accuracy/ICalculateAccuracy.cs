@@ -4,6 +4,6 @@ namespace CADence.Abstractions.Accuracy;
 
 public interface ICalculateAccuracy
 {
-    void StartCalculate(PathsD copper);
+    AccuracyBox StartCalculate(PathsD copper, double radius);
 }
 

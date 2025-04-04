@@ -20,11 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Clipper2.Extension" Version="1.0.0" />
     <PackageReference Include="SharpCompress" Version="0.39.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ExtensionClipper2\ExtensionClipper2.csproj" />
     <ProjectReference Include="..\CADence.Abstractions\CADence.Abstractions.csproj" />
   </ItemGroup>
 

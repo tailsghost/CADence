@@ -14,12 +14,16 @@ public static class CalculateBorderBox
             Top = double.MinValue
         };
 
-        foreach (var point in border[0])
+        for (var i = 0; i < border.Count; i++)
         {
-            bounds.Left = Math.Min(bounds.Left, point.X);
-            bounds.Right = Math.Max(bounds.Right, point.X);
-            bounds.Bottom = Math.Min(bounds.Bottom, point.Y);
-            bounds.Top = Math.Max(bounds.Top, point.Y);
+            for (var j = 0; j < border[i].Count; j++)
+            {
+                var point = border[i][j];
+                bounds.Left = Math.Min(bounds.Left, point.X);
+                bounds.Right = Math.Max(bounds.Right, point.X);
+                bounds.Bottom = Math.Min(bounds.Bottom, point.Y);
+                bounds.Top = Math.Max(bounds.Top, point.Y);
+            }
         }
 
         return bounds;

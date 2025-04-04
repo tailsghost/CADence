@@ -281,7 +281,7 @@ public class ApertureBase
         };
 
         var paths = new PathsD { holePath }.Render(HoleDiameter,
-            false, format.BuildClipperDrillOffset());
+            false, format.BuildClipperOffset());
 
         Clipper.ReversePaths(paths);
 

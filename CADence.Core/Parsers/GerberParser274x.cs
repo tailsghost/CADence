@@ -112,6 +112,8 @@ public class GerberParser274X : IGerberParser
         return _settings.ApertureStack.Peek().GetAdditive();
     }
 
+    public double GetMinimumThickness()
+        => _settings.MinimumDiameter;
     private int FindLargestAreaPath(PathsD paths)
     {
         var maxArea = double.MinValue;

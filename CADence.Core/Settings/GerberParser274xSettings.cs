@@ -1,6 +1,7 @@
 ﻿using CADence.Abstractions.Apertures;
 using CADence.Abstractions.Clippers;
 using CADence.Abstractions.Commands;
+using CADence.Abstractions.Helpers;
 using CADence.App.Abstractions.Formats;
 using CADence.Core.Apertures.Gerber_274;
 using ExtensionClipper2;
@@ -36,7 +37,7 @@ public class GerberParser274xSettings : IGerberSettings
     public ApertureBase Aperture { get; set; }
     public Dictionary<int, ApertureBase> Apertures { get; set; } = new();
     public IApertureMacro AmBuilder { get; set; }
-    public double MinimumDiameter { get; set; }
+    public double MinimumDiameter { get; set; } = double.MaxValue;
 
     public PathD RegionAccum { get; set; } = new(1000);
 
@@ -81,7 +82,46 @@ public class GerberParser274xSettings : IGerberSettings
         }
         else
         {
-            ///Добавить логику для другого режима.
+            CircularInterpolationHelper h = null;
+
+            var ccw =  imode == InterpolationMode.CIRCULAR_CCW;
+
+            if (qmode == QuadrantMode.UNDEFINED)
+            {
+                throw new InvalidOperationException("Arc command before quadrant mode set");
+            }
+            else if (qmode == QuadrantMode.MULTI)
+            {
+                h = new CircularInterpolationHelper(Pos, dest, new PointD(Pos.X + center.X, Pos.Y + center.Y), ccw, true);
+            }
+            else
+            {
+                for (int k = 0; k < 4; k++)
+                {
+                    var h2 = new CircularInterpolationHelper(
+                        Pos, dest,
+                        new PointD(
+                            Pos.X + ((k & 1) == 1 ? center.X : -center.X),
+                            Pos.Y + ((k & 2) == 2 ? center.Y : -center.Y)
+                        ),
+                        ccw, false
+                    );
+                    if (h2.IsSingleQuadrant())
+                    {
+                        if (h == null || h.Error() > h2.Error())
+                        {
+                            h = h2;
+                        }
+                    }
+                }
+            }
+
+            if (h == null)
+            {
+                throw new InvalidOperationException("Failed to make circular interpolation");
+            }
+
+            coordinates = h.ToCoordinates(format.GetMaxDeviation());
         }
 
 

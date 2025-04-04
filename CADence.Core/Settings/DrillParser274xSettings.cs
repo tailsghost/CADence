@@ -86,7 +86,7 @@ public class DrillParser274xSettings : IDrillSettings
 
         MinHole = Math.Min(MinHole, Tool.diameter);
 
-        var offset = format.BuildClipperDrillOffset();
+        var offset = format.BuildClipperOffset();
 
         if (Tool.plated)
         {

@@ -13,6 +13,5 @@ public interface ILayerFormat
     double ParseFloat(string value);
     double ToFixed(double value);
     ClipperOffsetD BuildClipperOffset();
-    ClipperOffsetD BuildClipperDrillOffset();
     double GetMaxDeviation();
 }

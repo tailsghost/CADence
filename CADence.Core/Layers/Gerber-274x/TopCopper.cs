@@ -1,4 +1,6 @@
 ﻿using CADence.Abstractions.Accuracy;
+using CADence.Abstractions.Global;
+using CADence.Abstractions.Layers;
 using CADence.App.Abstractions.Parsers;
 using ExtensionClipper2;
 using ExtensionClipper2.Core;
@@ -6,7 +8,7 @@ using ExtensionClipper2.Enums;
 
 
 namespace CADence.App.Abstractions.Layers.Gerber_274x;
-public class TopCopper : ILayer
+public class TopCopper : ILayer, ICopper
 {
     private PathsD Substrate;
     private PathsD _geometry;
@@ -19,6 +21,8 @@ public class TopCopper : ILayer
     public GerberLayer Layer { get; set; }
     public Color ColorLayer { get; set; }
     public double Thickness { get; }
+
+    private Task<AccuracyBox> _calculate = null;
 
     public TopCopper(IGerberParser parser, ICalculateAccuracy accuracy)
     {
@@ -51,12 +55,19 @@ public class TopCopper : ILayer
 
         copper.Clear();
 
-        _accuracy.StartCalculate(_geometry);
+        if (ExecuteAccuracy.GetExecute())
+            _calculate = Task.Run(() => _accuracy.StartCalculate(_geometry, PARSER.GetMinimumThickness()));
 
     }
-   public PathsD GetLayer()
+    public PathsD GetLayer()
     {
         return _geometry;
+    }
+
+
+    public async Task<AccuracyBox> GetAccuracy()
+    {
+        return await _calculate;
     }
 }
 

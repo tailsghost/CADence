@@ -23,7 +23,7 @@ public sealed class Circle : ApertureBase
         HoleDiameter = csep.Count > 2 ? format.ParseFloat(csep[2]) : 0;
 
         var paths = new PathsD{ new PathD { new PointD(0, 0) }
-            }.Render(Diameter, false, format.BuildClipperDrillOffset());
+            }.Render(Diameter, false, format.BuildClipperOffset());
 
         if (HoleDiameter > 0)
         {

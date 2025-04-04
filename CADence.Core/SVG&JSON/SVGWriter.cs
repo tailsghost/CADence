@@ -97,11 +97,11 @@ public class SVGWriter : IWriter
 
         var paths = layer.GetLayer();
 
-        for (int i = 0; i < paths.Count; i++)
+        for (var i = 0; i < paths.Count; i++)
         {
             Data.Append(string.Format(CultureInfo.InvariantCulture, "M {0} {1} ", paths[i].Last().X, paths[i].Last().Y));
 
-            for (int j = 0; j < paths[i].Count; j++)
+            for (var j = 0; j < paths[i].Count; j++)
             {
                 Data.Append(string.Format(CultureInfo.InvariantCulture, "L {0} {1} ", paths[i][j].X, paths[i][j].Y));
             }
