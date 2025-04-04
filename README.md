@@ -74,5 +74,11 @@ var box = CalculateAccuracyHelper.Execute(await coppers[0].GetAccuracy(),
 <img src="svgs/outputBack3.svg" width="600"/>
 <img src="svgs/outputFront3.svg" width="600"/>
 
+
+### Nuget
+📦 NuGet: [CADence.Core](https://www.nuget.org/packages/CADence.GerberParser.Core/)
+📦 NuGet: [CADence.Abstractions](https://www.nuget.org/packages/CADence.GerberParser.Abstractions/)
+
+
 ## Conclusion
 This library provides a powerful and flexible way to work with Gerber files and their layers. It combines parsing, rendering, and precision calculation into a simple and convenient API. Following the provided examples, you can quickly integrate it into your project and start working efficiently with PCB layers.

@@ -15,8 +15,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<PackageId>CADence.Core</PackageId>
-		<Version>1.0.0</Version>
+		<PackageId>CADence.GerberParser.Core</PackageId>
+		<Version>1.0.0-pre-release</Version>
 		<Authors>TailsGhost</Authors>
 		<Description>Library for working with Gerber files and PCB layers.</Description>
 		<PackageProjectUrl>https://github.com/tailsghost/CADence</PackageProjectUrl>
