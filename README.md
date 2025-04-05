@@ -60,6 +60,10 @@ var box = CalculateAccuracyHelper.Execute(await coppers[0].GetAccuracy(),
                                           await coppers[1].GetAccuracy());
 ```
 
+#### ⚠️ Attention!
+Due to the nature of the Clipper2 library and floating-point precision (double), the calculated distances may have a margin of error ranging from 0.5% to 10%.
+Keep this in mind when using the results in critical design constraints.
+
 ### PCB Layer Previews
 
 #### Board 1
@@ -84,8 +88,8 @@ var box = CalculateAccuracyHelper.Execute(await coppers[0].GetAccuracy(),
 
 
 ### Nuget
-📦 NuGet: [CADence.Core](https://www.nuget.org/packages/CADence.GerberParser.Core/)
-📦 NuGet: [CADence.Abstractions](https://www.nuget.org/packages/CADence.GerberParser.Abstractions/)
+#### 📦 NuGet: [CADence.Core](https://www.nuget.org/packages/CADence.GerberParser.Core/)
+#### 📦 NuGet: [CADence.Abstractions](https://www.nuget.org/packages/CADence.GerberParser.Abstractions/)
 
 
 ## Conclusion
