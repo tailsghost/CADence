@@ -1,4 +1,5 @@
-﻿using ExtensionClipper2.Core;
+﻿using ExtensionClipper2;
+using ExtensionClipper2.Core;
 
 namespace CADence.Abstractions.Helpers;
 
@@ -45,12 +46,12 @@ public class CircularInterpolationHelper
         {
             if (ccw)
             {
-                if (a2 <= a1)
+                if (Clipper.LessThanOrEqual(a2, a1))
                     a2 += 2.0 * Math.PI;
             }
             else
             {
-                if (a1 <= a2)
+                if (Clipper.LessThanOrEqual(a1, a2))
                     a1 += 2.0 * Math.PI;
             }
         }
@@ -58,12 +59,12 @@ public class CircularInterpolationHelper
         {
             if (ccw)
             {
-                if (a2 < a1)
+                if (Clipper.LessThan(a2, a1))
                     a2 += 2.0 * Math.PI;
             }
             else
             {
-                if (a1 < a2)
+                if (Clipper.LessThan(a1, a2))
                     a1 += 2.0 * Math.PI;
             }
         }
@@ -75,7 +76,7 @@ public class CircularInterpolationHelper
     /// <returns><c>true</c> if the arc is within a single quadrant; otherwise, <c>false</c>.</returns>
     public bool IsSingleQuadrant()
     {
-        return Math.Abs(a1 - a2) <= Math.PI / 2 + 1e-3;
+        return Math.Abs(a1 - a2) <= Math.PI / 2 + Epsilon.GetEpsilonValue();
     }
 
     /// <summary>
@@ -95,12 +96,12 @@ public class CircularInterpolationHelper
     public PathD ToCoordinates(double epsilon)
     {
         var r = (r1 + r2) * 0.5;
-        var x = (r > epsilon) ? (1.0 - epsilon / r) : 0.0;
-        var th = Math.Acos(2.0 * x * x - 1.0) + 1e-3;
+        var x = (Clipper.GreaterThan(r, epsilon)) ? (1.0 - epsilon / r) : 0.0;
+        var th = Math.Acos(2.0 * x * x - 1.0) + Epsilon.GetEpsilonValue();
         var nVertices = Math.Ceiling(Math.Abs(a2 - a1) / th);
         PathD p = new((int)nVertices);
 
-        for (int i = 0; i <= nVertices; i++)
+        for (var i = 0; i <= nVertices; i++)
         {
             var f2 = i / nVertices;
             var f1 = 1.0 - f2;

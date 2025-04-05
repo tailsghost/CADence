@@ -72,7 +72,7 @@ internal class ApertureMacro : IApertureMacro
 
         for (var j = 0; j < cmds.Count; j++)
         {
-            var code = (int)Math.Round(cmds[j][0].Eval(vars));
+            var code = (int)cmds[j][0].Eval(vars);
 
             switch (code)
             {
@@ -201,7 +201,7 @@ internal class ApertureMacro : IApertureMacro
         if (nVertices < 3 || cmd.Count < rotationIndex || cmd.Count > rotationIndex + 1)
             throw new ArgumentException("Invalid outline command in aperture macro");
 
-        var nVerticesInt = (int)Math.Round(nVertices);
+        var nVerticesInt = (int)nVertices;
 
         var paths = new PathsD(nVerticesInt);
 
@@ -233,7 +233,7 @@ internal class ApertureMacro : IApertureMacro
         var rotation = cmd.Count > 6 ? cmd[6].Eval(vars) : 0;
 
 
-        var nVerticesInt = (int)Math.Round(nVertices);
+        var nVerticesInt = (int)nVertices;
 
         var paths = new PathsD(nVerticesInt);
 

@@ -15,10 +15,6 @@
 		<DefineConstants>TRACE</DefineConstants>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="Clipper2.Extension" Version="1.0.1" />
-	</ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\CADence.Abstractions\CADence.Abstractions.csproj" />
     <ProjectReference Include="..\CADence.Core\CADence.Core.csproj" />

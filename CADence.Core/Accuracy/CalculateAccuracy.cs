@@ -18,7 +18,7 @@ public class CalculateAccuracy : ICalculateAccuracy
     /// <returns>An AccuracyBox containing the results.</returns>
     public AccuracyBox StartCalculate(PathsD copper, double radius)
     {
-       return GetDistance(copper, radius);
+        return GetDistance(copper, radius);
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public class CalculateAccuracy : ICalculateAccuracy
     /// <param name="copper">The copper paths.</param>
     /// <param name="radius">The radius for dynamic error calculation.</param>
     /// <returns>An AccuracyBox with calculated distances.</returns>
-    private AccuracyBox GetDistance(PathsD copper,double radius)
+    private AccuracyBox GetDistance(PathsD copper, double radius)
     {
         PolyTreeD tree = new();
         ClipperD cl = new();
@@ -50,26 +50,39 @@ public class CalculateAccuracy : ICalculateAccuracy
     /// <param name="copperTracks">The collection of copper track paths.</param>
     /// <param name="radius">The radius used for error adjustment.</param>
     /// <returns>The minimum distance.</returns>
-    private double MinDistanceFromHoleToOutline(PolyPathD copperTracks, double radius)
+
+    private double MinDistanceFromHoleToOutline(PolyPathD copperTracks, double diameter)
     {
         var minDist = double.MaxValue;
+        var lockObj = new object();
+        var radius = diameter / 2;
 
-        for (var i = 0; i < copperTracks.Count; i++)
+        Parallel.For(0, copperTracks.Count, () => double.MaxValue, (i, state, localMin) =>
         {
-            var outerContour = copperTracks[i].Polygon;
+            var outherCounter = copperTracks[i].Polygon;
 
             for (var j = 0; j < copperTracks[i].Count; j++)
             {
-                var childContour = copperTracks[i][j].Polygon;
+                var childCountour = copperTracks[i][j].Polygon;
 
-                var d = MinDistanceBetweenPathD(outerContour, childContour);
-                var err = CalculateDynamicError(childContour, radius /2 );
+                var d = MinDistanceBetweenPathD(outherCounter, childCountour);
+                var err = CalculateDynamicError(childCountour, radius);
+
                 d += err;
 
-                if (d < minDist)
-                    minDist = d;
+                if (d < localMin && d != 0)
+                    localMin = d;
             }
-        }
+
+            return localMin;
+        }, localMin =>
+        {
+            lock (lockObj)
+            {
+                if (localMin < minDist)
+                    minDist = localMin;
+            }
+        });
 
         return minDist;
     }
@@ -104,7 +117,7 @@ public class CalculateAccuracy : ICalculateAccuracy
             {
                 var distance = MinDistanceBetweenPathD(copperTracks[i].Polygon, copperTracks[j].Polygon);
 
-                if (distance < localMin)
+                if (distance < localMin && distance != 0)
                     localMin = distance;
             }
 

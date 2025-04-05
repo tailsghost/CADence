@@ -63,16 +63,24 @@ var box = CalculateAccuracyHelper.Execute(await coppers[0].GetAccuracy(),
 ### PCB Layer Previews
 
 #### Board 1
-<img src="svgs/outputBack1.svg" width="600"/>
-<img src="svgs/outputFront1.svg" width="600"/>
+<img src="svgs/outputBack1.svg" width="650"/>
+<img src="svgs/outputFront1.svg" width="650"/>
 
 #### Board 2
-<img src="svgs/outputBack2.svg" width="600"/>
-<img src="svgs/outputFront2.svg" width="600"/>
+<img src="svgs/outputBack2.svg" width="650"/>
+<img src="svgs/outputFront2.svg" width="650"/>
 
 #### Board 3
-<img src="svgs/outputBack3.svg" width="600"/>
-<img src="svgs/outputFront3.svg" width="600"/>
+<img src="svgs/outputBack3.svg" width="650"/>
+<img src="svgs/outputFront3.svg" width="650"/>
+
+#### Board 4
+<img src="svgs/outputBack4.svg" width="650"/>
+<img src="svgs/outputFront4.svg" width="650"/>
+
+#### Board 5
+<img src="svgs/outputBack5.svg" width="650"/>
+<img src="svgs/outputFront5.svg" width="650"/>
 
 
 ### Nuget
