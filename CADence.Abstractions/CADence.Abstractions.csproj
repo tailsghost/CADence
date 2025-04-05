@@ -16,7 +16,7 @@
 
 	<PropertyGroup>
 		<PackageId>CADence.GerberParser.Abstractions</PackageId>
-		<Version>1.0.0-pre-release</Version>
+		<Version>1.0.1-pre-release</Version>
 		<Authors>TailsGhost</Authors>
 		<Description>Additional library for the project CADence.Core.</Description>
 		<PackageProjectUrl>https://github.com/tailsghost/CADence</PackageProjectUrl>
