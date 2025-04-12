@@ -1,8 +1,10 @@
-﻿using CADence.Abstractions.Layers;
+﻿using System.Reflection.Metadata.Ecma335;
+using CADence.Abstractions.Layers;
 using CADence.Abstractions.Readers;
 using CADence.App.Abstractions.Layers;
 using CADence.App.Abstractions.Layers.Gerber_274x;
 using CADence.App.Abstractions.Parsers;
+using ExtensionClipper2.Core;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CADence.Core.Fabrics
@@ -78,10 +80,7 @@ namespace CADence.Core.Fabrics
                 dataCopy.Remove(key);
             }
 
-            var substrate = new Substrate(
-                _provider.GetRequiredService<IDrillParser>().Execute(_drills),
-                _provider.GetRequiredService<IGerberParser>().Execute(_outline)
-            );
+            var substrate = CreateSubstrate(_drills, _outline);
             _result.Add(substrate);
 
             var fileTopCopper = GetFileString(Layer274xFileExtensionsSupported.gtl, dataCopy);
@@ -169,42 +168,83 @@ namespace CADence.Core.Fabrics
             return fileEntry.Value;
         }
 
+        private Substrate CreateSubstrate(List<string> drills, string outline)
+        {
+            var parserDrill = _provider.GetRequiredService<IDrillParser>().Execute(_drills);
+            var parser = _provider.GetRequiredService<IGerberParser>().Execute(_outline);
+
+            return new Substrate(parserDrill, parser);
+        }
+            
+
         private Task<ILayer> CreateTopCopper(string file, Substrate substrate) =>
-            Task.Run(() => _provider.GetRequiredService<TopCopper>().Init(new[] { substrate.GetLayer() }, file));
+            Task.Run(() =>
+            {
+                var layer = _provider.GetRequiredService<Func<Substrate, string, TopCopper>>();
+                return (ILayer)layer(substrate, file);
+            });
 
         private Task<ILayer> CreateBottomCopper(string file, Substrate substrate) =>
-            Task.Run(() => _provider.GetRequiredService<BottomCopper>().Init(new[] { substrate.GetLayer() }, file));
+            Task.Run(() =>
+            {
+                var layer = _provider.GetRequiredService<Func<Substrate, string, BottomCopper>>();
+                return (ILayer)layer(substrate, file);
+            });
 
         private Task<ILayer> CreateTopMask(string file, Substrate substrate) =>
-            Task.Run(() => _provider.GetRequiredService<TopMask>().Init(new[] { substrate.GetLayer() }, file));
+            Task.Run(() =>
+            {
+                var layer = _provider.GetRequiredService<Func<Substrate, string, TopMask>>();
+                return (ILayer)layer(substrate, file);
+            });
 
         private Task<ILayer> CreateBottomMask(string file, Substrate substrate) =>
-            Task.Run(() => _provider.GetRequiredService<BottomMask>().Init(new[] { substrate.GetLayer() }, file));
+            Task.Run(() =>
+            {
+                var layer = _provider.GetRequiredService<Func<Substrate, string, BottomMask>>();
+                return (ILayer)layer(substrate, file);
+            });
 
         private async Task<ILayer> CreateTopSilk(string file, Task<ILayer> topMaskTask)
         {
             var topMask = await topMaskTask;
-            return await Task.Run(() => _provider.GetRequiredService<TopSilk>().Init(new[] { topMask.GetLayer() }, file));
+            return await Task.Run(() =>
+            {
+                var layer = _provider.GetRequiredService<Func<TopMask, string, TopSilk>>();
+                return (ILayer)layer((TopMask)topMask, file);
+            });
         }
 
         private async Task<ILayer> CreateTopFinish(Task<ILayer> topCopperTask, Task<ILayer> topMaskTask)
         {
             var topCopper = await topCopperTask;
             var topMask = await topMaskTask;
-            return await Task.Run(() => _provider.GetRequiredService<TopFinish>().Init(new[] { topMask.GetLayer(), topCopper.GetLayer() }));
+            return await Task.Run(() =>
+            {
+                var layer = _provider.GetRequiredService<Func<TopMask, TopCopper, TopFinish>>();
+                return (ILayer)layer((TopMask)topMask, (TopCopper)topCopper);
+            });
         }
 
         private async Task<ILayer> CreateBottomSilk(string file, Task<ILayer> bottomMaskTask)
         {
             var bottomMask = await bottomMaskTask;
-            return await Task.Run(() => _provider.GetRequiredService<BottomSilk>().Init(new[] { bottomMask.GetLayer() }, file));
+            return await Task.Run(() =>
+            {
+                var layer = _provider.GetRequiredService<Func<BottomMask, string, BottomSilk>>();
+                return (ILayer)layer((BottomMask)bottomMask, file);
+            });
         }
 
         private async Task<ILayer> CreateBottomFinish(Task<ILayer> bottomCopperTask, Task<ILayer> bottomMaskTask)
         {
             var bottomCopper = await bottomCopperTask;
             var bottomMask = await bottomMaskTask;
-            return await Task.Run(() => _provider.GetRequiredService<BottomFinish>().Init(new[] { bottomMask.GetLayer(), bottomCopper.GetLayer() }));
+            return await Task.Run(() =>
+            {
+                var layer = _provider.GetRequiredService<Func<BottomMask, BottomCopper, BottomFinish>>();
+                return (ILayer)layer((BottomMask)bottomMask, (BottomCopper)bottomCopper);
+            });
         }
     }
 }

@@ -23,23 +23,15 @@ internal class BottomSilk : ILayer
     /// <summary>
     /// Initializes the BottomSilk layer.
     /// </summary>
-    public BottomSilk(IGerberParser parser)
+    public BottomSilk(IGerberParser parser, BottomMask mask, string file)
     {
         Layer = GerberLayer.BottomSilk;
         ColorLayer = ColorConstants.SILK_WHITE;
         _parser = parser;
         Thickness = 0.01;
-    }
-
-    /// <summary>
-    /// Initializes the layer with mask data and parses the file.
-    /// </summary>
-    public ILayer Init(PathsD[] param, string file, List<string> files = null)
-    {
-        _mask = param[0];
+        _mask = mask.GetLayer();
         _parser.Execute(file);
         Render();
-        return this;
     }
 
     /// <summary>

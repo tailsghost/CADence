@@ -20,11 +20,14 @@ internal class TopFinish : ILayer
     /// <summary>
     /// Initializes the TopFinish layer.
     /// </summary>
-    public TopFinish()
+    public TopFinish(TopMask mask, TopCopper copper)
     {
         Layer = GerberLayer.TopFinish;
         ColorLayer = ColorConstants.FINISH_TIN;
         Thickness = 0.01;
+        _mask = mask.GetLayer();
+        _copper = copper.GetLayer();
+        Render();
     }
 
     /// <summary>
@@ -41,16 +44,5 @@ internal class TopFinish : ILayer
     private void Render()
     {
         _geometry = Clipper.Difference(_copper, _mask, FillRule.EvenOdd);
-    }
-
-    /// <summary>
-    /// Initializes the layer with mask and copper data.
-    /// </summary>
-    public ILayer Init(PathsD[] param, string file = null, List<string> files = null)
-    {
-        _mask = param[0];
-        _copper = param[1];
-        Render();
-        return this;
     }
 }

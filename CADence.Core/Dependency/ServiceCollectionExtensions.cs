@@ -133,15 +133,71 @@ public static class ServiceCollectionExtensions
         collection.AddTransient<ILayerFormat, LayerFormat>();
 
         //Layers
-        collection.AddTransient<BottomCopper>();
-        collection.AddTransient<BottomFinish>();
-        collection.AddTransient<BottomMask>();
-        collection.AddTransient<BottomSilk>();
+
+
         collection.AddTransient<Substrate>();
-        collection.AddTransient<TopCopper>();
-        collection.AddTransient<TopFinish>();
-        collection.AddTransient<TopMask>();
-        collection.AddTransient<TopSilk>();
+
+        collection.AddTransient<Func<Substrate, string, BottomCopper>>(sp =>
+
+            (substrate, file) =>
+            {
+                var parser = sp.GetRequiredService<IGerberParser>();
+                var accuracy = sp.GetRequiredService<ICalculateAccuracy>();
+
+                return new BottomCopper(parser, accuracy, substrate, file);
+            }
+        );
+
+        collection.AddTransient<Func<BottomMask, BottomCopper, BottomFinish>>(sp
+            => (mask, copper) => new BottomFinish(mask, copper));
+
+        collection.AddTransient<Func<Substrate, string, BottomMask>>(sp =>
+        
+            (substrate, file) =>
+            {
+                var parser = _provider.GetRequiredService<IGerberParser>();
+                return new BottomMask(parser, substrate, file);
+            }
+        );
+
+        collection.AddTransient<Func<BottomMask, string, BottomSilk>>(sp =>
+            (mask, file) =>
+            {
+                var parser = _provider.GetRequiredService<IGerberParser>();
+                return new BottomSilk(parser, mask, file);
+            }
+        );
+
+        collection.AddTransient<Func<Substrate, string, TopCopper>>(sp =>
+
+            (substrate, file) =>
+            {
+                var parser = sp.GetRequiredService<IGerberParser>();
+                var accuracy = sp.GetRequiredService<ICalculateAccuracy>();
+
+                return new TopCopper(parser, accuracy, substrate, file);
+            }
+        );
+
+        collection.AddTransient<Func<TopMask, TopCopper, TopFinish>>(sp
+            => (mask, copper) => new TopFinish(mask, copper));
+
+        collection.AddTransient<Func<Substrate, string, TopMask>>(sp =>
+
+            (substrate, file) =>
+            {
+                var parser = _provider.GetRequiredService<IGerberParser>();
+                return new TopMask(parser, substrate, file);
+            }
+        );
+
+        collection.AddTransient<Func<TopMask, string, TopSilk>>(sp =>
+            (mask, file) =>
+            {
+                var parser = _provider.GetRequiredService<IGerberParser>();
+                return new TopSilk(parser, mask, file);
+            }
+        );
 
 
         return collection;

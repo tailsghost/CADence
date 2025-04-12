@@ -20,11 +20,14 @@ internal class BottomFinish : ILayer
     /// <summary>
     /// Initializes the BottomFinish layer.
     /// </summary>
-    public BottomFinish()
+    public BottomFinish(BottomMask mask, BottomCopper copper)
     {
         Layer = GerberLayer.BottomFinish;
         ColorLayer = ColorConstants.FINISH_TIN;
         Thickness = 0.01;
+        _mask = mask.GetLayer();
+        _copper = copper.GetLayer();
+        Render();
     }
 
     /// <summary>
@@ -41,16 +44,5 @@ internal class BottomFinish : ILayer
     private void Render()
     {
         _geometry = Clipper.Difference(_copper, _mask, FillRule.EvenOdd);
-    }
-
-    /// <summary>
-    /// Initializes the layer with copper and mask data.
-    /// </summary>
-    public ILayer Init(PathsD[] param, string file = null, List<string> files = null)
-    {
-        _mask = param[0];
-        _copper = param[1];
-        Render();
-        return this;
     }
 }

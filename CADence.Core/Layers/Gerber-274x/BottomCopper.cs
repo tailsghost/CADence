@@ -27,24 +27,16 @@ internal class BottomCopper : ILayer, ICopper
     /// <summary>
     /// Initializes a new instance of the BottomCopper layer.
     /// </summary>
-    public BottomCopper(IGerberParser parser, ICalculateAccuracy accuracy)
+    public BottomCopper(IGerberParser parser, ICalculateAccuracy accuracy, Substrate substrate, string file)
     {
         Layer = GerberLayer.BottomCopper;
         PARSER = parser;
         ColorLayer = ColorConstants.COPPER;
         Thickness = 0.0348;
         _accuracy = accuracy;
-    }
-
-    /// <summary>
-    /// Initializes the layer with substrate data and parses the file.
-    /// </summary>
-    public ILayer Init(PathsD[] param, string file = null, List<string> files = null)
-    {
-        Substrate = param[0];
+        Substrate = substrate.GetLayer();
         PARSER.Execute(file);
         Render();
-        return this;
     }
 
     /// <summary>

@@ -8,5 +8,4 @@ public interface ILayer
     double Thickness { get; }
     Color ColorLayer { get; set; }
     PathsD GetLayer();
-    ILayer Init(PathsD[] param, string file = null, List<string> filesDrill = null);
 }

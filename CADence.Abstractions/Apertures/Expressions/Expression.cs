@@ -63,7 +63,7 @@ public abstract class Expression
             if (expr[i + 1].GetToken() == '\0')
             {
                 var oper = expr[i].GetToken();
-                if (oper == '-' || oper == '+')
+                if (oper is '-' or '+')
                 {
                     expr[i] = new UnaryExpression(oper, expr[i + 1]);
                     expr.RemoveAt(i + 1);
@@ -74,7 +74,7 @@ public abstract class Expression
         for (var i = 1; i < expr.Count - 1; i++)
         {
             var oper = expr[i].GetToken();
-            if (oper == 'x' || oper == '/' || oper == '+' || oper == '-')
+            if (oper is 'x' or '/' or '+' or '-')
             {
                 expr[i - 1] = new BinaryExpression(oper, expr[i - 1], expr[i + 1]);
                 expr.RemoveRange(i, 2);

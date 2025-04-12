@@ -21,23 +21,15 @@ internal class TopMask : ILayer
     /// <summary>
     /// Initializes the TopMask layer.
     /// </summary>
-    public TopMask(IGerberParser parser)
+    public TopMask(IGerberParser parser, Substrate substrate, string file)
     {
         Layer = GerberLayer.TopMask;
         ColorLayer = ColorConstants.MASK_GREEN;
         _parser = parser;
         Thickness = 0.01;
-    }
-
-    /// <summary>
-    /// Initializes the layer with substrate data and parses the file.
-    /// </summary>
-    public ILayer Init(PathsD[] param, string file, List<string> files = null)
-    {
-        Substrate = param[0];
+        Substrate = substrate.GetLayer();
         _parser.Execute(file);
         Render();
-        return this;
     }
 
     /// <summary>

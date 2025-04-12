@@ -27,24 +27,16 @@ internal class TopCopper : ILayer, ICopper
     /// <summary>
     /// Initializes a new instance of the TopCopper layer.
     /// </summary>
-    public TopCopper(IGerberParser parser, ICalculateAccuracy accuracy)
+    public TopCopper(IGerberParser parser, ICalculateAccuracy accuracy, Substrate substrate, string file)
     {
         Layer = GerberLayer.TopCopper;
         ColorLayer = ColorConstants.COPPER;
         PARSER = parser;
         Thickness = 0.0348;
         _accuracy = accuracy;
-    }
-
-    /// <summary>
-    /// Initializes the layer with substrate data and parses the file.
-    /// </summary>
-    public ILayer Init(PathsD[] param, string file, List<string> files = null)
-    {
-        Substrate = param[0];
+        Substrate = substrate.GetLayer();
         PARSER.Execute(file);
         Render();
-        return this;
     }
 
     /// <summary>

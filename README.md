@@ -61,8 +61,9 @@ var box = CalculateAccuracyHelper.Execute(await coppers[0].GetAccuracy(),
 ```
 
 #### ⚠️ Attention!
-Due to the nature of the Clipper2 library and floating-point precision (double), the calculated distances may have a margin of error ranging from 0.5% to 10%.
-Keep this in mind when using the results in critical design constraints.
+- Due to the nature of the Clipper2 library and the limitations of floating-point precision (double), calculated distances may have a margin of error ranging from 0.5% to 10%, particularly in complex scenarios. Please take this into account when working with strict design constraints. 
+- For simple boards (e.g., Board 1), the accuracy class is calculated quite reliably, with minor deviations typically between 0.3% and 1%.
+- For more complex boards (Board 2 to Board 5), the error margin can increase up to 10%. This is primarily due to how Clipper2 handles intricate geometry: such boards often consist of multiple sub-boards embedded within a single layout, which can lead to precision loss during boolean operations and distance calculations.
 
 ### PCB Layer Previews
 
